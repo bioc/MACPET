@@ -1,0 +1,16 @@
+citHeader("To cite the R package ‘MACPET’ in your publication please use:")
+
+citEntry(entry  = "unpublished",
+         title  = "Model-based Analysis for ChIA-PET (MACPET)",
+         author = c(person("Ioannis","Vardaxis"),
+		     person("Finn","Drabløs"),
+                    person("Morten","Rye"),
+                    person("Bo Henry","Lindqvist")),
+note = paste("R package version ", R.Version()$major, ".", R.Version()$minor, sep = ""),
+textVersion = paste("I. Vardaxis, F. Drabløs, M. Rye, B.H Lindqvist (2017) Model-based Analysis for ChIA-PET (MACPET)")
+	)
+
+citFooter("This free open-source software implements academic
+research by the authors. If you use it,
+please support the project by citing the appropriate
+journal articles.\n")

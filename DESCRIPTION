@@ -1,0 +1,37 @@
+Package: MACPET
+Type: Package
+Title: Model based analysis for ChIA-PET data
+Version: 0.99.0
+Date: 2017-25-10
+Author: Ioannis Vardaxis
+Maintainer: Ioannis Vardaxis <ioannis.vardaxis@ntnu.no>
+Description: The MACPET package can be used for binding site analysis for ChIA-PET data. MACPET reads ChIA-PET data in BAM or SAM format and separates the data into Self-ligated, Intra- and Inter-chromosomal PETs. Furthermore, MACPET breaks the genome into regions and applies 2D mixture models for identifying candidate peaks/binding sites using skewed generalized students-t distributions (SGT). It then uses a local poisson model for finding significant binding sites. MACPET is mainly written in C++, and it supports the BiocParallel package.
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+ByteCompile: true
+RoxygenNote: 6.0.1
+biocViews: Software, DNA3DStructure, PeakDetection, StatisticalMethod, Bayesian, Clustering, Classification, HiC
+Depends: R (>= 3.4.2), InteractionSet (>= 1.4.0)
+Imports: intervals (>= 0.15.1), plyr (>= 1.8.4),  Rsamtools (>= 1.28.0), stats (>= 3.4.2), utils (>= 3.4.2), methods (>= 3.4.2), GenomicRanges (>= 1.28.6), S4Vectors (>= 0.14.7), IRanges (>= 2.10.5), GenomeInfoDb (>= 1.12.3), gtools (>= 3.5.0), GenomicAlignments (>= 1.12.2), BSgenome (>= 1.44.2), knitr (>= 1.17), Rcpp (>= 0.12.13), rtracklayer (>= 1.36.6), BiocParallel (>= 1.10.1)
+Suggests: ggplot2 (>= 2.2.1), igraph (>= 1.1.2), rmarkdown (>= 1.6.0.9004), reshape2 (>= 1.4.2), BiocStyle (>= 2.4.1)
+VignetteBuilder: knitr
+RdMacros: Rdpack
+LinkingTo: Rcpp
+Collate: 
+    'ALLData.R'
+    'AllClasses.R'
+    'AnalysisStatistics.R'
+    'ConvertToPSelf-methods.R'
+    'InputChecks.R'
+    'MACPET_pkg.R'
+    'PeakCallerUlt.R'
+    'PeaksToGRanges-methods.R'
+    'PeaksToNarrowPeak-methods.R'
+    'RcppExports.R'
+    'Stage_0_PETClassificationFunctions.R'
+    'Stage_1_PeakFinderFunctions_R.R'
+    'TagsToGInteractions-methods.R'
+    'exportPeaks-methods.R'
+    'plot-methods.R'
+    'summary-methods.R'
