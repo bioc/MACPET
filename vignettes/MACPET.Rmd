@@ -33,7 +33,7 @@ references:
     year: 
     month: 
 output:
- BiocStyle::pdf_document2
+ BiocStyle::pdf_document
 vignette: >
  %\VignetteIndexEntry{MACPET}
  %\VignetteEngine{knitr::rmarkdown}
@@ -73,11 +73,9 @@ Before starting with examples of how to use \Rpackage{MACPET}, create a
 test folder to save all the output files of the examples presented in this 
 vignette:
 ```{r,eval=TRUE,echo=TRUE}
-#Create a test forder on the desktop, or anywhere you want:
-AnalysisDir=file.path(path.expand('~'),'Desktop')
-dir.create(file.path(AnalysisDir,"TestFolder"))
-#where you will save the results:
-AnalysisDir=file.path(AnalysisDir,"TestFolder")
+#Create a temporary test folder, or anywhere you want:
+AnalysisDir=file.path(tempdir(),"MACPETtest")
+dir.create(AnalysisDir)#where you will save the results.
 ```
 
 Load the package:

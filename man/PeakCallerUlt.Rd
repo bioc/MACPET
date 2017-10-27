@@ -128,11 +128,11 @@ backhead is necessary.
 }
 
 \examples{
-#Create a test forder on the desktop, or anywhere you want:
-AnalysisDir=file.path(path.expand('~'),'Desktop')
-dir.create(file.path(AnalysisDir,"MACPET.test"))
-AnalysisDir=file.path(AnalysisDir,"MACPET.test")#where you will save
-#the results
+
+#Create a temporary forder, or anywhere you want:
+AnalysisDir=file.path(tempdir(),"MACPETtest")
+dir.create(AnalysisDir)#where you will save the results
+
 
 #load sample data to use in the algorithm and give inputs:
 DataDir=system.file("extdata", package = "MACPET") #data path

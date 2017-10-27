@@ -41,11 +41,9 @@
 #' @importFrom utils write.table
 #'
 #' @examples
-#' #Create a test forder on the desktop, or anywhere you want:
-#' savedir=file.path(path.expand('~'),'Desktop')
-#' dir.create(file.path(savedir,"MACPET.test"))
-#' savedir=file.path(savedir,"MACPET.test")#where you will save
-#' #the results
+#' #Create a temporary test forder, or anywhere you want:
+#' savedir=file.path(tempdir(),"MACPETtest")
+#' dir.create(savedir)#where you will save the results
 #'
 #' #load Inter-chromosomal data:
 #' load(system.file("extdata", "pinterData.rda", package = "MACPET"))

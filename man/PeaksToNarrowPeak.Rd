@@ -43,10 +43,9 @@ MANGO or MICC algorithms. Note also that MANGO and MICC find a self-ligated cut-
 that found by MACPET. We suggest that the user overwrites MANGOS's or MICC's cut-off with that of MACPET.
 }
 \examples{
-#Create a test forder on the desktop, or anywhere you want:
-savedir=file.path(path.expand('~'),'Desktop')
-dir.create(file.path(savedir,"MACPET.test"))
-savedir=file.path(savedir,"MACPET.test")#where you will save
+#Create a temporary forder, or anywhere you want:
+savedir=file.path(tempdir(),"MACPETtest")
+dir.create(savedir)#where you will save the results
 file.out="MACPET_peaks.narrowPeak"
 
 #load Self-ligated data: (class=PSFit)

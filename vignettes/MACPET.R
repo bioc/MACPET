@@ -2,11 +2,9 @@
 BiocStyle::latex2
 
 ## ----eval=TRUE,echo=TRUE---------------------------------------------------
-#Create a test forder on the desktop, or anywhere you want:
-AnalysisDir=file.path(path.expand('~'),'Desktop')
-dir.create(file.path(AnalysisDir,"TestFolder"))
-#where you will save the results:
-AnalysisDir=file.path(AnalysisDir,"TestFolder")
+#Create a temporary test folder, or anywhere you want:
+AnalysisDir=file.path(tempdir(),"MACPETtest")
+dir.create(AnalysisDir)#where you will save the results.
 
 ## --------------------------------------------------------------------------
 library(MACPET)
