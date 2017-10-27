@@ -43,7 +43,8 @@ S4Vectors::metadata(object)$Peaks.Info #peak/binding site information
 
 }
 \references{
-\insertRef{macpetcite}{MACPET}
+Vardaxis I, Drabløs F, Rye M and Lindqvist BH (2018). \emph{Model-based Analysis for ChIA-PET (MACPET)}.
+To be published.
 }
 \seealso{
 \code{\linkS4class{PSFit}}

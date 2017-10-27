@@ -4,9 +4,12 @@
 #' @author Ioannis Vardaxis, \email{ioannis.vardaxis@@ntnu.no}
 #--#' make reference on the article:
 #' @references
-#' \insertRef{macpetcite}{MACPET}
+#' Vardaxis I, Drabløs F, Rye M and Lindqvist BH (2018). \emph{Model-based Analysis for ChIA-PET (MACPET)}.
+#' To be published.
 #'
-#' \insertRef{ENCODE_1}{MACPET}
+#' Consortium EP (2012) \emph{An integrated encyclopedia of DNA elements in the human genome.}.
+#'  Nature, 489(7414), pp. 57–74. \url{http://dx.doi.org/10.1038/nature11247}.
+#'
 #--#' for the current function to be exported on the NAMESPACE:
 #' @export
 #--#' make discription:

@@ -179,9 +179,11 @@ class(pinterData) # see methods for this class
 unlink(AnalysisDir,recursive=TRUE)
 }
 \references{
-\insertRef{macpetcite}{MACPET}
+Vardaxis I, Drabløs F, Rye M and Lindqvist BH (2018). \emph{Model-based Analysis for ChIA-PET (MACPET)}.
+To be published.
 
-\insertRef{ENCODE_1}{MACPET}
+Consortium EP (2012) \emph{An integrated encyclopedia of DNA elements in the human genome.}.
+ Nature, 489(7414), pp. 57–74. \url{http://dx.doi.org/10.1038/nature11247}.
 }
 \seealso{
 \linkS4class{PSelf}, \linkS4class{PIntra},

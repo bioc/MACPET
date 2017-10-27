@@ -49,7 +49,9 @@
 #' @name MACPET
 #' @author Ioannis Vardaxis, \email{ioannis.vardaxis@@ntnu.no}
 #--#' make reference on the article:
-#' @references \insertRef{macpetcite}{MACPET}
+#' @references
+#' Vardaxis I, Drabløs F, Rye M and Lindqvist BH (2018). \emph{Model-based Analysis for ChIA-PET (MACPET)}.
+#' To be published.
 #'
 #' @import Rcpp
 #' @importFrom Rcpp evalCpp sourceCpp

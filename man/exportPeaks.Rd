@@ -52,7 +52,8 @@ exportPeaks(object=psfitData,file.out="Peaks",threshold=1e-5,savedir=savedir)
 unlink(savedir,recursive=TRUE)
 }
 \references{
-\insertRef{macpetcite}{MACPET}
+Vardaxis I, Drabløs F, Rye M and Lindqvist BH (2018). \emph{Model-based Analysis for ChIA-PET (MACPET)}.
+To be published.
 }
 \seealso{
 \linkS4class{PSFit}

@@ -2,7 +2,9 @@
 #' @importClassesFrom InteractionSet GInteractions
 #' @title PSelf S4 Class
 #' @author Ioannis Vardaxis, \email{ioannis.vardaxis@@ntnu.no}
-#' @references \insertRef{macpetcite}{MACPET}
+#' @references
+#' Vardaxis I, Drabløs F, Rye M and Lindqvist BH (2018). \emph{Model-based Analysis for ChIA-PET (MACPET)}.
+#' To be published.
 #' @description  \code{\linkS4class{PSelf}} class in a S4 class which
 #'  inherits from the
 #' \code{\link[InteractionSet]{GInteractions}} class and it contains Self-ligated
@@ -27,7 +29,9 @@ PSelf=setClass("PSelf",contains="GInteractions")
 #' @export
 #' @title PSFit S4 Class
 #' @author Ioannis Vardaxis, \email{ioannis.vardaxis@@ntnu.no}
-#' @references \insertRef{macpetcite}{MACPET}
+#' @references
+#' Vardaxis I, Drabløs F, Rye M and Lindqvist BH (2018). \emph{Model-based Analysis for ChIA-PET (MACPET)}.
+#' To be published.
 #' @description \code{\linkS4class{PSFit}} class in a S4 class which
 #' inherits from the
 #' \code{\link[InteractionSet]{GInteractions}} class and it contains Self-ligated
@@ -83,7 +87,9 @@ PSFit=setClass("PSFit",contains="GInteractions")
 #' @export
 #' @title PInter S4 Class
 #' @author Ioannis Vardaxis, \email{ioannis.vardaxis@@ntnu.no}
-#' @references \insertRef{macpetcite}{MACPET}
+#' @references
+#' Vardaxis I, Drabløs F, Rye M and Lindqvist BH (2018). \emph{Model-based Analysis for ChIA-PET (MACPET)}.
+#' To be published.
 #' @description \code{\linkS4class{PInter}} class in a S4 class which
 #'  inherits from the
 #' \code{\link[InteractionSet]{GInteractions}} class and it contains
@@ -99,7 +105,9 @@ PInter=setClass("PInter",contains="GInteractions")
 #' @export
 #' @title PIntra Class
 #' @author Ioannis Vardaxis, \email{ioannis.vardaxis@@ntnu.no}
-#' @references \insertRef{macpetcite}{MACPET}
+#' @references
+#' Vardaxis I, Drabløs F, Rye M and Lindqvist BH (2018). \emph{Model-based Analysis for ChIA-PET (MACPET)}.
+#' To be published.
 #' @description \code{\linkS4class{PIntra}} class in a S4 class which
 #' inherits from the
 #' \code{\link[InteractionSet]{GInteractions}} class and it contains

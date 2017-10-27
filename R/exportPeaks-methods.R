@@ -1,7 +1,9 @@
 #' @title Exports peaks to csv file
 #' @author Ioannis Vardaxis, \email{ioannis.vardaxis@@ntnu.no}
 #'
-#' @references \insertRef{macpetcite}{MACPET}
+#' @references
+#' Vardaxis I, Drabløs F, Rye M and Lindqvist BH (2018). \emph{Model-based Analysis for ChIA-PET (MACPET)}.
+#' To be published.
 #' @description \code{exportPeaks} is an S3 method for the  \linkS4class{PSFit}
 #' class. It exports peak information to a csv file in a given directory.
 #'

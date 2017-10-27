@@ -1,6 +1,8 @@
 #' @title Count Statistics for ChIA-PET.
 #' @author Ioannis Vardaxis, \email{ioannis.vardaxis@@ntnu.no}
-#' @references \insertRef{macpetcite}{MACPET}
+#' @references
+#' Vardaxis I, Drabløs F, Rye M and Lindqvist BH (2018). \emph{Model-based Analysis for ChIA-PET (MACPET)}.
+#' To be published.
 #' @export
 #' @description \code{AnalysisStatistics} prints and saves count statistics
 #' for the current inputs of the peak-calling analysis.

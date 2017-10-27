@@ -1,6 +1,8 @@
 #' @title Convert Peaks to narrowPeak (BED) object.
 #' @author Ioannis Vardaxis, \email{ioannis.vardaxis@@ntnu.no}
-#' @references \insertRef{macpetcite}{MACPET}
+#' @references
+#' Vardaxis I, Drabløs F, Rye M and Lindqvist BH (2018). \emph{Model-based Analysis for ChIA-PET (MACPET)}.
+#' To be published.
 #'
 #' @description \code{PeaksToNarrowPeak} converts peaks of an object of \code{\linkS4class{PSFit}}
 #' class to \code{narrowPeak} object. The object is saved in a user specified directory and can be used in the

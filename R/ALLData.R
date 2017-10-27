@@ -15,7 +15,9 @@
 #'
 #' @author Yijun Ruan, GIS, 2012-05-24 (main data creators)
 #' @format A BAM file.
-#' @references \insertRef{ENCODE_1}{MACPET}
+#' @references
+#' Consortium EP (2012) \emph{An integrated encyclopedia of DNA elements in the human genome.}.
+#'  Nature, 489(7414), pp. 57–74. \url{http://dx.doi.org/10.1038/nature11247}.
 #' @docType data
 #' @source \url{https://www.encodeproject.org/experiments/ENCSR000BZZ/}
 #' @keywords data

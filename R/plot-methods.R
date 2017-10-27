@@ -1,7 +1,9 @@
 #' @title plot methods for MACPET package
 #' @author Ioannis Vardaxis, \email{ioannis.vardaxis@@ntnu.no}
 #'
-#' @references \insertRef{macpetcite}{MACPET}
+#' @references
+#' Vardaxis I, Drabløs F, Rye M and Lindqvist BH (2018). \emph{Model-based Analysis for ChIA-PET (MACPET)}.
+#' To be published.
 #' @description Different plot methods for the classes in the
 #' \code{\link{MACPET}} package.
 #'

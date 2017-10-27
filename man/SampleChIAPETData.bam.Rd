@@ -17,7 +17,8 @@ A subset of ChIA-PET data:
 }
 }
 \references{
-\insertRef{ENCODE_1}{MACPET}
+Consortium EP (2012) \emph{An integrated encyclopedia of DNA elements in the human genome.}.
+ Nature, 489(7414), pp. 57–74. \url{http://dx.doi.org/10.1038/nature11247}.
 }
 \seealso{
 \code{\link{pselfData.rda}}, \code{\link{pintraData.rda}},

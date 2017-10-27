@@ -62,7 +62,8 @@ requireNamespace("reshape2")
 summary(pinterData,heatmap=TRUE)#sample data, not good heatmap plot.
 }
 \references{
-\insertRef{macpetcite}{MACPET}
+Vardaxis I, Drabløs F, Rye M and Lindqvist BH (2018). \emph{Model-based Analysis for ChIA-PET (MACPET)}.
+To be published.
 }
 \seealso{
 \code{\linkS4class{PSelf}},
