@@ -943,7 +943,7 @@ void DensRespTot_g_Rcpp(int const &g,int const &i,
     double fDig=std::pow(1.0+std::pow(Dtag_my_gi,2.0)/DenomfDig,-1.5)/
         (2.0*sdy_g[g]);//DTag
     double fUDig=fUig*fDig*p_g[g+1];//multiply with p_g, NB index!
-    if(!(isnan(fUDig)||isinf(fUDig))){
+    if(!(std::isnan(fUDig)||std::isinf(fUDig))){
         // save density to vector for the sum:
         DensSum_i+=fUDig;//sum of densities
         Resp(i,g+1)=fUDig;//save for responsinilites
@@ -1268,7 +1268,7 @@ void MergeOvPeak_Rcpp(Rcpp::NumericMatrix const &DFit,
     // loop and merge iff overlaps:
     int Merge_safe_it=1;//for not getting in infinete loop
     while(Rcpp::as<int>(MergeInf["TotOv"])!=0&&Merge_safe_it<=1000){
-        
+
         // Rcout<<"----------------Merge_safe_it: "<<Merge_safe_it<<std::endl;
         //------------
         // Initiate EM:
