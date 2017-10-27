@@ -1,7 +1,7 @@
 Package: MACPET
 Type: Package
 Title: Model based analysis for ChIA-PET data
-Version: 0.99.2
+Version: 0.99.3
 Date: 2017-25-10
 Author: Ioannis Vardaxis
 Maintainer: Ioannis Vardaxis <ioannis.vardaxis@ntnu.no>
@@ -16,7 +16,6 @@ Depends: R (>= 3.4.2), InteractionSet (>= 1.5.7)
 Imports: intervals (>= 0.15.1), plyr (>= 1.8.4),  Rsamtools (>= 1.29.1), stats (>= 3.4.2), utils (>= 3.4.2), methods (>= 3.4.2), GenomicRanges (>= 1.29.15), S4Vectors (>= 0.15.14), IRanges (>= 2.11.19), GenomeInfoDb (>= 1.13.5), gtools (>= 3.5.0), GenomicAlignments (>= 1.13.6), BSgenome (>= 1.45.3), knitr (>= 1.17), Rcpp (>= 0.12.13), rtracklayer (>= 1.37.6), BiocParallel (>= 1.11.13)
 Suggests: ggplot2 (>= 2.2.1), igraph (>= 1.1.2), rmarkdown (>= 1.6), reshape2 (>= 1.4.2), BiocStyle (>= 2.5.43)
 VignetteBuilder: knitr
-RdMacros: Rdpack
 LinkingTo: Rcpp
 SystemRequirements: C++11
 Collate: 
