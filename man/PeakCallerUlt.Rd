@@ -6,7 +6,7 @@
 \usage{
 PeakCallerUlt(DataDir = "", DataFile = NULL, AnalysisDir = "",
   GenomePkg = NULL, fileSelf = NULL, fileIntra = NULL, fileInter = NULL,
-  PopImage = TRUE, BlackList = TRUE, fileSelfFit = NULL, method = "BH",
+  PopImage = TRUE, BlackList = NULL, fileSelfFit = NULL, method = "BH",
   Stages = c(0:1))
 }
 \arguments{
@@ -36,12 +36,12 @@ as output (stage 0 parameter).}
 \item{PopImage}{TRUE or FALSE indicating whether you want to create a figure
 for the Self-ligated borders/population or not (stage 0 parameter).}
 
-\item{BlackList}{TRUE or FALSE depending on whether the user wants to remove
-peaks which overlap with black listed regions before inference. Currently
-only available for \code{hg="hg19"}, however the user can provide his own as a
-data.frame with the following columns (stage 0 parameter):
+\item{BlackList}{NULL if no black-listed regions are to be removed from the data,
+ or a character specifying the genome from which the data comes from in order to remove the corresponding black-listed regions.
+ Currently available genomes are: 'hg19', 'ce10', 'dm3', 'hg38', 'mm9', 'mm10'.
+ Alternatively, the user can provide a data.frame with the following columns (stage 0 parameter):
 \describe{
-\item{\code{Chrom}}{A character vector with the chromosome names ("chr1" etc)}
+\item{\code{Chrom}}{A character vector with the chromosome names ('chr1' etc)}
 \item{\code{Region.Start}}{An integer vector with the start of the
 black listed regions.}
 \item{\code{Region.End}}{An integer vector with the end of the black
@@ -130,25 +130,25 @@ backhead is necessary.
 \examples{
 
 #Create a temporary forder, or anywhere you want:
-AnalysisDir=file.path(tempdir(),"MACPETtest")
+AnalysisDir=file.path(tempdir(),'MACPETtest')
 dir.create(AnalysisDir)#where you will save the results
 
 
 #load sample data to use in the algorithm and give inputs:
-DataDir=system.file("extdata", package = "MACPET") #data path
-DataFile="SampleChIAPETData.bam" #data name
+DataDir=system.file('extdata', package = 'MACPET') #data path
+DataFile='SampleChIAPETData.bam' #data name
 PopImage=TRUE #Sample data, not very good classifiction results.
-GenomePkg="BSgenome.Hsapiens.UCSC.hg19" #genome of the data.
-fileSelf="pselfData" #name for Self-ligated
-fileIntra="pintraData" #name for Intra-chromosomal
-fileInter="pinterData" #name for Inter-chromosomal
-BlackList=TRUE #remove PETs in black listed regions
+GenomePkg='BSgenome.Hsapiens.UCSC.hg19' #genome of the data.
+fileSelf='pselfData' #name for Self-ligated
+fileIntra='pintraData' #name for Intra-chromosomal
+fileInter='pinterData' #name for Inter-chromosomal
+BlackList='hg19' #remove PETs in black listed regions for hg19
 Stages=c(0)#run single stage for the example.
 
 #parallel backhead can be created using the BiocParallel package
 #parallel backhead can be created using the BiocParallel package
-#requireNamespace("BiocParallel")
-#snow <- BiocParallel::SnowParam(workers = 1, type = "SOCK", progressbar=FALSE)
+#requireNamespace('BiocParallel')
+#snow <- BiocParallel::SnowParam(workers = 1, type = 'SOCK', progressbar=FALSE)
 #BiocParallel::register(snow, default=TRUE)
 
 #-run for the whole binding site analysis:

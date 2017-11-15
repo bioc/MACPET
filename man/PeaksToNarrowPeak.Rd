@@ -36,20 +36,20 @@ class to \code{narrowPeak} object. The object is saved in a user specified direc
 MANGO or MICC algorithms for interaction analysis.
 }
 \details{
-Each Peak in the narrowPeak object is represented by an interval starting from the "CIQ.Up.start"
-estimated variable to its "CIQ.Down.end" (see \code{\linkS4class{PSFit}}). Close Peaks in genomic distance are NOT
+Each Peak in the narrowPeak object is represented by an interval starting from the 'CIQ.Up.start'
+estimated variable to its 'CIQ.Down.end' (see \code{\linkS4class{PSFit}}). Close Peaks in genomic distance are NOT
 merged by the \code{PeaksToNarrowPeak} function. However the user can specify a distance window for merging in the
 MANGO or MICC algorithms. Note also that MANGO and MICC find a self-ligated cut-off by itself which is usually very different than
 that found by MACPET. We suggest that the user overwrites MANGOS's or MICC's cut-off with that of MACPET.
 }
 \examples{
 #Create a temporary forder, or anywhere you want:
-savedir=file.path(tempdir(),"MACPETtest")
+savedir=file.path(tempdir(),'MACPETtest')
 dir.create(savedir)#where you will save the results
-file.out="MACPET_peaks.narrowPeak"
+file.out='MACPET_peaks.narrowPeak'
 
 #load Self-ligated data: (class=PSFit)
-load(system.file("extdata", "psfitData.rda", package = "MACPET"))
+load(system.file('extdata', 'psfitData.rda', package = 'MACPET'))
 class(psfitData)
 PeaksToNarrowPeak(object=psfitData,threshold=1e-5,file.out=file.out,savedir=savedir)
 

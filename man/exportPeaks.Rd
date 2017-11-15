@@ -38,13 +38,13 @@ class. It exports peak information to a csv file in a given directory.
 \examples{
 
 #Create a temporary forder, or anywhere you want:
-savedir=file.path(tempdir(),"MACPETtest")
+savedir=file.path(tempdir(),'MACPETtest')
 dir.create(savedir)#where you will save the results
 
 #load Self-ligated data: (class=PSFit)
-load(system.file("extdata", "psfitData.rda", package = "MACPET"))
+load(system.file('extdata', 'psfitData.rda', package = 'MACPET'))
 class(psfitData)
-exportPeaks(object=psfitData,file.out="Peaks",threshold=1e-5,savedir=savedir)
+exportPeaks(object=psfitData,file.out='Peaks',threshold=1e-5,savedir=savedir)
 
 #-----delete test directory:
 unlink(savedir,recursive=TRUE)

@@ -41,39 +41,39 @@ for the current inputs of the peak-calling analysis.
 }
 \examples{
 #Create a temporary test forder, or anywhere you want:
-savedir=file.path(tempdir(),"MACPETtest")
+savedir=file.path(tempdir(),'MACPETtest')
 dir.create(savedir)#where you will save the results
 
 #load Inter-chromosomal data:
-load(system.file("extdata", "pinterData.rda", package = "MACPET"))
+load(system.file('extdata', 'pinterData.rda', package = 'MACPET'))
 class(pinterData)
 
 #load Intra-chromosomal data:
-load(system.file("extdata", "pintraData.rda", package = "MACPET"))
+load(system.file('extdata', 'pintraData.rda', package = 'MACPET'))
 class(pintraData)
 
 #################################################################
 #load Self-ligated data: (class=PSelf)
-load(system.file("extdata", "pselfData.rda", package = "MACPET"))
+load(system.file('extdata', 'pselfData.rda', package = 'MACPET'))
 class(pselfData)
 
 #Print analysis:
 AnalysisStatistics(x.self=pselfData,
                    x.intra=pintraData,
                    x.inter=pinterData,
-                   file.out="AnalysisStats",
+                   file.out='AnalysisStats',
                    savedir=savedir)
 
 #################################################################
 #load Self-ligated data: (class=PSFit)
-load(system.file("extdata", "psfitData.rda", package = "MACPET"))
+load(system.file('extdata', 'psfitData.rda', package = 'MACPET'))
 class(psfitData)
 
 #Print analysis:
 AnalysisStatistics(x.self=psfitData,
                    x.intra=pintraData,
                    x.inter=pinterData,
-                   file.out="AnalysisStats",
+                   file.out='AnalysisStats',
                    savedir=savedir,
                    threshold=1e-5)
 

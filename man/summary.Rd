@@ -38,27 +38,27 @@ Different summary methods for the classes in the
 }
 \examples{
 #load Self-ligated data: (class=PSelf)
-load(system.file("extdata", "pselfData.rda", package = "MACPET"))
+load(system.file('extdata', 'pselfData.rda', package = 'MACPET'))
 class(pselfData)
 summary(pselfData)
 #load Self-ligated data: (class=PSFit)
-load(system.file("extdata", "psfitData.rda", package = "MACPET"))
+load(system.file('extdata', 'psfitData.rda', package = 'MACPET'))
 class(psfitData)
 summary(psfitData)
 summary(psfitData,threshold=1e-5)
 #load Intra-chromosomal data: (class=PIntra)
-load(system.file("extdata", "pintraData.rda", package = "MACPET"))
+load(system.file('extdata', 'pintraData.rda', package = 'MACPET'))
 class(pintraData)
 summary(pintraData)
-requireNamespace("ggplot2")
-requireNamespace("reshape2")
+requireNamespace('ggplot2')
+requireNamespace('reshape2')
 summary(pintraData,heatmap=TRUE)#sample data, not good heatmap plot.
 #load Inter-chromosomal data: (class=PInter)
-load(system.file("extdata", "pinterData.rda", package = "MACPET"))
+load(system.file('extdata', 'pinterData.rda', package = 'MACPET'))
 class(pinterData)
 summary(pinterData)
-requireNamespace("ggplot2")
-requireNamespace("reshape2")
+requireNamespace('ggplot2')
+requireNamespace('reshape2')
 summary(pinterData,heatmap=TRUE)#sample data, not good heatmap plot.
 }
 \references{

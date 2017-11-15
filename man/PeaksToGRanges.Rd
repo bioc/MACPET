@@ -35,14 +35,14 @@ class to \code{\linkS4class{GRanges}} object.
 \details{
 \code{PeaksToGRanges} converts peak information into a
 \code{\linkS4class{GRanges}} object. Each row in the
-\code{\linkS4class{GRanges}} object represents a peak with "CIQ.Up.start" and "CIQ.Down.end" as start
+\code{\linkS4class{GRanges}} object represents a peak with 'CIQ.Up.start' and 'CIQ.Down.end' as start
 and end coordinates, respectively (see \code{\linkS4class{PSFit}})
  Metadata will also include information for the total PETs,
 the p-value and the FDR of each peak.
 }
 \examples{
 #load Self-ligated data: (class=PSFit)
-load(system.file("extdata", "psfitData.rda", package = "MACPET"))
+load(system.file('extdata', 'psfitData.rda', package = 'MACPET'))
 class(psfitData)
 PeaksToGRanges(object=psfitData,threshold=1e-5)
 

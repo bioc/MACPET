@@ -39,15 +39,15 @@ PETs to a \code{\linkS4class{PSelf}} class for further analysis.
 }
 \examples{
 #load Self-ligated data: (class=PSelf)
-load(system.file("extdata", "pselfData.rda", package = "MACPET"))
+load(system.file('extdata', 'pselfData.rda', package = 'MACPET'))
 class(pselfData)
 
 object=pselfData
 #--remove information and convert to GInteractions:
 S4Vectors::metadata(object)=list(NULL)
-class(object)="GInteractions"
-GenomePkg="BSgenome.Hsapiens.UCSC.hg19" #genome of the data.
-BlackList=TRUE
+class(object)='GInteractions'
+GenomePkg='BSgenome.Hsapiens.UCSC.hg19' #genome of the data.
+BlackList='hg19'
 
 object=ConvertToPSelf(object=object,GenomePkg=GenomePkg,BlackList=BlackList)
 class(object)

@@ -35,7 +35,7 @@ class to \code{\linkS4class{GInteractions}} object.
 }
 \examples{
 #load Self-ligated data: (class=PSFit)
-load(system.file("extdata", "psfitData.rda", package = "MACPET"))
+load(system.file('extdata', 'psfitData.rda', package = 'MACPET'))
 class(psfitData)
 object=TagsToGInteractions(object=psfitData,threshold=1e-5)
 object
