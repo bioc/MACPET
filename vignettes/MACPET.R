@@ -74,6 +74,8 @@ plot(pselfData)
 class(psfitData)
 #binding site couts:
 plot(psfitData,kind="PeakCounts")
+
+## --------------------------------------------------------------------------
 # region example with binding sites:
 plot(psfitData,kind="PeakPETs",RegIndex=1)
 
@@ -104,7 +106,8 @@ TagsToGInteractions(object=psfitData,threshold=1e-5)
 
 ## ----eval=TRUE,echo=TRUE---------------------------------------------------
 class(psfitData)#PSFit class
-PeaksToNarrowPeak(object=psfitData,threshold=1e-5,file.out="MACPET_peaks.narrowPeak",savedir=AnalysisDir)
+PeaksToNarrowPeak(object=psfitData,threshold=1e-5,
+                  file.out="MACPET_peaks.narrowPeak",savedir=AnalysisDir)
 
 ## ----eval=TRUE,echo=TRUE---------------------------------------------------
  #--remove information and convert to GInteractions:
@@ -112,7 +115,7 @@ object=pselfData
 S4Vectors::metadata(object)=list(NULL)
 class(object)="GInteractions"
 GenomePkg="BSgenome.Hsapiens.UCSC.hg19" #genome of the data.
-BlackList=TRUE
+BlackList="hg19"
 object=ConvertToPSelf(object=object,GenomePkg=GenomePkg,BlackList=BlackList)
 class(object)
 
@@ -135,7 +138,7 @@ AnalysisStatistics(x.self=pselfData,#One of the self-ligated classes.
  fileSelf="pselfData" #name for Self-ligated
  fileIntra="pintraData" #name for Intra-chromosomal
  fileInter="pinterData" #name for Inter-chromosomal
- BlackList=TRUE #remove PETs in black listed regions
+ BlackList="hg19" #remove PETs in black listed regions
  fileSelfFit="psfitData"
  method="BH"
  Stages=c(0:1)

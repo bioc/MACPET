@@ -47,29 +47,29 @@ BiocStyle::latex2
 <!-- Intro -->
 \section{Introduction}
 
-Model based analysis for ChIA-PET data (\Rpackage{MACPET}) is a method/pipeline 
+Model based analysis for ChIA-PET data (\Biocpkg{MACPET}) is a method/pipeline 
 for finding binding sites (peak calling) using ChIA-PET data (or paired-end data in general).
-\Rpackage{MACPET} uses information from both paired-ends of ChIA-PET data and searches for two-dimensional 
+\Biocpkg{MACPET} uses information from both paired-ends of ChIA-PET data and searches for two-dimensional 
 clusters which represent binding sites, thus it finds
 binding site locations more accurately than other algorithms which use only one end (like MACS) [@macpet]. 
-The output from \Rpackage{MACPET} can be used for interaction analysis using either MANGO or MICC. However there are plans to extend the package and include interaction analysis in the future. Note that in the case of using the output from \Rpackage{MACPET} in MANGO or MICC for interaction analysis, the user should use the self-ligated cut-off found by \Rpackage{MACPET}, and not the one found in MANGO or MICC. Both of those algorithms allow the user to specify the self-ligated cut-off.
+The output from \Biocpkg{MACPET} can be used for interaction analysis using either MANGO or MICC. However there are plans to extend the package and include interaction analysis in the future. Note that in the case of using the output from \Biocpkg{MACPET} in MANGO or MICC for interaction analysis, the user should use the self-ligated cut-off found by \Biocpkg{MACPET}, and not the one found in MANGO or MICC. Both of those algorithms allow the user to specify the self-ligated cut-off.
 
-The main \Rpackage{MACPET}
+The main \Biocpkg{MACPET}
 pipeline is to first use the complete ChIA-PET data and distinguish between
 Self-ligated, Intra- and Inter-chromosomal PETs as well as to remove PETs
 with similarly mapped tags which might have been created by amplification 
 procedures. Then use the Self-ligated data on the peak-calling algorithm provided 
-by \Rpackage{MACPET} for finding significant peaks. Most of the \Rpackage{MACPET} functions require a user-specified path where the output of 
+by \Biocpkg{MACPET} for finding significant peaks. Most of the \Biocpkg{MACPET} functions require a user-specified path where the output of 
 the algorithm is to be saved.
 
-\Rpackage{MACPET} can analyse ChIA-PET data for both BAM and SAM formats and is 
+\Biocpkg{MACPET} can analyse ChIA-PET data for both BAM and SAM formats and is 
 also compatible with the \Biocpkg{BiocParallel} package. If the user wants to 
 run the algorithm in parallel, the parallel blackhead has to be registered
-before running a \Rpackage{MACPET} function. However most of the MACPET algorithms 
+before running a \Biocpkg{MACPET} function. However most of the MACPET algorithms 
 are implemented in C++ and are therefore very fast. 
 
 
-Before starting with examples of how to use \Rpackage{MACPET}, create a 
+Before starting with examples of how to use \Biocpkg{MACPET}, create a 
 test folder to save all the output files of the examples presented in this 
 vignette:
 ```{r,eval=TRUE,echo=TRUE}
@@ -84,22 +84,34 @@ library(MACPET)
 ```
 
 <!-- Classes -->
-\section{\Rpackage{MACPET} Classes}
+\section{\Biocpkg{MACPET} Classes}
 \label{sec:classes}
 
-\Rpackage{MACPET} provides four different classes which all inherit from the 
-\Rclass{GInteractions} class in the \Biocpkg{InteractionSet} package:
+\Biocpkg{MACPET} provides four different classes which all inherit from the 
+\Rclass{GInteractions} class in the \Biocpkg{InteractionSet} package. Therefore, 
+every method associated with the \Rclass{GInteractions} class is also applicable 
+to the \Biocpkg{MACPET} classes. Every \Biocpkg{MACPET} class contains information 
+of the PETs associated with the corresponding class, their start/end coordinates on 
+the genome as well as which chromosome they belong to. 
+This section provides an overview of the \Biocpkg{MACPET} classes, while methods
+associated with each class are presented in latter sections.
+The classes provided by \Biocpkg{MACPET} are the following:
 
 * \textcolor{LimeGreen}{\Rclass{PSelf}} class contains information 
-about the self-ligated PETs in the data.
+about the self-ligated PETs in the data. This class is created using either the 
+\Rfunction{PeakCallerUlt} function at stage 0 or the \Rfunction{ConvertToPSelf} 
+function.
 * \textcolor{LimeGreen}{\Rclass{PSFit}} class is an update of the
 \textcolor{LimeGreen}{\Rclass{PSelf}} class, which contains information about
 which binding site each PET belongs to, as well as significant peaks found by the
-peak-calling algorithm.
+peak-calling algorithm. This class is created using the \Rfunction{PeakCallerUlt}
+function at stage 1.
 * \textcolor{LimeGreen}{\Rclass{PInter}} class contains information about Inter-chromosomal
-PETs in the data.
+PETs in the data. This class is created using the \Rfunction{PeakCallerUlt}
+function at stage 0.
 * \textcolor{LimeGreen}{\Rclass{PIntra}} class contains information about Intra-chromosomal
-PETs in the data.
+PETs in the data. This class is created using the \Rfunction{PeakCallerUlt}
+function at stage 0.
 
 
 \subsection{\textcolor{LimeGreen}{\Rclass{PSelf}} Class}
@@ -232,18 +244,20 @@ metadata(pintraData)
 
 
 <!--  methods -->
-\section{\Rpackage{MACPET} Methods}
+\section{\Biocpkg{MACPET} Methods}
 
-This section describes methods associated with the classes in the \Rpackage{MACPET} package.
+This section describes methods associated with the classes in the \Biocpkg{MACPET} package.
 
 <!-- summary -->
 \subsection{summary-method}
-All \Rpackage{MACPET} classes are associated with a summary method which sums
+All \Biocpkg{MACPET} classes are associated with a summary method which sums
 up the information stored in each class:
 
 \subsubsection{\textcolor{LimeGreen}{\Rclass{PSelf}} Class}
 
-\Rfunction{summary} for \textcolor{LimeGreen}{\Rclass{PSelf}} class:
+\Rfunction{summary} for \textcolor{LimeGreen}{\Rclass{PSelf}} class prints information about
+the total number of self-ligated PETs for each chromosome, as well as the total number of
+self-ligated PETs in the data, their min/max length and genome information of the data:
 ```{r}
 class(pselfData)
 summary(pselfData)
@@ -251,7 +265,10 @@ summary(pselfData)
 
 
 \subsubsection{\textcolor{LimeGreen}{\Rclass{PSFit}} Class}
-\Rfunction{summary} for \textcolor{LimeGreen}{\Rclass{PSFit}} class:
+\Rfunction{summary} for \textcolor{LimeGreen}{\Rclass{PSFit}} class adds information to the 
+\Rfunction{summary} of \textcolor{LimeGreen}{\Rclass{PSelf}} class. The new information is
+the total regions found and analysed for each chromosome and the total number of 
+candidate binding sites found on each chromosome:
 ```{r}
 class(psfitData)
 summary(psfitData)
@@ -259,7 +276,10 @@ summary(psfitData)
 
 
 \subsubsection{\textcolor{LimeGreen}{\Rclass{PIntra}} Class}
-\Rfunction{summary} for \textcolor{LimeGreen}{\Rclass{PIntra}} class:
+\Rfunction{summary} for \textcolor{LimeGreen}{\Rclass{PIntra}} class prints 
+information about the total number of intra-ligated PETs for each chromosome,
+as well as information about the genome. The user can 
+choose to plot a heat-map for the total number of intra-ligated PETs on each chromosome:
 ```{r}
 class(pintraData)
 requireNamespace("ggplot2")
@@ -268,8 +288,10 @@ summary(pintraData,heatmap=TRUE)
 ```
 
 \subsubsection{\textcolor{LimeGreen}{\Rclass{PInter}} Class}
-\Rfunction{summary} for \textcolor{LimeGreen}{\Rclass{PInter}} class where the user can 
-choose to plot a heat-map for the total PETs between the chromosomes:
+\Rfunction{summary} for \textcolor{LimeGreen}{\Rclass{PInter}} class prints 
+information about the total number of inter-ligated PETs for each chromosome,
+as well as information about the genome. The user can 
+choose to plot a heat-map for the total number of inter-ligated PETs connecting the chromosomes:
 ```{r}
 class(pinterData)
 requireNamespace("ggplot2")
@@ -279,13 +301,15 @@ summary(pinterData,heatmap=TRUE)
 
 <!-- plot -->
 \subsection{plot-method}
-All \Rpackage{MACPET} classes are associated with a plot method which can be 
+All \Biocpkg{MACPET} classes are associated with a plot method which can be 
 used to visualize counts, PETs in a region, as well as binding sites. Here we give
 some examples for the usage of the plot methods, however more arguments can be
 provided to the plot methods, see \Rpackage{MACPET::plot}.
 
 \subsubsection{\textcolor{LimeGreen}{\Rclass{PSelf}} Class}
-\Rfunction{plot} for \textcolor{LimeGreen}{\Rclass{PSelf}} Class:
+\Rfunction{plot} for \textcolor{LimeGreen}{\Rclass{PSelf}}  Class will create a
+bar-plot showing the total number of self-ligated PETs on each chromosome. 
+The x-axis are the chromosomes and the y-axis are the corresponding frequencies.
 ```{r}
 requireNamespace("ggplot2")
 class(pselfData)
@@ -295,18 +319,36 @@ plot(pselfData)
 
 
 \subsubsection{\textcolor{LimeGreen}{\Rclass{PSFit}} Class}
-\Rfunction{plot} for \textcolor{LimeGreen}{\Rclass{PSFit}} Class:
+\Rfunction{plot} for \textcolor{LimeGreen}{\Rclass{PSFit}} Class will create a
+bar-plot (if kind="PeakCounts") showing the total number of candidate binding 
+sites found on each chromosome. The x-axis are the chromosomes and the y-axis 
+are the corresponding frequencies.
 ```{r}
 class(psfitData)
 #binding site couts:
 plot(psfitData,kind="PeakCounts")
+```
+
+Other kind of plots are also supported for this class. For example if 
+kind="PeakPETs", then a visual representation of a region will be plotted 
+(RegIndex chooses which region to plot with 1 meaning the one with the
+highest total of PETs in it). The x-axis are the genomic coordinates of the region
+and the y-axis if the sizes of the PETs. Each segment represents a PET from its
+start to its end coordinate. Different colors of colors represent which 
+binding site each PET belongs to, with red (PeakID=0) representing the noise
+cluster. Vertical lines represent the exact binding location of the 
+binding site.
+```{r}
 # region example with binding sites:
 plot(psfitData,kind="PeakPETs",RegIndex=1)
 ```
 
 
 \subsubsection{\textcolor{LimeGreen}{\Rclass{PIntra}} Class}
-\Rfunction{plot} for \textcolor{LimeGreen}{\Rclass{PIntra}} Class:
+\Rfunction{plot} for \textcolor{LimeGreen}{\Rclass{PIntra}} Class will create a
+bar-plot showing the total number of intra-ligated PETs on each chromosome. 
+The x-axis are the chromosomes and the y-axis are the corresponding 
+frequencies.
 ```{r}
 class(pintraData)
 #plot counts:
@@ -329,7 +371,8 @@ plot(pinterData)
 \subsection{exportPeaks methods}
 \textcolor{LimeGreen}{\Rclass{PSFit}} 
 class has a method which exports the binding site information stored in 
-\Rfunction{metadata(object)[['Peaks.Info']]} into csv files in a given directory.
+\Rfunction{metadata(object)[['Peaks.Info']]} into csv files in a given directory
+if one wishes to have the binding sites in an excel file.
 The user can also specify a threshold for the FDR. If no threshold is specified  all
 the binding sites found by the algorithm are exported.
 
@@ -341,8 +384,8 @@ exportPeaks(object=psfitData,file.out="Peaks",threshold=1e-5,savedir=AnalysisDir
 
 \subsection{PeaksToGRanges methods}
 \textcolor{LimeGreen}{\Rclass{PSFit}}
-class has also a method which converts the peaks found by the peak-calling algorithm
-into \Rclass{GRanges} objects with start and end coordinates the peak's confidence interval (CIQ.Up.start,CIQ.Down.end).
+class has also a method which converts the binding sites found by the peak-calling algorithm
+into a \Rclass{GRanges} object with start and end coordinates the binding site's confidence interval (CIQ.Up.start,CIQ.Down.end).
 It furthermore contains information about the total number of PETs in the peak (TotPETs),
 the p-value of the peak (p.value) and its FDR (FDR). The user can also specify an FDR
  threshold for returning significant peaks. If threshold=NULL, all the found peaks
@@ -359,7 +402,11 @@ object
 \textcolor{LimeGreen}{\Rclass{PSFit}}
 class has also a method which returns only PETs belonging to peaks 
 (removing noisy or insignificant PETs) as a
-\Rclass{GInteractions} object. 
+\Rclass{GInteractions} object. This might be useful if one wishes to
+visualize the tags belonging to PETs of binding sites on the
+genome-browser. The user can also specify an FDR
+ threshold for returning significant peaks. 
+ If threshold=NULL, all the found peaks are returned.
 
 ```{r,eval=TRUE,echo=TRUE}
 class(psfitData)#PSFit class
@@ -377,7 +424,8 @@ MANGO or MICC algorithms for interaction analysis.
 
 ```{r,eval=TRUE,echo=TRUE}
 class(psfitData)#PSFit class
-PeaksToNarrowPeak(object=psfitData,threshold=1e-5,file.out="MACPET_peaks.narrowPeak",savedir=AnalysisDir)
+PeaksToNarrowPeak(object=psfitData,threshold=1e-5,
+                  file.out="MACPET_peaks.narrowPeak",savedir=AnalysisDir)
 ```
 
 
@@ -386,7 +434,8 @@ PeaksToNarrowPeak(object=psfitData,threshold=1e-5,file.out="MACPET_peaks.narrowP
 This method if for the 
 \textcolor{LimeGreen}{\Rclass{GInteractions}} class. It converts a
 \Rclass{GInteractions} object to \textcolor{LimeGreen}{\Rclass{PSelf}} object for further use in the
-peak-calling algorithm. This method could be used in case the user already has the self-ligated PETs
+peak-calling algorithm \Rfunction{PeakCallerUlt}. 
+This method could be used in case the user already has the self-ligated PETs
 separated from the rest of the ChIA-PET data and wishes to run a binding site analysis on those only.
 
 ```{r,eval=TRUE,echo=TRUE}
@@ -395,7 +444,7 @@ object=pselfData
 S4Vectors::metadata(object)=list(NULL)
 class(object)="GInteractions"
 GenomePkg="BSgenome.Hsapiens.UCSC.hg19" #genome of the data.
-BlackList=TRUE
+BlackList="hg19"
 object=ConvertToPSelf(object=object,GenomePkg=GenomePkg,BlackList=BlackList)
 class(object)
 ```
@@ -404,7 +453,7 @@ class(object)
 \subsection{AnalysisStatistics function}
 
 \Rfunction{AnalysisStatistics} function can be used for all the
-classes of the \Rpackage{MACPET} package for printing and/or saving statistics
+classes of the \Biocpkg{MACPET} package for printing and/or saving statistics
 of the classes in csv file in a given working directory. Input for Self-ligated
 PETs of one of the classes (\textcolor{LimeGreen}{\Rclass{PSelf}},
 \textcolor{LimeGreen}{\Rclass{PSFit}}) is mandatory, while input for
@@ -472,7 +521,7 @@ Description of the input names below:
  fileSelf="pselfData" #name for Self-ligated
  fileIntra="pintraData" #name for Intra-chromosomal
  fileInter="pinterData" #name for Inter-chromosomal
- BlackList=TRUE #remove PETs in black listed regions
+ BlackList="hg19" #remove PETs in black listed regions
  fileSelfFit="psfitData"
  method="BH"
  Stages=c(0:1)
