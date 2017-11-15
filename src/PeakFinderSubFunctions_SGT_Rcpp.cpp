@@ -599,16 +599,6 @@ Rcpp::List GetLocFit_Rcpp(Rcpp::NumericMatrix const &DFit,Rcpp::List const &InPa
     Rcpp::List OptParam;
     Rcpp::NumericVector OptClass,OptClassTot;
     bool ModelPass=FALSE;//to check if model is accepted
-    // print:
-    // Rcout<<"p_g: "<<as<NumericVector>(InParam["p_g"])<<std::endl;
-    // Rcout<<"mx_g: "<<as<NumericVector>(InParam["mx_g"])<<std::endl;
-    // Rcout<<"my_g: "<<as<NumericVector>(InParam["my_g"])<<std::endl;
-    // Rcout<<"sdx_g: "<<as<NumericVector>(InParam["sdx_g"])<<std::endl;
-    // Rcout<<"sdy_g: "<<as<NumericVector>(InParam["sdy_g"])<<std::endl;
-    // Rcout<<"lambdax_g: "<<as<NumericVector>(InParam["lambdax_g"])<<std::endl;
-    // Rcout<<"lambday_g: "<<as<NumericVector>(InParam["lambday_g"])<<std::endl;
-    // Rcout<<" tot BS "<<as<NumericVector>(InParam["lambday_g"]).size()<<std::endl;
-    // Rcout<<std::endl<<"--------"<<std::endl;
     //------------
     // Fit model:
     //------------
@@ -622,18 +612,6 @@ Rcpp::List GetLocFit_Rcpp(Rcpp::NumericMatrix const &DFit,Rcpp::List const &InPa
         OptClass=FitRes["Classification"];
         OptClassTot=FitRes["ClassTot"];
     }
-    // print:
-    // Rcout<<"p_g: "<<as<NumericVector>(as<List>(FitRes["Param"])["p_g"])<<std::endl;
-    // Rcout<<"mx_g: "<<as<NumericVector>(as<List>(FitRes["Param"])["mx_g"])<<std::endl;
-    // Rcout<<"my_g: "<<as<NumericVector>(as<List>(FitRes["Param"])["my_g"])<<std::endl;
-    // Rcout<<"sdx_g: "<<as<NumericVector>(as<List>(FitRes["Param"])["sdx_g"])<<std::endl;
-    // Rcout<<"sdy_g: "<<as<NumericVector>(as<List>(FitRes["Param"])["sdy_g"])<<std::endl;
-    // Rcout<<"lambdax_g: "<<as<NumericVector>(as<List>(FitRes["Param"])["lambdax_g"])<<std::endl;
-    // Rcout<<"lambday_g: "<<as<NumericVector>(as<List>(FitRes["Param"])["lambday_g"])<<std::endl;
-    // Rcout<<" tot BS "<<as<NumericVector>(as<List>(FitRes["Param"])["lambday_g"]).size()<<std::endl;
-    // Rcout<<"KernSeq size"<<KernSeq.size()<<std::endl;
-    // Rcout<<std::endl<<"--------"<<std::endl;
-
     //------------
     // Create output:
     //------------
@@ -706,17 +684,17 @@ void OptClass_Update_Rcpp(Rcpp::NumericVector &OptClass,Rcpp::NumericVector cons
 //Main SLaplace EM algorithm Function:
 //---------------------
 Rcpp::List MainEMLoop_Rcpp(Rcpp::NumericMatrix const &DFit,Rcpp::List const &InParam,
-                            int const &N,double const &NoisePDF){
+                           int const &N,double const &NoisePDF){
     //------------
     // declare functions for EM steps:
     //------------
     void EMstep2D_Rcpp(Rcpp::NumericVector &sdx_g,Rcpp::NumericVector &lambdax_g,
-                        Rcpp::NumericVector &mx_g, Rcpp::NumericVector &sdy_g,
-                        Rcpp::NumericVector &lambday_g,Rcpp::NumericVector &my_g,
-                        Rcpp::NumericVector &p_g,Rcpp::NumericMatrix const &DFit,
-                        int const &G,int const &N,bool &OnlyNoise,double &CritVal,
-                        double const &NoisePDF,Rcpp::NumericVector &Classification,
-                        double &MixLogLik,Rcpp::NumericVector &ClassTot, int &Gupdate);
+                       Rcpp::NumericVector &mx_g, Rcpp::NumericVector &sdy_g,
+                       Rcpp::NumericVector &lambday_g,Rcpp::NumericVector &my_g,
+                       Rcpp::NumericVector &p_g,Rcpp::NumericMatrix const &DFit,
+                       int const &G,int const &N,bool &OnlyNoise,double &CritVal,
+                       double const &NoisePDF,Rcpp::NumericVector &Classification,
+                       double &MixLogLik,Rcpp::NumericVector &ClassTot, int &Gupdate);
     //------------
     // Initialize:
     //------------
@@ -741,20 +719,19 @@ Rcpp::List MainEMLoop_Rcpp(Rcpp::NumericMatrix const &DFit,Rcpp::List const &InP
     // First EMstep:
     //------------
     EMstep2D_Rcpp(sdx_g,lambdax_g,mx_g,sdy_g,lambday_g,my_g,p_g,DFit,
-                   G,N,OnlyNoise,CritVal,NoisePDF,Classification,
-                   MixLogLik,ClassTot,Gupdate);
+                  G,N,OnlyNoise,CritVal,NoisePDF,Classification,
+                  MixLogLik,ClassTot,Gupdate);
     //------------
     //Start EM loop:
     //------------
     int Emit=1;
     while(Emit<=500&&(CritVal>1e-6)){
-        // Rcout<<"Emit "<<Emit<<std::endl;
         //------------
         // new EMstep:
         //------------
         EMstep2D_Rcpp(sdx_g,lambdax_g,mx_g,sdy_g,lambday_g,my_g,p_g,DFit,
-                       G,N,OnlyNoise,CritVal,NoisePDF,Classification,
-                       MixLogLik,ClassTot,Gupdate);
+                      G,N,OnlyNoise,CritVal,NoisePDF,Classification,
+                      MixLogLik,ClassTot,Gupdate);
         // increase step
         Emit+=1;
     }
@@ -784,12 +761,12 @@ Rcpp::List MainEMLoop_Rcpp(Rcpp::NumericMatrix const &DFit,Rcpp::List const &InP
 //Estep and Mstep Function for main model fit:
 //---------------------
 void EMstep2D_Rcpp(Rcpp::NumericVector &sdx_g,Rcpp::NumericVector &lambdax_g,
-                    Rcpp::NumericVector &mx_g, Rcpp::NumericVector &sdy_g,
-                    Rcpp::NumericVector &lambday_g,Rcpp::NumericVector &my_g,
-                    Rcpp::NumericVector &p_g,Rcpp::NumericMatrix const &DFit,
-                    int const &G,int const &N,bool &OnlyNoise,double &CritVal,
-                    double const &NoisePDF,Rcpp::NumericVector &Classification,
-                    double &MixLogLik,Rcpp::NumericVector &ClassTot, int &Gupdate){
+                   Rcpp::NumericVector &mx_g, Rcpp::NumericVector &sdy_g,
+                   Rcpp::NumericVector &lambday_g,Rcpp::NumericVector &my_g,
+                   Rcpp::NumericVector &p_g,Rcpp::NumericMatrix const &DFit,
+                   int const &G,int const &N,bool &OnlyNoise,double &CritVal,
+                   double const &NoisePDF,Rcpp::NumericVector &Classification,
+                   double &MixLogLik,Rcpp::NumericVector &ClassTot, int &Gupdate){
 
 
     // ------------
@@ -797,16 +774,16 @@ void EMstep2D_Rcpp(Rcpp::NumericVector &sdx_g,Rcpp::NumericVector &lambdax_g,
     // ------------
     // Updating parameters:
     void Mstep2D_Rcpp(Rcpp::NumericVector &sdx_g,Rcpp::NumericVector &lambdax_g,
-                       Rcpp::NumericVector &mx_g, Rcpp::NumericVector &sdy_g,
-                       Rcpp::NumericVector &lambday_g,Rcpp::NumericVector &my_g,
-                       Rcpp::NumericVector &p_g,int const &G,
-                       int const &N,Rcpp::NumericVector const &n_g,
-                       Rcpp::NumericVector const &A_my_g,
-                       Rcpp::NumericVector const &B_my_g,
-                       Rcpp::NumericVector const &C_my_g,
-                       Rcpp::NumericVector const &RespFi_k_g,
-                       Rcpp::NumericVector const &RespFiXi_k_g,
-                       Rcpp::NumericMatrix const &Resp,Rcpp::NumericMatrix const &DFit);
+                      Rcpp::NumericVector &mx_g, Rcpp::NumericVector &sdy_g,
+                      Rcpp::NumericVector &lambday_g,Rcpp::NumericVector &my_g,
+                      Rcpp::NumericVector &p_g,int const &G,
+                      int const &N,Rcpp::NumericVector const &n_g,
+                      Rcpp::NumericVector const &A_my_g,
+                      Rcpp::NumericVector const &B_my_g,
+                      Rcpp::NumericVector const &C_my_g,
+                      Rcpp::NumericVector const &RespFi_k_g,
+                      Rcpp::NumericVector const &RespFiXi_k_g,
+                      Rcpp::NumericMatrix const &Resp,Rcpp::NumericMatrix const &DFit);
     // Finding densities and initiating class totals, also update densities sum:
     void DensRespTot_g_Rcpp(int const &g,int const &i,
                             Rcpp::NumericVector const &sdx_g,Rcpp::NumericVector const &lambdax_g,
@@ -873,7 +850,6 @@ void EMstep2D_Rcpp(Rcpp::NumericVector &sdx_g,Rcpp::NumericVector &lambdax_g,
                 maxResp_i=Resp(i,g);//save current maximum
             }
             // Compute the rest of the matrices here:
-            // n_g:
             if(i==0) n_g[g]=0;//initiate only once
             n_g[g]+=Resp(i,g);
             // rest of the matrices:
@@ -905,7 +881,7 @@ void EMstep2D_Rcpp(Rcpp::NumericVector &sdx_g,Rcpp::NumericVector &lambdax_g,
     // update parameters
     //----------
     Mstep2D_Rcpp(sdx_g,lambdax_g,mx_g,sdy_g,lambday_g,my_g,p_g,G,
-                  N,n_g,A_my_g,B_my_g,C_my_g,RespFi_k_g,RespFiXi_k_g,Resp,DFit);
+                 N,n_g,A_my_g,B_my_g,C_my_g,RespFi_k_g,RespFiXi_k_g,Resp,DFit);
 }
 //Done
 
@@ -1268,8 +1244,6 @@ void MergeOvPeak_Rcpp(Rcpp::NumericMatrix const &DFit,
     // loop and merge iff overlaps:
     int Merge_safe_it=1;//for not getting in infinete loop
     while(Rcpp::as<int>(MergeInf["TotOv"])!=0&&Merge_safe_it<=1000){
-
-        // Rcout<<"----------------Merge_safe_it: "<<Merge_safe_it<<std::endl;
         //------------
         // Initiate EM:
         //------------
@@ -1629,7 +1603,7 @@ Rcpp::DataFrame GetPeakInf_Rcpp(Rcpp::List const &OptParam,
     //---------
     // Break input:
     Rcpp::NumericVector sdx_g=OptParam["sdx_g"],lambdax_g=OptParam["lambdax_g"],mx_g=OptParam["mx_g"],
-                        sdy_g=OptParam["sdy_g"],lambday_g=OptParam["lambday_g"],my_g=OptParam["my_g"];
+                                       sdy_g=OptParam["sdy_g"],lambday_g=OptParam["lambday_g"],my_g=OptParam["my_g"];
     int G=sdx_g.size(),Gused=0;//total peaks and total used peaks
     //---------
     // Find used clusters with non-zero totals:
@@ -1653,7 +1627,7 @@ Rcpp::DataFrame GetPeakInf_Rcpp(Rcpp::List const &OptParam,
            !std::isnan(sdy_g[g])&&!std::isnan(lambday_g[g])&&
            !std::isnan(my_g[g])){//non-empty:NOTE: This removes both empty clusters and NAN clusters.
 
-            GlobalPeaksInfo(PeakID,0)=Region;
+           GlobalPeaksInfo(PeakID,0)=Region;
             GlobalPeaksInfo(PeakID,1)=PeakID+1;
             GlobalPeaksInfo(PeakID,2)=OptClassTot[g];
             GlobalPeaksInfo(PeakID,3)=std::round((mx_g[g]+my_g[g])/2.0);//Peak.Summit
@@ -1761,133 +1735,3 @@ void GetQuantilesCI_Rcpp(double const &sdx, double const &lambdax, double const 
 }
 
 //Done
-
-//####################################################
-//--------------------- Inference Functions:
-//####################################################------ change it in R with intervals this one.
-//---------------------
-//Function for running inference in each chromosome: Local inference (exported in R)
-//---------------------
-// // [[Rcpp::export]]
-// SEXP PoissonLocalInference_Rcpp(SEXP &bppass_x_inn,SEXP &windows_inn){
-//
-//     // ---------------------------------------
-//     // Convert SEXP to c++ types:
-//     // ---------------------------------------
-//     Rcpp::List bppass_x=Rcpp::as<Rcpp::List>(bppass_x_inn);
-//     Rcpp::DataFrame Peaks_Info_x=Rcpp::as<Rcpp::DataFrame>(bppass_x["Peaks_Info_x"]);
-//     Rcpp::NumericMatrix PETsData_x=Rcpp::as<Rcpp::NumericMatrix>(bppass_x["PETsData_x"]);
-//     Rcpp::DataFrame ChromInf_x=Rcpp::as<Rcpp::DataFrame>(bppass_x["ChromInf_x"]);
-//     Rcpp::NumericVector windows=Rcpp::as<Rcpp::NumericVector>(windows_inn);
-//     // -------
-//     // Take information you need for the inference
-//     // ------
-//     int ChromSize=Rcpp::as<int>(ChromInf_x["size"]);
-//     int ChromPETs=Rcpp::as<int>(ChromInf_x["PET.counts"]);
-//     // -------
-//     // Fill in the windows: NOTE: you have UpWindow1, UpWindow2, DownWindow1, DownWindow2
-//     // ------
-//     // initiate:
-//     int Nx=Peaks_Info_x.nrows();//total peaks in data
-//     Rcpp::NumericVector lambdaUp(Nx),FoldEnrichUp(Nx),pvalueUp(Nx),
-//     lambdaDown(Nx),FoldEnrichDown(Nx),pvalueDown(Nx),pvalue(Nx);
-//     // Break x to its vectors:
-//     Rcpp::NumericVector CIQ_Up_start=Peaks_Info_x["CIQ.Up.start"],CIQ_Up_end=Peaks_Info_x["CIQ.Up.end"],
-//                         CIQ_Up_size=Peaks_Info_x["CIQ.Up.size"],CIQ_Down_start=Peaks_Info_x["CIQ.Down.start"],
-//                         CIQ_Down_end=Peaks_Info_x["CIQ.Down.end"],CIQ_Down_size=Peaks_Info_x["CIQ.Down.size"],
-//                         PeakPETs=Peaks_Info_x["Pets"];//total PETs in peak
-//     // loop for every peak:
-//     for(int i=0;i<Nx;i++){
-//         // ------ Up window 1:
-//         double UpW1_start=CIQ_Up_start[i]-CIQ_Up_size[i]*windows[0]/2.0;
-//         double UpW1_end=CIQ_Up_start[i]+CIQ_Up_size[i]*windows[0]/2.0;
-//         double UpW1_size=UpW1_end-UpW1_start+1.0;
-//         int UpW1_obs=0;//observed in window
-//         // ------ Up window 2:
-//         double UpW2_start=CIQ_Up_start[i]-CIQ_Up_size[i]*windows[1]/2.0;
-//         double UpW2_end=CIQ_Up_start[i]+CIQ_Up_size[i]*windows[1]/2.0;
-//         double UpW2_size=UpW2_end-UpW2_start+1.0;
-//         int UpW2_obs=0;//observed in window
-//         // ------ Down window 1:
-//         double DownW1_start=CIQ_Down_start[i]-CIQ_Down_size[i]*windows[0]/2.0;
-//         double DownW1_end=CIQ_Down_start[i]+CIQ_Down_size[i]*windows[0]/2.0;
-//         double DownW1_size=DownW1_end-DownW1_start+1.0;
-//         int DownW1_obs=0;//observed in window
-//         // ------ Down window 2:
-//         double DownW2_start=CIQ_Down_start[i]-CIQ_Down_size[i]*windows[1]/2.0;
-//         double DownW2_end=CIQ_Down_start[i]+CIQ_Down_size[i]*windows[1]/2.0;
-//         double DownW2_size=DownW2_end-DownW2_start+1.0;
-//         int DownW2_obs=0;//observed in window
-//         // ------
-//         // Loop through the PETs data to find the observed:
-//         // ------
-//         for(int j=0;j<ChromPETs;j++){
-//             // need to find the included Tags
-//             // ------ Up window 1:
-//             if((UpW1_start<=PETsData_x(j,0))&&
-//                (PETsData_x(j,0)<=UpW1_end)) UpW1_obs+=1;
-//             // ------ Up window 2:
-//             if((UpW2_start<=PETsData_x(j,0))&&
-//                (PETsData_x(j,0)<=UpW2_end)) UpW2_obs+=1;
-//             // ------ Down window 1:
-//             if((DownW1_start<=PETsData_x(j,1))&&
-//                (PETsData_x(j,1)<=DownW1_end)) DownW1_obs+=1;
-//             // ------ Down window 2:
-//             if((DownW2_start<=PETsData_x(j,1))&&
-//                (PETsData_x(j,1)<=DownW2_end)) DownW2_obs+=1;
-//         }
-//         // ------
-//         // Find lambdas for windows:
-//         // ------
-//         // ------ Up window 1:
-//         double lambdaUpW1=UpW1_obs*CIQ_Up_size[i]/UpW1_size;
-//         // ------ Up window 2:
-//         double lambdaUpW2=UpW2_obs*CIQ_Up_size[i]/UpW2_size;
-//         // ------ Down window 1:
-//         double lambdaDownW1=DownW1_obs*CIQ_Down_size[i]/DownW1_size;
-//         // ------ Down window 2:
-//         double lambdaDownW2=DownW2_obs*CIQ_Down_size[i]/DownW2_size;
-//         // ------
-//         // Find lambdas for background genome:
-//         // ------
-//         double lambdaBGC_Up=ChromPETs*CIQ_Up_size[i]/ChromSize;
-//         double lambdaBGC_Down=ChromPETs*CIQ_Down_size[i]/ChromSize;
-//         // ------
-//         // Find max lambdas for the current Peak i:
-//         // ------
-//         // Up:
-//         double Optlambda_Up=2.0;//the minimum to have
-//         if(Optlambda_Up<lambdaBGC_Up) Optlambda_Up=lambdaBGC_Up;
-//         if(Optlambda_Up<lambdaUpW1) Optlambda_Up=lambdaUpW1;
-//         if(Optlambda_Up<lambdaUpW2) Optlambda_Up=lambdaUpW2;
-//         lambdaUp[i]=Optlambda_Up;//save lambda
-//         FoldEnrichUp[i]=PeakPETs[i]/Optlambda_Up;//save fold enrichment
-//         pvalueUp[i]=R::ppois(PeakPETs[i],Optlambda_Up,0,0);//p-values
-//         // Down:
-//         double Optlambda_Down=2.0;//the minimum to have
-//         if(Optlambda_Down<lambdaBGC_Down) Optlambda_Down=lambdaBGC_Down;
-//         if(Optlambda_Down<lambdaDownW1) Optlambda_Down=lambdaDownW1;
-//         if(Optlambda_Down<lambdaDownW2) Optlambda_Down=lambdaDownW2;
-//         lambdaDown[i]=Optlambda_Down;//save lambda
-//         FoldEnrichDown[i]=PeakPETs[i]/Optlambda_Down;//save fold enrichment
-//         pvalueDown[i]=R::ppois(PeakPETs[i],Optlambda_Down,0,0);//p-values
-//
-//         // merged p-value:
-//         pvalue[i]=pvalueUp[i]*pvalueDown[i];
-//     }
-//     // -------
-//     // Append to the data frame and return:
-//     // ------
-//     Peaks_Info_x.push_back(lambdaUp,"lambdaUp");
-//     Peaks_Info_x.push_back(FoldEnrichUp,"FoldEnrichUp");
-//     Peaks_Info_x.push_back(pvalueUp,"p.valueUp");
-//     Peaks_Info_x.push_back(lambdaDown,"lambdaDown");
-//     Peaks_Info_x.push_back(FoldEnrichDown,"FoldEnrichDown");
-//     Peaks_Info_x.push_back(pvalueDown,"p.valueDown");
-//     Peaks_Info_x.push_back(pvalue,"p.value");
-//
-//
-//     return Rcpp::wrap(Peaks_Info_x);
-//
-// }
-// //Done
