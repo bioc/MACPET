@@ -24,8 +24,7 @@
 #' @seealso \code{\link{AnalysisStatistics}}, \code{\link{plot}},
 #' \code{\link{summary}},
 #' \code{\link{PeakCallerUlt}}
-PSelf=setClass("PSelf",contains="GInteractions")
-
+PSelf = setClass("PSelf", contains = "GInteractions")
 #' @export
 #' @title PSFit S4 Class
 #' @author Ioannis Vardaxis, \email{ioannis.vardaxis@@ntnu.no}
@@ -82,8 +81,7 @@ PSelf=setClass("PSelf",contains="GInteractions")
 #' \code{\link{summary}}, \code{\link{PeakCallerUlt}},
 #' \code{\link{exportPeaks}}, \code{\link{PeaksToGRanges}},
 #' \code{\link{TagsToGInteractions}}, \code{\link{PeaksToNarrowPeak}}
-PSFit=setClass("PSFit",contains="GInteractions")
-
+PSFit = setClass("PSFit", contains = "GInteractions")
 #' @export
 #' @title PInter S4 Class
 #' @author Ioannis Vardaxis, \email{ioannis.vardaxis@@ntnu.no}
@@ -100,8 +98,7 @@ PSFit=setClass("PSFit",contains="GInteractions")
 #' @seealso \code{\link{AnalysisStatistics}}, \code{\link{plot}},
 #' \code{\link{summary}},
 #' \code{\link{PeakCallerUlt}}
-PInter=setClass("PInter",contains="GInteractions")
-
+PInter = setClass("PInter", contains = "GInteractions")
 #' @export
 #' @title PIntra Class
 #' @author Ioannis Vardaxis, \email{ioannis.vardaxis@@ntnu.no}
@@ -118,4 +115,4 @@ PInter=setClass("PInter",contains="GInteractions")
 #' @seealso \code{\link{AnalysisStatistics}}, \code{\link{plot}},
 #' \code{\link{summary}},
 #' \code{\link{PeakCallerUlt}}
-PIntra=setClass("PIntra",contains="GInteractions")
+PIntra = setClass("PIntra", contains = "GInteractions")

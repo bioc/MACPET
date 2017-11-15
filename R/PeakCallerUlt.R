@@ -107,12 +107,12 @@
 #' as output (stage 0 parameter).
 #' @param PopImage TRUE or FALSE indicating whether you want to create a figure
 #'  for the Self-ligated borders/population or not (stage 0 parameter).
-#'@param BlackList TRUE or FALSE depending on whether the user wants to remove
-#' peaks which overlap with black listed regions before inference. Currently
-#'only available for \code{hg="hg19"}, however the user can provide his own as a
-#'data.frame with the following columns (stage 0 parameter):
+#'@param BlackList NULL if no black-listed regions are to be removed from the data,
+#'  or a character specifying the genome from which the data comes from in order to remove the corresponding black-listed regions.
+#'  Currently available genomes are: 'hg19', 'ce10', 'dm3', 'hg38', 'mm9', 'mm10'.
+#'  Alternatively, the user can provide a data.frame with the following columns (stage 0 parameter):
 #'\describe{
-#'\item{\code{Chrom}}{A character vector with the chromosome names ("chr1" etc)}
+#'\item{\code{Chrom}}{A character vector with the chromosome names ('chr1' etc)}
 #'\item{\code{Region.Start}}{An integer vector with the start of the
 #'black listed regions.}
 #'\item{\code{Region.End}}{An integer vector with the end of the black
@@ -132,25 +132,25 @@
 #' @examples
 #'
 #' #Create a temporary forder, or anywhere you want:
-#' AnalysisDir=file.path(tempdir(),"MACPETtest")
+#' AnalysisDir=file.path(tempdir(),'MACPETtest')
 #' dir.create(AnalysisDir)#where you will save the results
 #'
 #'
 #' #load sample data to use in the algorithm and give inputs:
-#' DataDir=system.file("extdata", package = "MACPET") #data path
-#' DataFile="SampleChIAPETData.bam" #data name
+#' DataDir=system.file('extdata', package = 'MACPET') #data path
+#' DataFile='SampleChIAPETData.bam' #data name
 #' PopImage=TRUE #Sample data, not very good classifiction results.
-#' GenomePkg="BSgenome.Hsapiens.UCSC.hg19" #genome of the data.
-#' fileSelf="pselfData" #name for Self-ligated
-#' fileIntra="pintraData" #name for Intra-chromosomal
-#' fileInter="pinterData" #name for Inter-chromosomal
-#' BlackList=TRUE #remove PETs in black listed regions
+#' GenomePkg='BSgenome.Hsapiens.UCSC.hg19' #genome of the data.
+#' fileSelf='pselfData' #name for Self-ligated
+#' fileIntra='pintraData' #name for Intra-chromosomal
+#' fileInter='pinterData' #name for Inter-chromosomal
+#' BlackList='hg19' #remove PETs in black listed regions for hg19
 #' Stages=c(0)#run single stage for the example.
 #'
 #' #parallel backhead can be created using the BiocParallel package
 #' #parallel backhead can be created using the BiocParallel package
-#' #requireNamespace("BiocParallel")
-#' #snow <- BiocParallel::SnowParam(workers = 1, type = "SOCK", progressbar=FALSE)
+#' #requireNamespace('BiocParallel')
+#' #snow <- BiocParallel::SnowParam(workers = 1, type = 'SOCK', progressbar=FALSE)
 #' #BiocParallel::register(snow, default=TRUE)
 #'
 #' #-run for the whole binding site analysis:
@@ -179,88 +179,79 @@
 #'
 #' #-----delete test directory:
 #' unlink(AnalysisDir,recursive=TRUE)
-
-PeakCallerUlt=function(DataDir="",DataFile=NULL,AnalysisDir="",GenomePkg=NULL,
-                       fileSelf=NULL,fileIntra=NULL,fileInter=NULL,PopImage=TRUE,
-                       BlackList=TRUE,fileSelfFit=NULL,method="BH",Stages=c(0:1)){
+PeakCallerUlt = function(DataDir = "", DataFile = NULL, AnalysisDir = "", GenomePkg = NULL, 
+    fileSelf = NULL, fileIntra = NULL, fileInter = NULL, PopImage = TRUE, BlackList = NULL, 
+    fileSelfFit = NULL, method = "BH", Stages = c(0:1)) {
     #--------------------------------------------
     #---------------Take and reorder Input:
     #--------------------------------------------
     # Take time:
-    Analysis.time.start=Sys.time()
+    Analysis.time.start = Sys.time()
     # get arguments:
-    InArg=list(DataDir=DataDir,DataFile=DataFile,AnalysisDir=AnalysisDir,
-             GenomePkg=GenomePkg,fileSelf=fileSelf,fileIntra=fileIntra,
-             fileInter=fileInter,PopImage=PopImage,fileSelfFit=fileSelfFit,
-             method=method,BlackList=BlackList,Stages=Stages)
+    InArg = list(DataDir = DataDir, DataFile = DataFile, AnalysisDir = AnalysisDir, 
+        GenomePkg = GenomePkg, fileSelf = fileSelf, fileIntra = fileIntra, fileInter = fileInter, 
+        PopImage = PopImage, fileSelfFit = fileSelfFit, method = method, BlackList = BlackList, 
+        Stages = Stages)
     #--------------------------------------------
     #---------------Check input is correct:
     #--------------------------------------------
-    InArg=InputCheckPeakCallerUlt(InArg=InArg)
+    InArg = InputCheckPeakCallerUlt(InArg = InArg)
     #--------------------------------------------
     #---------------Run stages:
     #--------------------------------------------
-    if(0%in%InArg$Stages){
+    if (0 %in% InArg$Stages) {
         #------------------------------------------------------------------#
         #--------------------- Run PETClassification-----------------------#
         #------------------------------------------------------------------#
-        LogFile=list()#for the log file.
-        LogFile[1]="|%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%|\n"
-        LogFile[2]="|------------Starting classification process------------|\n"
-        LogFile[3]="|-----------------------Stage 0-------------------------|\n"
-        LogFile[4]="|%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%|\n"
-        for(lf in 1:4) cat(LogFile[[lf]])
-        for(lf in 1:4) write(LogFile[[lf]],file=InArg$LogFile.dir,append=TRUE)
-        #create input:
-        InArg_S0=which(names(InArg)%in%c("DataDir","DataFile","AnalysisDir",
-                                        "BlackList","fileSelf",
-                                        "fileIntra","fileInter","PopImage",
-                                        "LogFile.dir","Format",
-                                        "GenInfo","ChromLengths"))
-        InArg_S0=InArg[InArg_S0]
-        #call Stage 0:
-        do.call(what=PETClassification_fun,args=InArg_S0)
-
+        LogFile = list()  #for the log file.
+        LogFile[1] = "|%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%|\n"
+        LogFile[2] = "|------------Starting classification process------------|\n"
+        LogFile[3] = "|-----------------------Stage 0-------------------------|\n"
+        LogFile[4] = "|%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%|\n"
+        for (lf in 1:4) cat(LogFile[[lf]])
+        for (lf in 1:4) write(LogFile[[lf]], file = InArg$LogFile.dir, append = TRUE)
+        # create input:
+        InArg_S0 = which(names(InArg) %in% c("DataDir", "DataFile", "AnalysisDir", 
+            "BlackList", "fileSelf", "fileIntra", "fileInter", "PopImage", "LogFile.dir", 
+            "Format", "GenInfo", "ChromLengths"))
+        InArg_S0 = InArg[InArg_S0]
+        # call Stage 0:
+        do.call(what = PETClassification_fun, args = InArg_S0)
     }
-    if(1%in%InArg$Stages){
+    if (1 %in% InArg$Stages) {
         #------------------------------------------------------------------#
         #------------------------  Run PeakFinder -------------------------#
         #------------------------------------------------------------------#
-        LogFile=list()#for the log file.
-        LogFile[1]="|%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%|\n"
-        LogFile[2]="|-------------Starting Binding Site Analysis------------|\n"
-        LogFile[3]="|-----------------------Stage 1-------------------------|\n"
-        LogFile[4]="|%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%|\n"
-        for(lf in 1:4) cat(LogFile[[lf]])
-        for(lf in 1:4) write(LogFile[[lf]],file=InArg$LogFile.dir,append=TRUE)
-        #load self.data:
-        if(!c(0)%in%InArg$Stages){
+        LogFile = list()  #for the log file.
+        LogFile[1] = "|%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%|\n"
+        LogFile[2] = "|-------------Starting Binding Site Analysis------------|\n"
+        LogFile[3] = "|-----------------------Stage 1-------------------------|\n"
+        LogFile[4] = "|%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%|\n"
+        for (lf in 1:4) cat(LogFile[[lf]])
+        for (lf in 1:4) write(LogFile[[lf]], file = InArg$LogFile.dir, append = TRUE)
+        # load self.data:
+        if (!c(0) %in% InArg$Stages) {
             # then the data is loaded:
-            Selfobject=InArg$Selfobject
-        }else{
+            Selfobject = InArg$Selfobject
+        } else {
             # then step 0 is run so load it
-            load(file.path(InArg$AnalysisDir,InArg$fileSelf))
-            Selfobject=get(InArg$fileSelf)
+            load(file.path(InArg$AnalysisDir, InArg$fileSelf))
+            Selfobject = get(InArg$fileSelf)
         }
-        #create input:
-        InArg_S1=list(AnalysisDir=InArg$AnalysisDir,Selfobject=Selfobject,
-                    fileSelfFit=InArg$fileSelfFit,method=InArg$method,
-                    LogFile.dir=InArg$LogFile.dir)
-        #call stage 1:
-        do.call(what=PeakFinder_fun,args=InArg_S1)
+        # create input:
+        InArg_S1 = list(AnalysisDir = InArg$AnalysisDir, Selfobject = Selfobject, 
+            fileSelfFit = InArg$fileSelfFit, method = InArg$method, LogFile.dir = InArg$LogFile.dir)
+        # call stage 1:
+        do.call(what = PeakFinder_fun, args = InArg_S1)
     }
     # finallize:
-    Analysis.time.end=Sys.time()
-    Total.Time=Analysis.time.end-Analysis.time.start
-    LogFile[5]=paste("Total analysis time: ",Total.Time," ",
-                   units(Total.Time),"\n",sep="")
+    Analysis.time.end = Sys.time()
+    Total.Time = Analysis.time.end - Analysis.time.start
+    LogFile[5] = paste("Total analysis time: ", Total.Time, " ", units(Total.Time), 
+        "\n", sep = "")
     cat(LogFile[[5]])
-    write(LogFile[[5]],file=InArg$LogFile.dir,append=TRUE)#write in log file.
-    LogFile[6]="Global Analysis in done!\n"
-    write(LogFile[[6]],file=InArg$LogFile.dir,append=TRUE)
-    #remove chuncks:
-    rm(list=ls())
-    return(cat("Global Analysis in done!\n"))
+    write(LogFile[[5]], file = InArg$LogFile.dir, append = TRUE)  #write in log file.
+    LogFile[6] = "Global Analysis in done!\n"
+    write(LogFile[[6]], file = InArg$LogFile.dir, append = TRUE)
+    return("Global Analysis in done!")
 }
-
-

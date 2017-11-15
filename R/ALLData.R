@@ -22,7 +22,6 @@
 #' @source \url{https://www.encodeproject.org/experiments/ENCSR000BZZ/}
 #' @keywords data
 NULL
-
 #-------------------Inter data:
 #' @title Inter-chromosomal PETs from ChIA-PET data
 #' @name pinterData.rda
@@ -44,7 +43,6 @@ NULL
 #' @seealso \code{\link{SampleChIAPETData.bam}}, \code{\linkS4class{PInter}}
 #' @keywords data
 NULL
-
 #-------------------Intra data:
 #' @title Intra-chromosomal PETs from ChIA-PET data
 #' @name pintraData.rda
@@ -66,7 +64,6 @@ NULL
 #' @seealso \code{\link{SampleChIAPETData.bam}}, \code{\linkS4class{PIntra}}
 #' @keywords data
 NULL
-
 #-------------------Self data:
 #' @title Self-ligated PETs from ChIA-PET data
 #' @name pselfData.rda
@@ -88,8 +85,6 @@ NULL
 #' @seealso \code{\link{SampleChIAPETData.bam}}, \code{\linkS4class{PSelf}}
 #' @keywords data
 NULL
-
-
 #-------------------Self data FIT:
 #' @title Self-ligated PETs from ChIA-PET data
 #' @name psfitData.rda

@@ -55,6 +55,6 @@
 #'
 #' @import Rcpp
 #' @importFrom Rcpp evalCpp sourceCpp
+#' @importFrom methods is
 #' @useDynLib MACPET
-
 NULL

@@ -27,25 +27,22 @@
 #'
 #' @examples
 #' #load Self-ligated data: (class=PSFit)
-#' load(system.file("extdata", "psfitData.rda", package = "MACPET"))
+#' load(system.file('extdata', 'psfitData.rda', package = 'MACPET'))
 #' class(psfitData)
 #' object=TagsToGInteractions(object=psfitData,threshold=1e-5)
 #' object
 #' S4Vectors::metadata(object)$Peaks.Info #peak/binding site information
 #'
-
-#default:
-TagsToGInteractions <- function(object,...){
-    UseMethod("TagsToGInteractions",object=object)
+# default:
+TagsToGInteractions = function(object, ...) {
+    UseMethod("TagsToGInteractions", object = object)
 }
-
 #' @rdname TagsToGInteractions
 #' @method TagsToGInteractions default
 #' @export
-TagsToGInteractions.default = function(object,...) {
-    stop(paste("No TagsToGInteractions method for class ",class(object),sep=""))
+TagsToGInteractions.default = function(object, ...) {
+    stop("No TagsToGInteractions method for class ", class(object), ".", call. = FALSE)
 }
-
 #' @rdname TagsToGInteractions
 #' @method TagsToGInteractions PSFit
 #' @return For \code{\linkS4class{PSFit}} class:
@@ -55,52 +52,45 @@ TagsToGInteractions.default = function(object,...) {
 #'  the binding sites which can be accessed via the
 #'  \code{\link[S4Vectors]{metadata}} function.
 #' @export
-TagsToGInteractions.PSFit=function(object,threshold=NULL,...){
-    #global variables for Rcheck:
-    FDR=NULL
+TagsToGInteractions.PSFit = function(object, threshold = NULL, ...) {
+    # global variables for Rcheck:
+    FDR = NULL
     #--------------------------
-    #keep significant peaks:
-    Peaks.info=S4Vectors::metadata(object)$Peaks.Info
-    if(nrow(Peaks.info)==0){
-        stop("No peaks in the data!\n")
+    # keep significant peaks:
+    Peaks.info = S4Vectors::metadata(object)$Peaks.Info
+    if (nrow(Peaks.info) == 0) {
+        stop("No peaks in the data!", call. = FALSE)
     }
-    if(is.numeric(threshold)){
-        Peaks.info=subset(Peaks.info,FDR<threshold)
-        if(nrow(Peaks.info)==0){
-            stop("No significant peaks in the data!
-                 Try a higher threshold.\n")
+    if (is.numeric(threshold)) {
+        Peaks.info = subset(Peaks.info, FDR < threshold)
+        if (nrow(Peaks.info) == 0) {
+            stop("No significant peaks in the data!Try a higher threshold.", call. = FALSE)
         }
-        }else{
-            warning("No threshold given, all the peaks are returned.")
+    } else {
+        warning("No threshold given, all the peaks are returned.")
     }
-    Peaks.infoSave=Peaks.info
-    Peaks.info=Peaks.info[,c("Chrom","Region","Peak")]
-    #make data to data.frame to find the tags.
-    #keep seqinfo:
-    Seqinformation=GenomicRanges::seqinfo(object)
-    #make df of the data:
-    objectdf=data.frame(object)
-    #take chromosomes:
-    ChromInfo=objectdf$seqnames1
-    ChromInfo=as.character(ChromInfo)
-    #Make stings and find overlaps:
-    From.significant=paste(Peaks.info$Chrom,"-",Peaks.info$Region,
-                           "-",Peaks.info$Peak,sep="")
-
-    #take EMinformation:
-    Classification.Info=S4Vectors::metadata(object)$Classification.Info
-    To.data=paste(ChromInfo[Classification.Info$MainIndex],"-",
-                  Classification.Info$Region,"-",
-                  Classification.Info$Peak.ID,sep="")
-    Keep.data=which(To.data%in%From.significant)
-    #take MainIndex:
-    MainIndex=Classification.Info$MainIndex[Keep.data]
-    #keep those in object:
-    object=object[MainIndex]#keep those in peaks only
-    S4Vectors::metadata(object)$Peaks.Info=Peaks.infoSave
-    class(object)="GInteractions"
+    Peaks.infoSave = Peaks.info
+    Peaks.info = Peaks.info[, c("Chrom", "Region", "Peak")]
+    # make data to data.frame to find the tags. keep seqinfo:
+    Seqinformation = GenomicRanges::seqinfo(object)
+    # make df of the data:
+    objectdf = data.frame(object)
+    # take chromosomes:
+    ChromInfo = objectdf$seqnames1
+    ChromInfo = as.character(ChromInfo)
+    # Make stings and find overlaps:
+    From.significant = paste(Peaks.info$Chrom, "-", Peaks.info$Region, "-", Peaks.info$Peak, 
+        sep = "")
+    # take EMinformation:
+    Classification.Info = S4Vectors::metadata(object)$Classification.Info
+    To.data = paste(ChromInfo[Classification.Info$MainIndex], "-", Classification.Info$Region, 
+        "-", Classification.Info$Peak.ID, sep = "")
+    Keep.data = which(To.data %in% From.significant)
+    # take MainIndex:
+    MainIndex = Classification.Info$MainIndex[Keep.data]
+    # keep those in object:
+    object = object[MainIndex]  #keep those in peaks only
+    S4Vectors::metadata(object)$Peaks.Info = Peaks.infoSave
+    class(object) = "GInteractions"
     return(object)
 }
-
-
-

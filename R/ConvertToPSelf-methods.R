@@ -29,105 +29,108 @@
 #'
 #' @examples
 #' #load Self-ligated data: (class=PSelf)
-#' load(system.file("extdata", "pselfData.rda", package = "MACPET"))
+#' load(system.file('extdata', 'pselfData.rda', package = 'MACPET'))
 #' class(pselfData)
 #'
 #' object=pselfData
 #' #--remove information and convert to GInteractions:
 #' S4Vectors::metadata(object)=list(NULL)
-#' class(object)="GInteractions"
-#' GenomePkg="BSgenome.Hsapiens.UCSC.hg19" #genome of the data.
-#' BlackList=TRUE
+#' class(object)='GInteractions'
+#' GenomePkg='BSgenome.Hsapiens.UCSC.hg19' #genome of the data.
+#' BlackList='hg19'
 #'
 #' object=ConvertToPSelf(object=object,GenomePkg=GenomePkg,BlackList=BlackList)
 #' class(object)
 #'
-
-#default:
-ConvertToPSelf <- function(object,...){
-    UseMethod("ConvertToPSelf",object=object)
+# default:
+ConvertToPSelf = function(object, ...) {
+    UseMethod("ConvertToPSelf", object = object)
 }
-
 #' @rdname ConvertToPSelf
 #' @method ConvertToPSelf default
 #' @export
-ConvertToPSelf.default = function(object,...) {
-    stop(paste("No ConvertToPSelf method for class ",class(object),sep=""))
+ConvertToPSelf.default = function(object, ...) {
+    stop("No ConvertToPSelf method for class ", class(object), ".", call. = FALSE)
 }
-
 #' @rdname ConvertToPSelf
 #' @method ConvertToPSelf GInteractions
 #' @return An object of class \code{\linkS4class{PSelf}}.
 #' @export
-ConvertToPSelf.GInteractions=function(object,GenomePkg,BlackList,...){
+ConvertToPSelf.GInteractions = function(object, GenomePkg, BlackList, ...) {
     #----R-check:
-    pkgname=NULL
+    pkgname = NULL
     #----
     #-------------------------
     #---------Test the genome:
     #-------------------------
-    if(!is.character(GenomePkg)){
-        stop("GenomePkg has to be of chracter class!",call. = FALSE)
-    }else if(!GenomePkg%in%BSgenome::available.genomes()){
-        stop("GenomePkg is not a part of the available.genomes! See ??BSgenome::available.genomes",call. = FALSE)
-    }else if(!GenomePkg%in%BSgenome::installed.genomes()){
-        stop("GenomePkg is not installed! See ??BSgenome::installed.genomes",call. = FALSE)
-    }else{
-        GenInfo=subset(BSgenome::installed.genomes(splitNameParts=TRUE),
-                       pkgname==GenomePkg)
-        ChromLengths=BSgenome::getBSgenome(GenomePkg)
-        ChromLengths=GenomeInfoDb::seqlengths(ChromLengths)
-        ChromLengths=data.frame(chrom=names(ChromLengths),size=ChromLengths)
-        rownames(ChromLengths)=NULL
+    if (!is.character(GenomePkg) || length(GenomePkg) != 1) {
+        stop("GenomePkg has to be of chracter class!", call. = FALSE)
+    } else if (!GenomePkg %in% BSgenome::available.genomes()) {
+        stop(GenomePkg, " is not a part of the available.genomes! See ??BSgenome::available.genomes", 
+            call. = FALSE)
+    } else if (!GenomePkg %in% BSgenome::installed.genomes()) {
+        stop(GenomePkg, " is not installed! See ??BSgenome::installed.genomes", call. = FALSE)
+    } else {
+        GenInfo = subset(BSgenome::installed.genomes(splitNameParts = TRUE), pkgname == 
+            GenomePkg)
+        ChromLengths = BSgenome::getBSgenome(GenomePkg)
+        ChromLengths = GenomeInfoDb::seqlengths(ChromLengths)
+        ChromLengths = data.frame(chrom = names(ChromLengths), size = ChromLengths)
+        rownames(ChromLengths) = NULL
     }
     #--------------------------
     #---------load black list:
     #--------------------------
-    if(is.data.frame(BlackList)){
-        if(!c("Chrom","Region.Start","Region.End")%in%colnames(BlackList)){
-            stop("Give correct colnames to BlackList if it is given as data.frame!",call. = FALSE)
+    if (is.data.frame(BlackList)) {
+        if (!c("Chrom", "Region.Start", "Region.End") %in% colnames(BlackList)) {
+            stop("Give correct colnames to BlackList if it is given as data.frame!", 
+                call. = FALSE)
         }
-
-    }else if(!is.logical(BlackList)){
-        BlackList=NULL
-
-    }else if(BlackList){
-        hg=GenInfo$provider_version
-        if(hg=="hg19"){
-            BlackList=sysdata$Black_list_hg19
-        }else{
-            BlackList=NULL
+    } else if (is.character(BlackList) && length(BlackList) == 1) {
+        # probably correct inputs.
+        genome.given = BlackList  #the given genome
+        genome.data = GenInfo$provider_version  #the genome of the data.
+        if (!genome.given %in% names(sysdata)) {
+            # wrong genome given.
+            stop("If BlackList is character, then it has to be one of the following values: 'hg19', 'ce10', 'dm3', 'hg38', 'mm9', 'mm10'", 
+                call. = FALSE)
+        } else if (genome.given != genome.data) {
+            # the genome of the data is not the same as the given genome.
+            stop("The genome given as BlackList is not the same as the actuall genome of the input data.", 
+                call. = FALSE)
+        } else {
+            # all correct, choose data:
+            BlackList = sysdata[[genome.given]]
         }
-    }else{
-        BlackList=NULL
+    } else {
+        # wrong inputs
+        stop("BlackList can be either NULL, data.frame, of a character", call. = FALSE)
     }
     #-------------------------
     #---------Trim anchors, add info etc:
     #-------------------------
-    ArgPairedData=list(ChromLengths=ChromLengths,GenInfo=GenInfo,
-                       BlackList=BlackList,LogFile.dir=NULL)
-    object=GInteractionsCovnert_fun(ChIAPET=object,ArgPairedData=ArgPairedData)
-    Nobject=length(object)#before removing any
-    cat(paste("Total PETs found in data:",Nobject),"\n")
+    ArgPairedData = list(ChromLengths = ChromLengths, GenInfo = GenInfo, BlackList = BlackList, 
+        LogFile.dir = NULL)
+    object = GInteractionsCovnert_fun(ChIAPET = object, ArgPairedData = ArgPairedData)
+    Nobject = length(object)  #before removing any
+    cat("Total PETs found in data:", Nobject, "\n")
     #-------------------------
     #---------Check if Inter-chromosomal:
     #-------------------------
-    object=subset(object,!is.na(object$Dist))
-    Nreduced=length(object)
-    if(Nobject!=Nreduced){
-        cat(paste("Total Inter-Chromsomal removed from data:",
-                  Nobject-Nreduced),"\n")
+    object = subset(object, !is.na(object$Dist))
+    Nreduced = length(object)
+    if (Nobject != Nreduced) {
+        cat("Total Inter-Chromsomal removed from data:", Nobject - Nreduced, "\n")
     }
-    if(Nreduced==0){
-        #only Inter-chromosomal:
+    if (Nreduced == 0) {
+        # only Inter-chromosomal:
         stop("object contained only Inter-chromosomal PETs!")
     }
     #-------------------------
     #-----Convert to PSelf class:
     #-------------------------
-    SelfIndicator=1:Nreduced#all the data
-    object=FindSelf_fun(x=object,SelfIndicator=SelfIndicator,
-                        ArgFindSelf=ArgPairedData,PSelf.Convert=TRUE)
+    SelfIndicator = 1:Nreduced  #all the data
+    object = FindSelf_fun(x = object, SelfIndicator = SelfIndicator, ArgFindSelf = ArgPairedData, 
+        PSelf.Convert = TRUE)
     return(object)
 }
-
