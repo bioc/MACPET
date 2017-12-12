@@ -1,7 +1,7 @@
 Package: MACPET
 Type: Package
-Title: Model based analysis for ChIA-PET data
-Version: 0.99.5
+Title: Model based analysis for paired-end data
+Version: 0.99.6
 Date: 2017-25-10
 Author: Ioannis Vardaxis
 Maintainer: Ioannis Vardaxis <ioannis.vardaxis@ntnu.no>
@@ -12,9 +12,9 @@ LazyData: true
 ByteCompile: true
 RoxygenNote: 6.0.1
 biocViews: Software, DNA3DStructure, PeakDetection, StatisticalMethod, Bayesian, Clustering, Classification, HiC
-Depends: R (>= 3.5), InteractionSet (>= 1.5.7)
-Imports: intervals (>= 0.15.1), plyr (>= 1.8.4),  Rsamtools (>= 1.29.1), stats (>= 3.4.2), utils (>= 3.4.2), methods (>= 3.4.2), GenomicRanges (>= 1.29.15), S4Vectors (>= 0.15.14), IRanges (>= 2.11.19), GenomeInfoDb (>= 1.13.5), gtools (>= 3.5.0), GenomicAlignments (>= 1.13.6), BSgenome (>= 1.45.3), knitr (>= 1.17), Rcpp (>= 0.12.13), rtracklayer (>= 1.37.6), BiocParallel (>= 1.11.13)
-Suggests: ggplot2 (>= 2.2.1), igraph (>= 1.1.2), rmarkdown (>= 1.6), reshape2 (>= 1.4.2), BiocStyle (>= 2.5.43)
+Depends: R (>= 3.5), InteractionSet (>= 1.7.0)
+Imports: intervals (>= 0.15.1), plyr (>= 1.8.4),  Rsamtools (>= 1.31.0), stats (>= 3.5.0), utils (>= 3.5.0), methods (>= 3.5.0), GenomicRanges (>= 1.31.1), S4Vectors (>= 0.17.6), IRanges (>= 2.13.3), GenomeInfoDb (>= 1.15.1), gtools (>= 3.5.0), GenomicAlignments (>= 1.15.1), knitr (>= 1.17), Rcpp (>= 0.12.13), rtracklayer (>= 1.39.0), BiocParallel (>= 1.13.0), Rbowtie (>= 1.19.0), GEOquery (>= 2.47.11), Biostrings (>= 2.47.0), ShortRead (>= 1.37.0), rbamtools(>= 2.16.6)
+Suggests: ggplot2 (>= 2.2.1), igraph (>= 1.1.2), rmarkdown (>= 1.8), reshape2 (>= 1.4.2), BiocStyle (>= 2.7.0)
 VignetteBuilder: knitr
 LinkingTo: Rcpp
 SystemRequirements: C++11
@@ -22,15 +22,18 @@ Collate:
     'ALLData.R'
     'AllClasses.R'
     'AnalysisStatistics.R'
+    'ConvertToPE_BAM.R'
     'ConvertToPSelf-methods.R'
     'InputChecks.R'
+    'MACPETUlt.R'
     'MACPET_pkg.R'
-    'PeakCallerUlt.R'
     'PeaksToGRanges-methods.R'
     'PeaksToNarrowPeak-methods.R'
     'RcppExports.R'
-    'Stage_0_PETClassificationFunctions.R'
-    'Stage_1_PeakFinderFunctions_R.R'
+    'Stage_0_FilteringLinkersFunctions.R'
+    'Stage_1_MappingFunctions.R'
+    'Stage_2_PETClassificationFunctions.R'
+    'Stage_3_PeakFinderFunctions.R'
     'TagsToGInteractions-methods.R'
     'exportPeaks-methods.R'
     'plot-methods.R'
