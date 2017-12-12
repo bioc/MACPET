@@ -7,11 +7,11 @@ date: "`r doc_date()`"
 package: "`r BiocStyle::pkg_ver('MACPET')` Rversion >=`r getRversion()`"
 abstract: |
     This vignette gives an introduction to the MACPET package which can be
-    used for binding site analysis (peak-calling) of ChIA-PET data. Throughout the
+    used for the analysis of paired-end DNA data like ChIA-PET. Throughout the
     vignette an introduction of MACPET classes, methods and functions will be given.
 references:
 - id: macpet
-  title: Model-based Analysis for ChIA-PET (MACPET)
+  title: Model based analysis for paired-end data
   author:
   - family: Vardaxis
     given: Ioannis
@@ -47,26 +47,26 @@ BiocStyle::latex2
 <!-- Intro -->
 \section{Introduction}
 
-Model based analysis for ChIA-PET data (\Biocpkg{MACPET}) is a method/pipeline 
-for finding binding sites (peak calling) using ChIA-PET data (or paired-end data in general).
-\Biocpkg{MACPET} uses information from both paired-ends of ChIA-PET data and searches for two-dimensional 
-clusters which represent binding sites, thus it finds
-binding site locations more accurately than other algorithms which use only one end (like MACS) [@macpet]. 
-The output from \Biocpkg{MACPET} can be used for interaction analysis using either MANGO or MICC. However there are plans to extend the package and include interaction analysis in the future. Note that in the case of using the output from \Biocpkg{MACPET} in MANGO or MICC for interaction analysis, the user should use the self-ligated cut-off found by \Biocpkg{MACPET}, and not the one found in MANGO or MICC. Both of those algorithms allow the user to specify the self-ligated cut-off.
+The \Biocpkg{MACPET} package can be used for general analysis of paired-end (PET) data like ChIA-PET.
+\Biocpkg{MACPET} currently implements the following four stages:
 
-The main \Biocpkg{MACPET}
-pipeline is to first use the complete ChIA-PET data and distinguish between
-Self-ligated, Intra- and Inter-chromosomal PETs as well as to remove PETs
-with similarly mapped tags which might have been created by amplification 
-procedures. Then use the Self-ligated data on the peak-calling algorithm provided 
-by \Biocpkg{MACPET} for finding significant peaks. Most of the \Biocpkg{MACPET} functions require a user-specified path where the output of 
-the algorithm is to be saved.
+* Stage 0 (Linker filtering): Identifies linkers A and B in the fastq files and classifies the
+reads as usable (A/A,B/B), chimeric (A/B,B/A) and ambiguous (non/A, non/B, A/non, B/non).
+* Stage 1 (Mapping to the reference genome): Maps the usable reads separately into the reference genome using 
+\Biocpkg{Rbowtie} package, and keeps only uniquely mapped reads with zero mismatch per read. 
+It then maps the unmapped reads to the reference genome with at most one mismatch and keeps the uniquely mapped reads. Uniquely mapped reads with zero or one mismatch are then merged and paired, their duplicates are marked and a paired-end bam file is created which is used in State 2.
+* Stage 2 (PET classification): Classifies the PETs as self-ligated (short genomic distance, same chromosome),
+intra-chromosomal (long genomic distance, same chromosome) by finding the self-ligated cut-off using the elbow method,
+and inter-chromosomal (different chromosomes).  Furthermore, it removes identically mapped PETs for reducing noise created by amplification procedures. Moreover, it can remove black-listed regions based on the genome of the data. Note that loading the data into R might take a while depending on the size of the data.
+* Stage 3 (Peak-calling): Uses the self-ligated PETs found in Stage 2 and segments the genome into non-overlapping
+regions. It then uses both reads of each PET and applies 2D mixture models for identifying two-dimensional 
+clusters which represent candidate binding sites using the
+skewed generalized students-t distributions (SGT). Finally, it uses a local Poisson
+model for finding significant binding sites. 
 
-\Biocpkg{MACPET} can analyse ChIA-PET data for both BAM and SAM formats and is 
-also compatible with the \Biocpkg{BiocParallel} package. If the user wants to 
-run the algorithm in parallel, the parallel blackhead has to be registered
-before running a \Biocpkg{MACPET} function. However most of the MACPET algorithms 
-are implemented in C++ and are therefore very fast. 
+
+\Biocpkg{MACPET} identifies binding site locations more accurately than other algorithms which use only one end (like MACS) [@macpet]. The output from \Biocpkg{MACPET} can be used for interaction analysis using either MANGO or MICC. However there are plans to extend the package and include interaction analysis in the future. Note that in the case of using the output from \Biocpkg{MACPET} in MANGO or MICC for interaction analysis, the user should use the self-ligated cut-off found by \Biocpkg{MACPET}, and not the one found in MANGO or MICC. Both of those algorithms allow the user to specify the self-ligated cut-off. MACPET is mainly written in C++,
+and it supports the  \Biocpkg{BiocParallel}  package.
 
 
 Before starting with examples of how to use \Biocpkg{MACPET}, create a 
@@ -74,8 +74,8 @@ test folder to save all the output files of the examples presented in this
 vignette:
 ```{r,eval=TRUE,echo=TRUE}
 #Create a temporary test folder, or anywhere you want:
-AnalysisDir=file.path(tempdir(),"MACPETtest")
-dir.create(AnalysisDir)#where you will save the results.
+SA_AnalysisDir=file.path(tempdir(),"MACPETtest")
+dir.create(SA_AnalysisDir)#where you will save the results.
 ```
 
 Load the package:
@@ -99,19 +99,19 @@ The classes provided by \Biocpkg{MACPET} are the following:
 
 * \textcolor{LimeGreen}{\Rclass{PSelf}} class contains information 
 about the self-ligated PETs in the data. This class is created using either the 
-\Rfunction{PeakCallerUlt} function at stage 0 or the \Rfunction{ConvertToPSelf} 
+\Rfunction{MACPETUlt} function at stage 2 or the \Rfunction{ConvertToPSelf} 
 function.
 * \textcolor{LimeGreen}{\Rclass{PSFit}} class is an update of the
 \textcolor{LimeGreen}{\Rclass{PSelf}} class, which contains information about
 which binding site each PET belongs to, as well as significant peaks found by the
-peak-calling algorithm. This class is created using the \Rfunction{PeakCallerUlt}
-function at stage 1.
+peak-calling algorithm. This class is created using the \Rfunction{MACPETUlt}
+function at stage 3.
 * \textcolor{LimeGreen}{\Rclass{PInter}} class contains information about Inter-chromosomal
-PETs in the data. This class is created using the \Rfunction{PeakCallerUlt}
-function at stage 0.
+PETs in the data. This class is created using the \Rfunction{MACPETUlt}
+function at stage 2.
 * \textcolor{LimeGreen}{\Rclass{PIntra}} class contains information about Intra-chromosomal
-PETs in the data. This class is created using the \Rfunction{PeakCallerUlt}
-function at stage 0.
+PETs in the data. This class is created using the \Rfunction{MACPETUlt}
+function at stage 2.
 
 
 \subsection{\textcolor{LimeGreen}{\Rclass{PSelf}} Class}
@@ -119,9 +119,9 @@ function at stage 0.
 The \textcolor{LimeGreen}{\Rclass{PSelf}} class contains pair-end tag information of self-ligated PETs
 which is used for binding site analysis.
 ```{r}
-load(system.file("extdata", "pselfData.rda", package = "MACPET"))
-class(pselfData) #example name
-pselfData #print method
+load(system.file("extdata", "MACPET_pselfData.rda", package = "MACPET"))
+class(MACPET_pselfData) #example name
+MACPET_pselfData #print method
 ```
 
 
@@ -131,16 +131,15 @@ the following elements:
 * Self_info: a two-column data.frame with information about the chromosomes
 in the data (chrom) and  the total PET counts of each chromosome (PET.counts). 
 * SLmean: which is the mean size of the self-ligated PETs.
-* GenInfo: a data.frame with information about the genome of the data.
 * MaxSize: The maximum self-ligated PET size in the data.
 * MinSize: The minimum self-ligated PET size in the data.
 ```{r}
-metadata(pselfData)
+metadata(MACPET_pselfData)
 ```
 
 One can also access information about chromosome lengths etc.
 ```{r}
-seqinfo(pselfData)
+seqinfo(MACPET_pselfData)
 ```
 
 
@@ -152,9 +151,9 @@ peak each PET belongs to, as well as the total number of peaks
 in each chromosome in the data, p-values and FDR for each peak.
 
 ```{r}
-load(system.file("extdata", "psfitData.rda", package = "MACPET"))
-class(psfitData) #example name
-psfitData #print method
+load(system.file("extdata", "MACPET_psfitData.rda", package = "MACPET"))
+class(MACPET_psfitData) #example name
+MACPET_psfitData #print method
 ```
 
 
@@ -188,11 +187,11 @@ a data.frame with the following entries:
 * FDRDown: FDR correction for the right-stream Peak region.
 * FDR: FDR correction for the Peak.
 ```{r}
-head(metadata(psfitData)$Peaks.Info)
+head(metadata(MACPET_psfitData)$Peaks.Info)
 ```
 
 One can also access information about chromosome lengths etc, using  
-\Rfunction{seqinfo(psfitData)}.
+\Rfunction{seqinfo(MACPET\_psfitData)}.
 
 
 \subsection{\textcolor{LimeGreen}{\Rclass{PInter}} Class}
@@ -201,21 +200,20 @@ The \textcolor{LimeGreen}{\Rclass{PInter}} class contains pair-end tag informati
 of Inter-chromosomal PETs:
 
 ```{r}
-load(system.file("extdata", "pinterData.rda", package = "MACPET"))
-class(pinterData) #example name
-pinterData #print method
+load(system.file("extdata", "MACPET_pinterData.rda", package = "MACPET"))
+class(MACPET_pinterData) #example name
+MACPET_pinterData #print method
 ```
 
 One can also access information about chromosome lengths etc, using  
-\Rfunction{seqinfo(InterpetsData)}.
+\Rfunction{seqinfo(MACPET\_pinterData)}.
 
 It also contains a two-element metadata list with the following elements:
 
 * InteractionCounts: a table with the total number of Inter-chromosomal PETs between chromosomes. Where
 the rows represent the "from"  anchor and the columns the "to" anchor.
-* GenInfo: information about the genome.
 ```{r,eval=TRUE}
-metadata(pinterData)
+metadata(MACPET_pinterData)
 ```
 
 
@@ -226,20 +224,19 @@ The \textcolor{LimeGreen}{\Rclass{PIntra}} class contains pair-end tag informati
 of Intra-chromosomal PETs.
 
 ```{r}
-load(system.file("extdata", "pintraData.rda", package = "MACPET"))
-class(pintraData)#example name
-pintraData#print method
+load(system.file("extdata", "MACPET_pintraData.rda", package = "MACPET"))
+class(MACPET_pintraData)#example name
+MACPET_pintraData#print method
 ```
 
 One can also access information about chromosome lengths etc, using  
-\Rfunction{seqinfo(IntrapetsData)}.
+\Rfunction{seqinfo(MACPET\_pintraData)}.
 
 It also contains a two-element metadata list with the following elements:
 
 * InteractionCounts: a data.frame with the total number of Intra-chromosomal PETs for each chromosome (Counts).
-* GenInfo: information about the genome.
 ```{r}
-metadata(pintraData)
+metadata(MACPET_pintraData)
 ```
 
 
@@ -259,8 +256,8 @@ up the information stored in each class:
 the total number of self-ligated PETs for each chromosome, as well as the total number of
 self-ligated PETs in the data, their min/max length and genome information of the data:
 ```{r}
-class(pselfData)
-summary(pselfData)
+class(MACPET_pselfData)
+summary(MACPET_pselfData)
 ```
 
 
@@ -270,8 +267,8 @@ summary(pselfData)
 the total regions found and analysed for each chromosome and the total number of 
 candidate binding sites found on each chromosome:
 ```{r}
-class(psfitData)
-summary(psfitData)
+class(MACPET_psfitData)
+summary(MACPET_psfitData)
 ```
 
 
@@ -281,10 +278,10 @@ information about the total number of intra-ligated PETs for each chromosome,
 as well as information about the genome. The user can 
 choose to plot a heat-map for the total number of intra-ligated PETs on each chromosome:
 ```{r}
-class(pintraData)
+class(MACPET_pintraData)
 requireNamespace("ggplot2")
 requireNamespace("reshape2")
-summary(pintraData,heatmap=TRUE)
+summary(MACPET_pintraData,heatmap=TRUE)
 ```
 
 \subsubsection{\textcolor{LimeGreen}{\Rclass{PInter}} Class}
@@ -293,10 +290,10 @@ information about the total number of inter-ligated PETs for each chromosome,
 as well as information about the genome. The user can 
 choose to plot a heat-map for the total number of inter-ligated PETs connecting the chromosomes:
 ```{r}
-class(pinterData)
+class(MACPET_pinterData)
 requireNamespace("ggplot2")
 requireNamespace("reshape2")
-summary(pinterData,heatmap=TRUE)
+summary(MACPET_pinterData,heatmap=TRUE)
 ```
 
 <!-- plot -->
@@ -312,9 +309,9 @@ bar-plot showing the total number of self-ligated PETs on each chromosome.
 The x-axis are the chromosomes and the y-axis are the corresponding frequencies.
 ```{r}
 requireNamespace("ggplot2")
-class(pselfData)
+class(MACPET_pselfData)
 # PET counts plot
-plot(pselfData)
+plot(MACPET_pselfData)
 ```
 
 
@@ -324,9 +321,9 @@ bar-plot (if kind="PeakCounts") showing the total number of candidate binding
 sites found on each chromosome. The x-axis are the chromosomes and the y-axis 
 are the corresponding frequencies.
 ```{r}
-class(psfitData)
+class(MACPET_psfitData)
 #binding site couts:
-plot(psfitData,kind="PeakCounts")
+plot(MACPET_psfitData,kind="PeakCounts")
 ```
 
 Other kind of plots are also supported for this class. For example if 
@@ -340,7 +337,7 @@ cluster. Vertical lines represent the exact binding location of the
 binding site.
 ```{r}
 # region example with binding sites:
-plot(psfitData,kind="PeakPETs",RegIndex=1)
+plot(MACPET_psfitData,kind="PeakPETs",RegIndex=1)
 ```
 
 
@@ -350,9 +347,9 @@ bar-plot showing the total number of intra-ligated PETs on each chromosome.
 The x-axis are the chromosomes and the y-axis are the corresponding 
 frequencies.
 ```{r}
-class(pintraData)
+class(MACPET_pintraData)
 #plot counts:
-plot(pintraData)
+plot(MACPET_pintraData)
 ```
 
 \subsubsection{\textcolor{LimeGreen}{\Rclass{PInter}} Class}
@@ -362,10 +359,10 @@ the total number of Inter-chromosomal PETs leaving from this chromosome. Edges
 connect interacting chromosomes where the thickness of each edge is proportional
 to the total number of Inter-chromosomal PETs connecting the two chromosomes.
 ```{r}
-class(pinterData)
+class(MACPET_pinterData)
 requireNamespace("igraph")
 #network plot:
-plot(pinterData)
+plot(MACPET_pinterData)
 ```
 
 \subsection{exportPeaks methods}
@@ -377,8 +374,8 @@ The user can also specify a threshold for the FDR. If no threshold is specified 
 the binding sites found by the algorithm are exported.
 
 ```{r,eval=TRUE,echo=TRUE}
-class(psfitData)#PSFit class
-exportPeaks(object=psfitData,file.out="Peaks",threshold=1e-5,savedir=AnalysisDir)
+class(MACPET_psfitData)#PSFit class
+exportPeaks(object=MACPET_psfitData,file.out="Peaks",threshold=1e-5,savedir=SA_AnalysisDir)
 ```
 
 
@@ -392,8 +389,8 @@ the p-value of the peak (p.value) and its FDR (FDR). The user can also specify a
  are returned.
 
 ```{r,eval=TRUE,echo=TRUE}
-class(psfitData)#PSFit class
-object=PeaksToGRanges(object=psfitData,threshold=1e-5)
+class(MACPET_psfitData)#PSFit class
+object=PeaksToGRanges(object=MACPET_psfitData,threshold=1e-5)
 object
 ```
 
@@ -409,8 +406,8 @@ genome-browser. The user can also specify an FDR
  If threshold=NULL, all the found peaks are returned.
 
 ```{r,eval=TRUE,echo=TRUE}
-class(psfitData)#PSFit class
-TagsToGInteractions(object=psfitData,threshold=1e-5)
+class(MACPET_psfitData)#PSFit class
+TagsToGInteractions(object=MACPET_psfitData,threshold=1e-5)
 
 ```
 
@@ -423,9 +420,9 @@ The object is saved in a user specified directory and can be used in the
 MANGO or MICC algorithms for interaction analysis.
 
 ```{r,eval=TRUE,echo=TRUE}
-class(psfitData)#PSFit class
-PeaksToNarrowPeak(object=psfitData,threshold=1e-5,
-                  file.out="MACPET_peaks.narrowPeak",savedir=AnalysisDir)
+class(MACPET_psfitData)#PSFit class
+PeaksToNarrowPeak(object=MACPET_psfitData,threshold=1e-5,
+                  file.out="MACPET_peaks.narrowPeak",savedir=SA_AnalysisDir)
 ```
 
 
@@ -433,22 +430,33 @@ PeaksToNarrowPeak(object=psfitData,threshold=1e-5,
 
 This method if for the 
 \textcolor{LimeGreen}{\Rclass{GInteractions}} class. It converts a
-\Rclass{GInteractions} object to \textcolor{LimeGreen}{\Rclass{PSelf}} object for further use in the
-peak-calling algorithm \Rfunction{PeakCallerUlt}. 
+\Rclass{GInteractions} object to \textcolor{LimeGreen}{\Rclass{PSelf}} object. 
 This method could be used in case the user already has the self-ligated PETs
-separated from the rest of the ChIA-PET data and wishes to run a binding site analysis on those only.
+separated from the rest of the data and wishes to run a binding site analysis on those only using stage 3 in  \Rfunction{MACPETUlt}. The output object will be saved in the user-specified directory.
 
 ```{r,eval=TRUE,echo=TRUE}
  #--remove information and convert to GInteractions:
-object=pselfData
+object=MACPET_pselfData
+#--remove information and convert to GInteractions:
 S4Vectors::metadata(object)=list(NULL)
-class(object)="GInteractions"
-GenomePkg="BSgenome.Hsapiens.UCSC.hg19" #genome of the data.
-BlackList="hg19"
-object=ConvertToPSelf(object=object,GenomePkg=GenomePkg,BlackList=BlackList)
-class(object)
-```
+class(object)='GInteractions'
+#----input parameters
+S2_BlackList=TRUE
+SA_prefix="MACPET"
+S2_AnalysisDir=SA_AnalysisDir
 
+ConvertToPSelf(object=object,
+               S2_BlackList=S2_BlackList,
+               SA_prefix=SA_prefix,
+               S2_AnalysisDir=S2_AnalysisDir)
+#load object:
+rm(MACPET_pselfData)#old object
+load(file.path(S2_AnalysisDir,"MACPET_pselfData"))
+class(MACPET_pselfData)
+
+```
+<!--  supplementary functions -->
+\section{\Biocpkg{MACPET} Supplementary functions}
 
 \subsection{AnalysisStatistics function}
 
@@ -464,119 +472,165 @@ class, a threshold can be given for the FDR cut-off.
 
 Here is an example:
 ```{r,echo=TRUE,eval=TRUE}
-AnalysisStatistics(x.self=pselfData,#One of the self-ligated classes.
-                    x.intra=pintraData,#NULL for not printing the class.
-                    x.inter=pinterData,#NULL for not printing the class.
-                    #specify a name for the output to be saved.
-                    file.out="Statistics",
-                    savedir=AnalysisDir,#Where to save the output.
-                    threshold=1e-5)#Theshold for FDR
+AnalysisStatistics(x.self=MACPET_psfitData,
+                   x.intra=MACPET_pintraData,
+                   x.inter=MACPET_pinterData,
+                   file.out='AnalysisStats',
+                   savedir=SA_AnalysisDir,
+                   threshold=1e-5)
 
 ```
+\subsection{ConvertToPE\_BAM function}
 
+\Rfunction{ConvertToPE\_BAM} in case the user has two separate BAM files from 
+read 1 and 2 of the paired data, and needs to pair them in one paired-end 
+BAM file for further analysis in stage 2-3 on the \Rfunction{MACPETUlt} function.
+The output paired-end BAM file will be saved in the user-specified directory.
+
+Here is an example:
+```{r,echo=TRUE,eval=TRUE}
+requireNamespace('ggplot2')
+
+#Create a temporary forder, or anywhere you want:
+S1_AnalysisDir=SA_AnalysisDir
+
+#directories of the BAM files:
+BAM_file_1=system.file('extdata', 'SampleChIAPETDataRead_1.bam', package = 'MACPET')
+BAM_file_2=system.file('extdata', 'SampleChIAPETDataRead_2.bam', package = 'MACPET')
+SA_prefix="MACPET"
+
+#convert to paired-end BAM:
+ConvertToPE_BAM(S1_AnalysisDir=S1_AnalysisDir,
+             SA_prefix=SA_prefix,
+             S1_BAMStream=2000000,S1_image=TRUE,
+             S1_genome="hg19",BAM_file_1=BAM_file_1,
+             BAM_file_2=BAM_file_2)
+
+#test if the resulted BAM is paired-end:
+PairedBAM=file.path(S1_AnalysisDir,paste(SA_prefix,"_Paired_end.bam",sep=""))
+Rsamtools::testPairedEndBam(file = PairedBAM, index = PairedBAM)
+
+bamfile = Rsamtools::BamFile(file = PairedBAM,asMates = TRUE)
+GenomicAlignments::readGAlignmentPairs(file = bamfile,use.names = FALSE,
+                                with.which_label = FALSE,
+                                strandMode = 1)
+
+```
 
 <!-- analysis workflow -->
 \section{Peak Calling Workflow}
 
-The main function which the user can use for running a complete binding site
-analysis is called \Rfunction{PeakCallerUlt}. It consists of two stages:
+The main function which the user can use for running a paired-end data 
+analysis is called \Rfunction{MACPETUlt}. It consists of the  four stages described
+in the introduction section. The user may run the whole pipeline/analysis at once using Stages=c(0:3) or step by step using a single stage at a time. The function supports the \Biocpkg{BiocParallel} package.
 
-* Stage 0: PET classification. This stage takes the BAM/SAM ChIA-PET file as input
-    and it separates the PETs into three categories:
-    Inter-chromosomal PETs (which connect two different chromosomes),
-    Intra-chromosomal PETs (which connect regions of the same chromosome) and
-    Self-ligated PETs (which are used for binding site analysis).
-    Self-ligated PETs are used for finding the protein binding sites (peaks),
-    while Intra- and Inter-chromosomal are used for interactions between
-    the peaks. Furthermore, it removes identically mapped PETs for reducing noise created by
-    amplification procedures. The algorithm uses the elbow-method to separate the
-    Self-ligated from the Intra-chromosomal population. Note that loading the data 
-    into R might take a while depending on the size of the data.
-* Stage 1: Peak calling. This stage uses the Self-ligated PETs and it runs the
-    EM algorithm to find clusters which represent candidate peaks/binding sites in
-    2 dimensional space using skewed generalized students-t distributions (SGT).
-    After the peak-calling analysis is done, the algorithm assesses the
-    significance of the candidate peaks using a local Poisson model.
+For the following example we run stages 2 and 3 of the \Rfunction{MACPETUlt} only.
+The reason is that for running state 1, the bowtie index is needed which is 
+too big for downloading it here.
 
-
-The user may run the whole pipeline/analysis at once using Stages=c(0:1) or step by step using a single
-stage at a time. Using a single stage might be convenient if for example the user has already separated
-the Self-ligated PETs and only needs to run Stage 1 for peak-calling.
-
-The function supports the \Biocpkg{BiocParallel} package.
-
-Description of the input names below:
-
-* fileSelf: output name of the \textcolor{LimeGreen}{\Rclass{PSelf}} object
-* fileIntra: output name of the \textcolor{LimeGreen}{\Rclass{PIntra}} object
-* fileInter: output name of the \textcolor{LimeGreen}{\Rclass{PInter}} object
-* fileSelfFit: output name of the \textcolor{LimeGreen}{\Rclass{PSFit}} object
 
 ```{r,echo=TRUE,eval=TRUE}
- #load sample data to use in the algorithm and give inputs:
- DataDir=system.file("extdata", package = "MACPET") #data path
- DataFile="SampleChIAPETData.bam" #data name
- PopImage=TRUE #Sample data, not very good classifiction results.
- GenomePkg="BSgenome.Hsapiens.UCSC.hg19" #genome of the data.
- fileSelf="pselfData" #name for Self-ligated
- fileIntra="pintraData" #name for Intra-chromosomal
- fileInter="pinterData" #name for Inter-chromosomal
- BlackList="hg19" #remove PETs in black listed regions
- fileSelfFit="psfitData"
- method="BH"
- Stages=c(0:1)
+
+#give directory of the BAM file:
+S2_PairedEndBAMpath=system.file('extdata', 'SampleChIAPETData.bam', package = 'MACPET')
+
+#give prefix name:
+SA_prefix="MACPET"
 
 #parallel backhead can be created using the BiocParallel package
-# requireNamespace("BiocParallel")
-# snow <- BiocParallel::SnowParam(workers = 1, type = "SOCK", progressbar=FALSE)
-# BiocParallel::register(snow, default=TRUE)
+#parallel backhead can be created using the BiocParallel package
+#requireNamespace('BiocParallel')
+#snow <- BiocParallel::SnowParam(workers = 4, type = 'SOCK', progressbar=FALSE)
+#BiocParallel::register(snow, default=TRUE)
 
 #-run for the whole binding site analysis:
-PeakCallerUlt(DataDir=DataDir,
-           DataFile=DataFile,
-           AnalysisDir=AnalysisDir,
-           GenomePkg=GenomePkg,
-           fileSelf=fileSelf,
-           fileIntra=fileIntra,
-           fileInter=fileInter,
-           PopImage=PopImage,
-           fileSelfFit=fileSelfFit,
-           method=method,
-           BlackList=BlackList,
-           Stages=Stages)
-#load results:
-load(file.path(AnalysisDir,fileSelf))
-class(pselfData) # see methods for this class
-load(file.path(AnalysisDir,fileIntra))
-class(pintraData) # see methods for this class
-load(file.path(AnalysisDir,fileInter))
-class(pinterData) # see methods for this class
-load(file.path(AnalysisDir,fileSelfFit))
-class(psfitData) # see methods for this class
+MACPETUlt(SA_AnalysisDir=SA_AnalysisDir,
+       SA_stages=c(2:3),
+       SA_prefix=SA_prefix,
+       S2_PairedEndBAMpath=S2_PairedEndBAMpath,
+       S2_image=TRUE,
+       S2_BlackList=TRUE,
+       S3_image=TRUE)
 
+#load results:
+SelfObject=paste(SA_prefix,"_pselfData",sep="")
+load(file.path(SA_AnalysisDir,"S2_results",SelfObject))
+SelfObject=get(SelfObject)
+class(SelfObject) # see methods for this class
+
+IntraObject=paste(SA_prefix,"_pintraData",sep="")
+load(file.path(SA_AnalysisDir,"S2_results",IntraObject))
+IntraObject=get(IntraObject)
+class(IntraObject) # see methods for this class
+
+InterObject=paste(SA_prefix,"_pinterData",sep="")
+load(file.path(SA_AnalysisDir,"S2_results",InterObject))
+InterObject=get(InterObject)
+class(InterObject) # see methods for this class
+
+SelfFitObject=paste(SA_prefix,"_psfitData",sep="")
+load(file.path(SA_AnalysisDir,"S3_results",SelfFitObject))
+SelfFitObject=get(SelfFitObject)
+class(SelfFitObject) # see methods for this class
 #-----delete test directory:
-unlink(AnalysisDir,recursive=TRUE)
+unlink(SA_AnalysisDir,recursive=TRUE)
+
 ```
 
-The function saves the following outputs in AnalysisDir:
 
-For Stage 0:
+ \Rfunction{MACPETUlt} saves its outputs in SA\_AnalysisDir in the folders
+ S0\_results, S1\_results, S2\_results and S3\_results based on the stages run.
+ The output of \Rfunction{MACPETUlt} in those folders is the following:
+ 
+Stage 0: (output saved in a folder named S0\_results in  SA\_AnalysisDir)
 
-* An object named fileSelf which is of \textcolor{LimeGreen}{\Rclass{PSelf}}
- class
-* An object named fileIntra which is of \textcolor{LimeGreen}{\Rclass{PIntra}}
- class
-* An object named fileInter which is of \textcolor{LimeGreen}{\Rclass{PInter}}
- class
-* An image named Self\_ligated\_borders\_plot.jpg with the density of the 
- sizes of the Self-ligated and Intra-chromosomal population, with the borders
- of the Self-ligated PETs. This output will be produced if pop.image=TRUE
+* SA\_prefix\_usable\_1.fastq.gz: fastq.gz files with the usable 5-end tags. To be used in Stage 1.
+* SA\_prefix\_usable\_2.fastq.gz: fastq.gz files with the usable 3-end tags. To be used in Stage 1.
+* SA\_prefix\_chimeric\_1.fastq.gz: fastq.gz files with the chimeric 5-end tags.
+* SA\_prefix\_chimeric\_2.fastq.gz: fastq.gz files with the chimeric 3-end tags.
+* SA\_prefix\_ambiguous\_1.fastq.gz: fastq.gz files with the ambiguous 5-end tags. 
+* SA\_prefix\_ambiguous\_2.fastq.gz: fastq.gz files with the ambiguous 3-end tags.
+* SA\_prefix\_stage\_0\_image.jpg: Pie chart image with the split of two fastq files used as input (if S0\_image==TRUE)
 
-For Stage 1:
 
-* An object of \textcolor{LimeGreen}{\Rclass{PSFit}} named by the 
- fileSelfFit argument. This object contains
+Stage 1: (output saved in a folder named S1\_results in  SA\_AnalysisDir)
+
+* SA\_prefix\_usable\_1.sam: sam file with the mapped 5-end reads (if S1\_rmSam==FALSE).
+* SA\_prefix\_usable\_2.sam: sam file with the mapped 3-end reads (if S1\_rmSam==FALSE).
+* SA\_prefix\_Paired\_end.bam: paired-end bam file with the mapped PETs. To be used in Stage 2
+* SA\_prefix\_Paired\_end.bam.bai: .bai paired-end bam file with the mapped PETs. To be used in Stage 2
+* SA\_prefix\_stage\_1\_p1\_image.jpg: Pie-chart for the mapped/unmapped reads from SA\_prefix\_usable\_1.sam
+and SA\_prefix\_usable\_2.sam (if S1\_image==TRUE).
+* SA\_prefix\_stage\_1\_p2\_image.jpg: Pie-chart for the paired/unpaired reads of SA\_prefix\_Paired\_end.bam (if S1\_image==TRUE).
+
+
+Stage 2: (output saved in a folder named S2\_results in  SA\_AnalysisDir)
+
+* SA\_prefix\_pselfData: An object of \textcolor{LimeGreen}{\Rclass{PSelf}}
+ class, containing the self-ligated PETs. To be used in Stage 3.
+* SA\_prefix\_pintraData: An object of \textcolor{LimeGreen}{\Rclass{PIntra}}
+ class, containing the intra-chromosomal PETs.
+* SA\_prefix\_pinterData: An object of \textcolor{LimeGreen}{\Rclass{PInter}}
+ class, containing the inter-chromosomal PETs.
+* SA\_prefix\_stage\_2\_p1\_image.jpg: Pie-chart reliable/duplicated/black-listed PETs of SA\_prefix\_Paired\_end.bam (if S2\_image==TRUE).
+* SA\_prefix\_stage\_2\_p2\_image.jpg: Histogram with the self-ligated/intra-chromosomal cut-off of SA\_prefix\_Paired\_end.bam (if S2\_image==TRUE).
+* SA\_prefix\_stage\_2\_p3\_image.jpg: Pie-chart for the self-ligated/intra-chromosomal/inter-chromosomal PETs of SA\_prefix\_Paired\_end.bam (if S2\_image==TRUE).
+
+Stage 3: (output saved in a folder named S3\_results in  SA\_AnalysisDir)
+
+* SA\_prefix\_psfitData: An object of \textcolor{LimeGreen}{\Rclass{PSFit}} class. This object contains
  peaks found by the peak-calling algorithm along with their p-values and FDR.
+* SA\_prefix\_stage\_3\_p1\_image.jpg: Sizes of the upstream vs downstream peaks of each binding site given the binding site's FDR (if S3\_image==TRUE).
+* SA\_prefix\_stage\_3\_p2\_image.jpg: FDR of the binding sites. The horizontal red line is at FDR=0.05 (if S3\_image==TRUE).
+* SA\_prefix\_stage\_3\_p3\_image.jpg: Comparison of binding site sizes given their FDR (if S3\_image==TRUE).
+* SA\_prefix\_stage\_3\_p4\_image.jpg: FDR for the upstream/donwstream peaks of the binding sites given the binding sites FDR (if S3\_image==TRUE).
 
-Furthermore a log-file named MACPET_analysis.log with the progress of the analysis
-is also saved in the AnalysisDir.
+Stages 0:3:
+
+*  All the above outputs in separate folders.
+ 
+
+Furthermore a log-file named SA\_prefix\_analysis.log with the progress of the analysis
+is also saved in the SA\_AnalysisDir.
+
+
