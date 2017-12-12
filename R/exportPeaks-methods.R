@@ -13,7 +13,7 @@
 #' \code{savedir}.
 #' @param threshold A numeric indicating the FDR cut-off used for subseting
 #' significant peaks. If NULL all the peaks are returned.
-#' @param ... Further arguments to be passed to \code{exportPeaks} (not used).
+#' @param ... (not used).
 #'
 #' @seealso \linkS4class{PSFit}
 #---#'define default:
@@ -29,9 +29,9 @@
 #' dir.create(savedir)#where you will save the results
 #'
 #' #load Self-ligated data: (class=PSFit)
-#' load(system.file('extdata', 'psfitData.rda', package = 'MACPET'))
-#' class(psfitData)
-#' exportPeaks(object=psfitData,file.out='Peaks',threshold=1e-5,savedir=savedir)
+#' load(system.file('extdata', 'MACPET_psfitData.rda', package = 'MACPET'))
+#' class(MACPET_psfitData)
+#' exportPeaks(object=MACPET_psfitData,file.out='Peaks',threshold=1e-5,savedir=savedir)
 #'
 #' #-----delete test directory:
 #' unlink(savedir,recursive=TRUE)
@@ -49,7 +49,7 @@ exportPeaks.default = function(object, ...) {
 #' @method exportPeaks PSFit
 #' @return For \code{\linkS4class{PSFit}} class: a csv file named after the
 #' value of \code{file.out} with all the information about the peaks found by the
-#' \code{\link{PeakCallerUlt}} function, plus comments which
+#' \code{\link{MACPETUlt}} function, plus comments which
 #'  explain the column names.
 #' @export
 exportPeaks.PSFit = function(object, file.out, savedir, threshold = NULL, ...) {

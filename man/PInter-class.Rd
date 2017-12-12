@@ -13,8 +13,8 @@ Inter-chromosomal data.
 }
 \details{
 \code{\linkS4class{PInter}} class is created by the
- \code{\link{PeakCallerUlt}}
-function at Stage 0.
+ \code{\link{MACPETUlt}}
+function at Stage 2.
 }
 \references{
 Vardaxis I, Drabløs F, Rye M and Lindqvist BH (2018). \emph{Model-based Analysis for ChIA-PET (MACPET)}.
@@ -23,7 +23,7 @@ To be published.
 \seealso{
 \code{\link{AnalysisStatistics}}, \code{\link{plot}},
 \code{\link{summary}},
-\code{\link{PeakCallerUlt}}
+\code{\link{MACPETUlt}}
 }
 \author{
 Ioannis Vardaxis, \email{ioannis.vardaxis@ntnu.no}

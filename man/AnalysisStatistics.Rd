@@ -5,7 +5,7 @@
 \title{Count Statistics for ChIA-PET.}
 \usage{
 AnalysisStatistics(x.self, x.intra = NULL, x.inter = NULL,
-  file.out = NULL, threshold = 1e-05, savedir = NULL)
+  file.out = NULL, threshold = 0.00001, savedir = NULL)
 }
 \arguments{
 \item{x.self}{An object of class \code{\linkS4class{PSelf}} or
@@ -45,34 +45,33 @@ savedir=file.path(tempdir(),'MACPETtest')
 dir.create(savedir)#where you will save the results
 
 #load Inter-chromosomal data:
-load(system.file('extdata', 'pinterData.rda', package = 'MACPET'))
-class(pinterData)
+load(system.file('extdata', 'MACPET_pinterData.rda', package = 'MACPET'))
+class(MACPET_pinterData)
 
 #load Intra-chromosomal data:
-load(system.file('extdata', 'pintraData.rda', package = 'MACPET'))
-class(pintraData)
+load(system.file('extdata', 'MACPET_pintraData.rda', package = 'MACPET'))
+class(MACPET_pintraData)
 
-#################################################################
 #load Self-ligated data: (class=PSelf)
-load(system.file('extdata', 'pselfData.rda', package = 'MACPET'))
-class(pselfData)
+load(system.file('extdata', 'MACPET_pselfData.rda', package = 'MACPET'))
+class(MACPET_pselfData)
 
 #Print analysis:
-AnalysisStatistics(x.self=pselfData,
-                   x.intra=pintraData,
-                   x.inter=pinterData,
+AnalysisStatistics(x.self=MACPET_pselfData,
+                   x.intra=MACPET_pintraData,
+                   x.inter=MACPET_pinterData,
                    file.out='AnalysisStats',
                    savedir=savedir)
 
 #################################################################
 #load Self-ligated data: (class=PSFit)
-load(system.file('extdata', 'psfitData.rda', package = 'MACPET'))
-class(psfitData)
+load(system.file('extdata', 'MACPET_psfitData.rda', package = 'MACPET'))
+class(MACPET_psfitData)
 
 #Print analysis:
-AnalysisStatistics(x.self=psfitData,
-                   x.intra=pintraData,
-                   x.inter=pinterData,
+AnalysisStatistics(x.self=MACPET_psfitData,
+                   x.intra=MACPET_pintraData,
+                   x.inter=MACPET_pinterData,
                    file.out='AnalysisStats',
                    savedir=savedir,
                    threshold=1e-5)

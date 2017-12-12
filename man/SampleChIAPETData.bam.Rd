@@ -21,9 +21,10 @@ Consortium EP (2012) \emph{An integrated encyclopedia of DNA elements in the hum
  Nature, 489(7414), pp. 57–74. \url{http://dx.doi.org/10.1038/nature11247}.
 }
 \seealso{
-\code{\link{pselfData.rda}}, \code{\link{pintraData.rda}},
-\code{\link{pinterData.rda}},
-\code{\link{psfitData.rda}}
+\code{\link{MACPET_pinterData.rda}}, \code{\link{MACPET_pintraData.rda}},
+\code{\link{MACPET_pselfData.rda}},
+\code{\link{MACPET_psfitData.rda}}, \code{\link{SampleChIAPETDataRead_1.bam}},
+ \code{\link{SampleChIAPETDataRead_2.bam}}
 }
 \author{
 Yijun Ruan, GIS, 2012-05-24 (main data creators)

@@ -7,40 +7,59 @@
 #' @description \code{ConvertToPSelf} converts a GInteractions object to
 #' class to \code{\linkS4class{PSelf}} object.
 #'
-#' @details \code{\link{PeakCallerUlt}} with Stage=0 is the first function the user can
-#' use for separating Inter-chromosomal, Intra-chromosomal and Self-ligated PETs by giving
-#' the whole paired-end BAM/SAM file as input. However the user might only have
+#' @details \code{\link{MACPETUlt}} at State 2 separates the Inter-chromosomal,
+#'  Intra-chromosomal and Self-ligated PETs by taking
+#' the paired-end BAM/SAM file as input. However the user might only have
 #' Self-ligated data available and already separated from the Inter/Intra-chromosomal
 #' PETs. \code{ConvertToPSelf} can then be used in the Self-ligated data to convert
 #' a \code{\link[InteractionSet]{GInteractions}} object containing only the Self-ligated
-#' PETs to a \code{\linkS4class{PSelf}} class for further analysis.
+#' PETs to a \code{\linkS4class{PSelf}} class for further analysis in Stage 3.
+#' The object will be saved in the \code{S2_AnalysisDir} directory with the
+#'  name \code{SA_prefix_pselfData}.
+#' Note that if \code{S2_BlackList==TRUE} then the \code{\link[InteractionSet]{GInteractions}}
+#' object given as input has to include the genome name in the \code{seqinfo} slot.
+#' Also, the sequences lengths are mandatory in the \code{seqinfo} slot since they
+#' are used in stage 3 of the analysis.
 #'
 #' @param object An object of \code{\link[InteractionSet]{GInteractions}} class.
-#' @param GenomePkg See  \code{\link{PeakCallerUlt}}.
 #' @param ... not used.
-#' @param BlackList See  \code{\link{PeakCallerUlt}}.
+#' @param S2_BlackList See  \code{\link{MACPETUlt}}.
+#' @param SA_prefix See  \code{\link{MACPETUlt}}.
+#' @param S2_AnalysisDir The directory in which the object will be saved.
 #'
 #' @seealso \code{\linkS4class{PSelf}}
 #---#'define default:
 #' @name ConvertToPSelf
 #' @export
 #' @include AllClasses.R
-#'
+#' @importFrom GenomeInfoDb genome seqlengths seqinfo seqnames
+#' @importFrom methods is
 #'
 #' @examples
 #' #load Self-ligated data: (class=PSelf)
-#' load(system.file('extdata', 'pselfData.rda', package = 'MACPET'))
-#' class(pselfData)
+#' load(system.file('extdata', 'MACPET_pselfData.rda', package = 'MACPET'))
+#' class(MACPET_pselfData)
 #'
-#' object=pselfData
+#' object=MACPET_pselfData
 #' #--remove information and convert to GInteractions:
 #' S4Vectors::metadata(object)=list(NULL)
 #' class(object)='GInteractions'
-#' GenomePkg='BSgenome.Hsapiens.UCSC.hg19' #genome of the data.
-#' BlackList='hg19'
+#' #----input parameters
+#' S2_BlackList=TRUE
+#' SA_prefix='MACPET'
+#' S2_AnalysisDir=file.path(tempdir(),'MACPETtest')
+#' if(!dir.exists(S2_AnalysisDir)) dir.create(S2_AnalysisDir)
 #'
-#' object=ConvertToPSelf(object=object,GenomePkg=GenomePkg,BlackList=BlackList)
-#' class(object)
+#' ConvertToPSelf(object=object,
+#'                       S2_BlackList=S2_BlackList,
+#'                       SA_prefix=SA_prefix,
+#'                       S2_AnalysisDir=S2_AnalysisDir)
+#' #load object:
+#' rm(MACPET_pselfData)#old object
+#' load(file.path(S2_AnalysisDir,'MACPET_pselfData'))
+#' class(MACPET_pselfData)
+#' #-----delete test directory:
+#' unlink(S2_AnalysisDir,recursive=TRUE)
 #'
 # default:
 ConvertToPSelf = function(object, ...) {
@@ -56,67 +75,79 @@ ConvertToPSelf.default = function(object, ...) {
 #' @method ConvertToPSelf GInteractions
 #' @return An object of class \code{\linkS4class{PSelf}}.
 #' @export
-ConvertToPSelf.GInteractions = function(object, GenomePkg, BlackList, ...) {
+ConvertToPSelf.GInteractions = function(object, S2_BlackList, SA_prefix, S2_AnalysisDir, 
+    ...) {
     #----R-check:
-    pkgname = NULL
     #----
-    #-------------------------
-    #---------Test the genome:
-    #-------------------------
-    if (!is.character(GenomePkg) || length(GenomePkg) != 1) {
-        stop("GenomePkg has to be of chracter class!", call. = FALSE)
-    } else if (!GenomePkg %in% BSgenome::available.genomes()) {
-        stop(GenomePkg, " is not a part of the available.genomes! See ??BSgenome::available.genomes", 
+    #------------
+    # check directory:
+    #------------
+    if (!methods::is(S2_AnalysisDir, "character")) {
+        stop("S2_AnalysisDir:", S2_AnalysisDir, " is not a directory!", call. = FALSE)
+    } else if (!dir.exists(S2_AnalysisDir)) {
+        stop("S2_AnalysisDir:", S2_AnalysisDir, " directory does not exist!", call. = FALSE)
+    }
+    #------------
+    # check prefix:
+    #------------
+    if (!methods::is(SA_prefix, "character")) {
+        stop("SA_prefix: ", SA_prefix, " variable has to be a string!", call. = FALSE)
+    } else if (nchar(SA_prefix) == 0) {
+        stop("SA_prefix: ", SA_prefix, " variable has to be a non-empty string!", 
             call. = FALSE)
-    } else if (!GenomePkg %in% BSgenome::installed.genomes()) {
-        stop(GenomePkg, " is not installed! See ??BSgenome::installed.genomes", call. = FALSE)
-    } else {
-        GenInfo = subset(BSgenome::installed.genomes(splitNameParts = TRUE), pkgname == 
-            GenomePkg)
-        ChromLengths = BSgenome::getBSgenome(GenomePkg)
-        ChromLengths = GenomeInfoDb::seqlengths(ChromLengths)
-        ChromLengths = data.frame(chrom = names(ChromLengths), size = ChromLengths)
-        rownames(ChromLengths) = NULL
     }
-    #--------------------------
-    #---------load black list:
-    #--------------------------
-    if (is.data.frame(BlackList)) {
-        if (!c("Chrom", "Region.Start", "Region.End") %in% colnames(BlackList)) {
-            stop("Give correct colnames to BlackList if it is given as data.frame!", 
-                call. = FALSE)
-        }
-    } else if (is.character(BlackList) && length(BlackList) == 1) {
-        # probably correct inputs.
-        genome.given = BlackList  #the given genome
-        genome.data = GenInfo$provider_version  #the genome of the data.
-        if (!genome.given %in% names(sysdata)) {
-            # wrong genome given.
-            stop("If BlackList is character, then it has to be one of the following values: 'hg19', 'ce10', 'dm3', 'hg38', 'mm9', 'mm10'", 
-                call. = FALSE)
-        } else if (genome.given != genome.data) {
-            # the genome of the data is not the same as the given genome.
-            stop("The genome given as BlackList is not the same as the actuall genome of the input data.", 
-                call. = FALSE)
-        } else {
-            # all correct, choose data:
-            BlackList = sysdata[[genome.given]]
-        }
+    #------------
+    # check seqinfo in object:
+    #------------
+    SeqInfo = GenomeInfoDb::seqinfo(object)
+    # names:
+    Names = GenomeInfoDb::seqnames(SeqInfo)
+    if (any(is.na(Names))) {
+        WhichNA = which(is.na(Names))
+        stop("GenomeInfoDb::seqnames(object) has NA names at positions: ", paste(WhichNA, 
+            collapse = "/"), call. = FALSE)
+    }
+    # sizes:
+    Lengths = GenomeInfoDb::seqlengths(SeqInfo)
+    if (any(is.na(Lengths))) {
+        WhichNA = which(is.na(Lengths))
+        stop("GenomeInfoDb::seqlengths(object) has NA lengths at positions: ", paste(names(Lengths[WhichNA]), 
+            collapse = "/"), call. = FALSE)
+    }
+    # get genome:
+    Genome = GenomeInfoDb::genome(SeqInfo)
+    Genome = unique(Genome)
+    if (length(Genome) > 1) {
+        stop("There are more than one genomes defined in the object. Those are: ", 
+            paste(Genome, collapse = "/"), call. = FALSE)
+    }
+    #------------
+    # check S2_BlackList:
+    #------------
+    if (!methods::is(S2_BlackList, "logical") && !methods::is(S2_BlackList, "GRanges")) {
+        stop("S2_BlackList: has to be logical or a GRanges object!", call. = FALSE)
+    } else if (isTRUE(S2_BlackList) & !Genome %in% names(sysdata)) {
+        LogFile = paste("The genome: ", Genome, " is not one of the following: ", 
+            paste(names(sysdata), collapse = "/"), ". No black listed regions will be removed!")
+        warning(LogFile)
+    } else if (isTRUE(S2_BlackList) & Genome %in% names(sysdata)) {
+        # get black list:
+        S2_BlackList = sysdata[[Genome]]
     } else {
-        # wrong inputs
-        stop("BlackList can be either NULL, data.frame, of a character", call. = FALSE)
+        S2_BlackList = NULL
     }
     #-------------------------
-    #---------Trim anchors, add info etc:
+    #---------Get correct GInteractions object:
     #-------------------------
-    ArgPairedData = list(ChromLengths = ChromLengths, GenInfo = GenInfo, BlackList = BlackList, 
-        LogFile.dir = NULL)
-    object = GInteractionsCovnert_fun(ChIAPET = object, ArgPairedData = ArgPairedData)
-    Nobject = length(object)  #before removing any
-    cat("Total PETs found in data:", Nobject, "\n")
+    object = GInteractionsCovnert_fun(S2_PairedData = object, S2_BlackList = S2_BlackList, 
+        PselfConvert = TRUE)
+    if (length(object) == 0) {
+        stop("The object contained only black-listed regions!", call. = FALSE)
+    }
     #-------------------------
     #---------Check if Inter-chromosomal:
     #-------------------------
+    Nobject = length(object)
     object = subset(object, !is.na(object$Dist))
     Nreduced = length(object)
     if (Nobject != Nreduced) {
@@ -130,7 +161,7 @@ ConvertToPSelf.GInteractions = function(object, GenomePkg, BlackList, ...) {
     #-----Convert to PSelf class:
     #-------------------------
     SelfIndicator = 1:Nreduced  #all the data
-    object = FindSelf_fun(x = object, SelfIndicator = SelfIndicator, ArgFindSelf = ArgPairedData, 
-        PSelf.Convert = TRUE)
-    return(object)
+    Nself = FindSelf_fun(S2_PairedData = object, SelfIndicator = SelfIndicator, SA_LogFile.dir = NULL, 
+        S2_AnalysisDir = S2_AnalysisDir, SA_prefix = SA_prefix)
+    cat("The PSelf object is saved in: \n", S2_AnalysisDir)
 }

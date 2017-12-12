@@ -16,7 +16,6 @@ genome of the data. Furthermore it also contains the following in the
  \item{\code{Self_info}}{Counts statistics for the total PETs,
  total regions and total Peaks in each chromosome.}
  \item{\code{SLmean}}{The mean size of the PETs in the data.}
- \item{\code{GenInfo}}{Information about the genome.}
  \item{\code{MaxSize}}{Maximum size of self-ligated PETs.}
  \item{\code{MinSize}}{Minimum size of self-ligated PETs.}
  \item{\code{Classification.Info}}{A matrix with information for the Data-row ID, region ID and Peak ID (0 represent noise)
@@ -53,7 +52,7 @@ genome of the data. Furthermore it also contains the following in the
 }
 \details{
 \code{\linkS4class{PSFit}} class is created by the
-\code{\link{PeakCallerUlt}} function at Stage=1.
+\code{\link{MACPETUlt}} function at Stage 3.
 }
 \references{
 Vardaxis I, Drabløs F, Rye M and Lindqvist BH (2018). \emph{Model-based Analysis for ChIA-PET (MACPET)}.
@@ -61,7 +60,7 @@ To be published.
 }
 \seealso{
 \code{\link{AnalysisStatistics}},\code{\link{plot}},
-\code{\link{summary}}, \code{\link{PeakCallerUlt}},
+\code{\link{summary}}, \code{\link{MACPETUlt}},
 \code{\link{exportPeaks}}, \code{\link{PeaksToGRanges}},
 \code{\link{TagsToGInteractions}}, \code{\link{PeaksToNarrowPeak}}
 }

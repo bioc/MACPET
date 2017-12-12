@@ -6,7 +6,7 @@
 \alias{summary.PSFit}
 \alias{summary.PIntra}
 \alias{summary.PInter}
-\title{summary methods for the MACPET package.}
+\title{summary methods for the MACPET classes.}
 \usage{
 \method{summary}{PSelf}(object, ...)
 
@@ -38,28 +38,28 @@ Different summary methods for the classes in the
 }
 \examples{
 #load Self-ligated data: (class=PSelf)
-load(system.file('extdata', 'pselfData.rda', package = 'MACPET'))
-class(pselfData)
-summary(pselfData)
+load(system.file('extdata', 'MACPET_pselfData.rda', package = 'MACPET'))
+class(MACPET_pselfData)
+summary(MACPET_pselfData)
 #load Self-ligated data: (class=PSFit)
-load(system.file('extdata', 'psfitData.rda', package = 'MACPET'))
-class(psfitData)
-summary(psfitData)
-summary(psfitData,threshold=1e-5)
+load(system.file('extdata', 'MACPET_psfitData.rda', package = 'MACPET'))
+class(MACPET_psfitData)
+summary(MACPET_psfitData)
+summary(MACPET_psfitData,threshold=1e-5)
 #load Intra-chromosomal data: (class=PIntra)
-load(system.file('extdata', 'pintraData.rda', package = 'MACPET'))
-class(pintraData)
-summary(pintraData)
+load(system.file('extdata', 'MACPET_pintraData.rda', package = 'MACPET'))
+class(MACPET_pintraData)
+summary(MACPET_pintraData)
 requireNamespace('ggplot2')
 requireNamespace('reshape2')
-summary(pintraData,heatmap=TRUE)#sample data, not good heatmap plot.
+summary(MACPET_pintraData,heatmap=TRUE)#sample data, not good heatmap plot.
 #load Inter-chromosomal data: (class=PInter)
-load(system.file('extdata', 'pinterData.rda', package = 'MACPET'))
-class(pinterData)
-summary(pinterData)
+load(system.file('extdata', 'MACPET_pinterData.rda', package = 'MACPET'))
+class(MACPET_pinterData)
+summary(MACPET_pinterData)
 requireNamespace('ggplot2')
 requireNamespace('reshape2')
-summary(pinterData,heatmap=TRUE)#sample data, not good heatmap plot.
+summary(MACPET_pinterData,heatmap=TRUE)#sample data, not good heatmap plot.
 }
 \references{
 Vardaxis I, Drabløs F, Rye M and Lindqvist BH (2018). \emph{Model-based Analysis for ChIA-PET (MACPET)}.

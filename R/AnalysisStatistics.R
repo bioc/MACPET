@@ -35,9 +35,10 @@
 #--#' import packages to NAMESPACE:
 #' @importFrom S4Vectors metadata
 #' @importFrom plyr ddply .
-#' @importFrom GenomeInfoDb genome
+#' @importFrom GenomeInfoDb genome seqinfo
 #' @importFrom knitr kable
 #' @importFrom utils write.table
+#' @importFrom methods is
 #'
 #' @examples
 #' #Create a temporary test forder, or anywhere you want:
@@ -45,41 +46,40 @@
 #' dir.create(savedir)#where you will save the results
 #'
 #' #load Inter-chromosomal data:
-#' load(system.file('extdata', 'pinterData.rda', package = 'MACPET'))
-#' class(pinterData)
+#' load(system.file('extdata', 'MACPET_pinterData.rda', package = 'MACPET'))
+#' class(MACPET_pinterData)
 #'
 #' #load Intra-chromosomal data:
-#' load(system.file('extdata', 'pintraData.rda', package = 'MACPET'))
-#' class(pintraData)
+#' load(system.file('extdata', 'MACPET_pintraData.rda', package = 'MACPET'))
+#' class(MACPET_pintraData)
 #'
-#' #################################################################
 #' #load Self-ligated data: (class=PSelf)
-#' load(system.file('extdata', 'pselfData.rda', package = 'MACPET'))
-#' class(pselfData)
+#' load(system.file('extdata', 'MACPET_pselfData.rda', package = 'MACPET'))
+#' class(MACPET_pselfData)
 #'
 #' #Print analysis:
-#' AnalysisStatistics(x.self=pselfData,
-#'                    x.intra=pintraData,
-#'                    x.inter=pinterData,
+#' AnalysisStatistics(x.self=MACPET_pselfData,
+#'                    x.intra=MACPET_pintraData,
+#'                    x.inter=MACPET_pinterData,
 #'                    file.out='AnalysisStats',
 #'                    savedir=savedir)
 #'
 #' #################################################################
 #' #load Self-ligated data: (class=PSFit)
-#' load(system.file('extdata', 'psfitData.rda', package = 'MACPET'))
-#' class(psfitData)
+#' load(system.file('extdata', 'MACPET_psfitData.rda', package = 'MACPET'))
+#' class(MACPET_psfitData)
 #'
 #' #Print analysis:
-#' AnalysisStatistics(x.self=psfitData,
-#'                    x.intra=pintraData,
-#'                    x.inter=pinterData,
+#' AnalysisStatistics(x.self=MACPET_psfitData,
+#'                    x.intra=MACPET_pintraData,
+#'                    x.inter=MACPET_pinterData,
 #'                    file.out='AnalysisStats',
 #'                    savedir=savedir,
 #'                    threshold=1e-5)
 #'
 #' #-----delete test directory:
 #' unlink(savedir,recursive=TRUE)
-AnalysisStatistics = function(x.self, x.intra = NULL, x.inter = NULL, file.out = NULL, 
+AnalysisStatistics = function(x.self, x.intra = NULL, x.inter = NULL, file.out = NULL,
     threshold = 1e-05, savedir = NULL) {
     # global variables for Rcheck:
     FDR = Chrom = NULL
@@ -87,14 +87,14 @@ AnalysisStatistics = function(x.self, x.intra = NULL, x.inter = NULL, file.out =
     # input Check:
     if (!class(x.self) %in% c("PSelf", "PSFit")) {
         stop("x.self has to be on of the following classes:
-             PSelf or PSFit", 
+             PSelf or PSFit",
             call. = FALSE)
-    } else if (is(x.self, "PSFit") & !is.numeric(threshold)) {
+    } else if (methods::is(x.self, "PSFit") & !is.numeric(threshold)) {
         threshold = NULL
     }
     # take intra:
     if (!is.null(x.intra)) {
-        if (!is(x.intra, "PIntra")) {
+        if (!methods::is(x.intra, "PIntra")) {
             stop("x.intra has to be PIntra class!", call. = FALSE)
         } else {
             RES.intra = S4Vectors::metadata(x.intra)$InteractionCounts
@@ -103,7 +103,7 @@ AnalysisStatistics = function(x.self, x.intra = NULL, x.inter = NULL, file.out =
     }
     # take inter:
     if (!is.null(x.inter)) {
-        if (!is(x.inter, "PInter")) {
+        if (!methods::is(x.inter, "PInter")) {
             stop("x.inter has to be PInter class!", call. = FALSE)
         } else {
             RES.inter = S4Vectors::metadata(x.inter)$InteractionCounts
@@ -118,21 +118,19 @@ AnalysisStatistics = function(x.self, x.intra = NULL, x.inter = NULL, file.out =
     MaxSize = S4Vectors::metadata(x.self)$MaxSize
     MinSize = S4Vectors::metadata(x.self)$MinSize
     hg = unique(GenomeInfoDb::genome(GenomeInfoDb::seqinfo(x.self)))
-    Organism = as.character(S4Vectors::metadata(x.self)$GenInfo$organism)
-    Info = data.frame(SLmean = SLmean, hg = hg, Organism = Organism, SelfBord = paste(MinSize, 
-        "/", MaxSize, " bp", sep = ""), Total.PETs = Nself)
+    Info = data.frame(SLmean = SLmean, hg = hg, SelfBord = paste(MinSize, "/", MaxSize,
+        " bp", sep = ""), Total.PETs = Nself)
     RES = S4Vectors::metadata(x.self)$Self_info
-    if (class(x.self) == "PSelf") {
+    if (methods::is(x.self, "PSelf")) {
         colnames(RES) = c("Chrom", "Self")
-        colnames(Info) = c("Self-lig. mean size", "Genome", "Organism", "Self Borders", 
-            "Tot. Self")
-    } else if (is(x.self, "PSFit") & is.null(threshold)) {
+        colnames(Info) = c("Self-lig. mean size", "Genome", "Self Borders", "Tot. Self")
+    } else if (methods::is(x.self, "PSFit") & is.null(threshold)) {
         colnames(RES) = c("Chrom", "Self", "Regions", "Peaks")
         Info$Total.regions = sum(S4Vectors::metadata(x.self)$Self_info$Region.counts)
         Info$Total.bs = sum(S4Vectors::metadata(x.self)$Self_info$Peak.counts)
-        colnames(Info) = c("Self-lig. mean size", "Genome", "Organism", "Self Borders", 
-            "Tot. Self", "Regions", "Peaks")
-    } else if (is(x.self, "PSFit") & !is.null(threshold)) {
+        colnames(Info) = c("Self-lig. mean size", "Genome", "Self Borders", "Tot. Self",
+            "Regions", "Peaks")
+    } else if (methods::is(x.self, "PSFit") & !is.null(threshold)) {
         colnames(RES) = c("Chrom", "Self", "Regions", "Peaks")
         Info$Total.regions = sum(S4Vectors::metadata(x.self)$Self_info$Region.counts)
         Info$Total.bs = sum(S4Vectors::metadata(x.self)$Self_info$Peak.counts)
@@ -142,8 +140,8 @@ AnalysisStatistics = function(x.self, x.intra = NULL, x.inter = NULL, file.out =
         RES$`Sign. Peaks` = 0
         RES$`Sign. Peaks`[match(Sig.bs$Chrom, RES$Chrom)] = Sig.bs$V1
         Info$Total.sig = sum(RES$`Sign. Peaks`)
-        colnames(Info) = c("Self-lig. mean size", "Genome", "Organism", "Self Borders", 
-            "Tot. Self", "Regions", "Peaks", "Sign. Peaks")
+        colnames(Info) = c("Self-lig. mean size", "Genome", "Self Borders", "Tot. Self",
+            "Regions", "Peaks", "Sign. Peaks")
     }
     # append:
     if (!is.null(x.intra)) {
@@ -164,21 +162,25 @@ AnalysisStatistics = function(x.self, x.intra = NULL, x.inter = NULL, file.out =
     cat(rep("-", 25), sep = "")
     cat("\n PETs Counts Summary \n")
     cat(rep("-", 25), sep = "")
-    print(knitr::kable(RES, row.names = FALSE, align = c("c"), format = "markdown", 
+    print(knitr::kable(RES, row.names = FALSE, align = c("c"), format = "markdown",
         padding = 1, output = TRUE))
     # print:
-    print(knitr::kable(Info, row.names = FALSE, align = c("c"), format = "rst", padding = 1, 
-        output = TRUE))
+    ICol = floor(ncol(Info)/2)
+    print(knitr::kable(Info[,seq_len(ICol)], row.names = FALSE, align = c("c"),
+                       format = "rst", padding = 1, output = TRUE))
+    print(knitr::kable(Info[,seq_len(ncol(Info)-ICol)+ICol], row.names = FALSE,
+                       align = c("c"), format = "rst", padding = 1,
+                       output = TRUE))
     # save
     if (!is.null(file.out) & !is.null(savedir)) {
         if (!dir.exists(savedir)) {
             stop("savedir does not exist!", call. = FALSE)
         }
         Desc = "#Count statistics for each chromosome:"
-        writeLines(paste(Desc, sep = "\n"), file.path(savedir, paste(file.out, ".csv", 
+        writeLines(paste(Desc, sep = "\n"), file.path(savedir, paste(file.out, ".csv",
             sep = "")))
-        suppressWarnings(utils::write.table(RES, quote = FALSE, file = file.path(savedir, 
-            paste(file.out, ".csv", sep = "")), sep = ";", col.names = TRUE, row.names = FALSE, 
+        suppressWarnings(utils::write.table(RES, quote = FALSE, file = file.path(savedir,
+            paste(file.out, ".csv", sep = "")), sep = ";", col.names = TRUE, row.names = FALSE,
             qmethod = "double", append = TRUE))
         return("The output has been saved at the savedir")
     }

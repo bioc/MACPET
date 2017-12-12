@@ -12,7 +12,7 @@
 #' @param threshold A numeric for the FDR threshold used to take a subset of
 #' significant peaks/binding sites. If \code{threshold=NULL} then
 #' all the peaks are returned.
-#' @param ... Further arguments to be passed to \code{TagsToGInteractions} (not used).
+#' @param ... (not used).
 #'
 #' @seealso \code{\linkS4class{PSFit}}
 #---#'define default:
@@ -20,16 +20,14 @@
 #' @export
 #' @include AllClasses.R
 #' @importFrom S4Vectors metadata
-#' @importFrom GenomicRanges GRanges seqinfo
-#' @importFrom IRanges IRanges
-#' @importFrom GenomeInfoDb seqlevelsInUse seqlevels
+#' @importFrom GenomicRanges seqinfo
 #'
 #'
 #' @examples
 #' #load Self-ligated data: (class=PSFit)
-#' load(system.file('extdata', 'psfitData.rda', package = 'MACPET'))
-#' class(psfitData)
-#' object=TagsToGInteractions(object=psfitData,threshold=1e-5)
+#' load(system.file('extdata', 'MACPET_psfitData.rda', package = 'MACPET'))
+#' class(MACPET_psfitData)
+#' object=TagsToGInteractions(object=MACPET_psfitData,threshold=1e-5)
 #' object
 #' S4Vectors::metadata(object)$Peaks.Info #peak/binding site information
 #'
@@ -41,7 +39,8 @@ TagsToGInteractions = function(object, ...) {
 #' @method TagsToGInteractions default
 #' @export
 TagsToGInteractions.default = function(object, ...) {
-    stop("No TagsToGInteractions method for class ", class(object), ".", call. = FALSE)
+    stop("No TagsToGInteractions method for class ", class(object), ".",
+         call. = FALSE)
 }
 #' @rdname TagsToGInteractions
 #' @method TagsToGInteractions PSFit
@@ -64,7 +63,8 @@ TagsToGInteractions.PSFit = function(object, threshold = NULL, ...) {
     if (is.numeric(threshold)) {
         Peaks.info = subset(Peaks.info, FDR < threshold)
         if (nrow(Peaks.info) == 0) {
-            stop("No significant peaks in the data!Try a higher threshold.", call. = FALSE)
+            stop("No significant peaks in the data!Try a higher threshold.",
+                 call. = FALSE)
         }
     } else {
         warning("No threshold given, all the peaks are returned.")
@@ -79,12 +79,13 @@ TagsToGInteractions.PSFit = function(object, threshold = NULL, ...) {
     ChromInfo = objectdf$seqnames1
     ChromInfo = as.character(ChromInfo)
     # Make stings and find overlaps:
-    From.significant = paste(Peaks.info$Chrom, "-", Peaks.info$Region, "-", Peaks.info$Peak, 
-        sep = "")
+    From.significant = paste(Peaks.info$Chrom, "-", Peaks.info$Region, "-",
+                             Peaks.info$Peak, sep = "")
     # take EMinformation:
     Classification.Info = S4Vectors::metadata(object)$Classification.Info
-    To.data = paste(ChromInfo[Classification.Info$MainIndex], "-", Classification.Info$Region, 
-        "-", Classification.Info$Peak.ID, sep = "")
+    To.data = paste(ChromInfo[Classification.Info$MainIndex], "-",
+                    Classification.Info$Region, "-", Classification.Info$Peak.ID,
+                    sep = "")
     Keep.data = which(To.data %in% From.significant)
     # take MainIndex:
     MainIndex = Classification.Info$MainIndex[Keep.data]

@@ -1,4 +1,4 @@
-#' @title plot methods for MACPET package
+#' @title plot methods for MACPET classes
 #' @author Ioannis Vardaxis, \email{ioannis.vardaxis@@ntnu.no}
 #'
 #' @references
@@ -34,10 +34,10 @@ NULL
 #'
 #' @examples
 #' #load Inter-chromosomal data:
-#' load(system.file('extdata', 'pinterData.rda', package = 'MACPET'))
-#' class(pinterData)
+#' load(system.file('extdata', 'MACPET_pinterData.rda', package = 'MACPET'))
+#' class(MACPET_pinterData)
 #' requireNamespace('igraph')
-#' plot(pinterData)
+#' plot(MACPET_pinterData)
 plot.PInter = function(x, ...) {
     # global variables for Rcheck:
     V1 = NULL
@@ -82,10 +82,10 @@ plot.PInter = function(x, ...) {
 #'
 #' @examples
 #' #load Intra-chromosomal data:
-#' load(system.file('extdata', 'pintraData.rda', package = 'MACPET'))
-#' class(pintraData)
+#' load(system.file('extdata', 'MACPET_pintraData.rda', package = 'MACPET'))
+#' class(MACPET_pintraData)
 #' requireNamespace('ggplot2')
-#' plot(pintraData)
+#' plot(MACPET_pintraData)
 plot.PIntra = function(x, ...) {
     # global variables for Rcheck:
     Chrom = NULL
@@ -111,10 +111,10 @@ plot.PIntra = function(x, ...) {
 #'
 #' @examples
 #' #load Self-ligated data:
-#' load(system.file('extdata', 'pselfData.rda', package = 'MACPET'))
-#' class(pselfData)
+#' load(system.file('extdata', 'MACPET_pselfData.rda', package = 'MACPET'))
+#' class(MACPET_pselfData)
 #' requireNamespace('ggplot2')
-#' plot(pselfData)
+#' plot(MACPET_pselfData)
 plot.PSelf = function(x, ...) {
     # global variables for Rcheck:
     Chrom = NULL
@@ -155,13 +155,13 @@ plot.PSelf = function(x, ...) {
 #'
 #' @examples
 #' #load Self-ligated data:
-#' load(system.file('extdata', 'psfitData.rda', package = 'MACPET'))
-#' class(psfitData)
+#' load(system.file('extdata', 'MACPET_psfitData.rda', package = 'MACPET'))
+#' class(MACPET_psfitData)
 #' requireNamespace('ggplot2')
-#' plot(psfitData,kind='PETcounts')
-#' plot(psfitData,kind='PeakCounts')
-#' plot(psfitData,kind='PeakPETs',RegIndex=1)
-#' plot(psfitData,kind='PeakTags',RegIndex=1)
+#' plot(MACPET_psfitData,kind='PETcounts')
+#' plot(MACPET_psfitData,kind='PeakCounts')
+#' plot(MACPET_psfitData,kind='PeakPETs',RegIndex=1)
+#' plot(MACPET_psfitData,kind='PeakTags',RegIndex=1)
 plot.PSFit = function(x, kind, RegIndex = NULL, threshold = NULL, ...) {
     # global variables for Rcheck:
     FDR = RegCount = X = Y = ymin = ymax = Dist = Tag = Stream = PeakID = NULL
@@ -227,7 +227,7 @@ plot.PSFit = function(x, kind, RegIndex = NULL, threshold = NULL, ...) {
         # (with summits):
         #----choose the region to plot:
         Classification.Info = S4Vectors::metadata(x)$Classification.Info
-        xdf = data.frame(x)
+        xdf = as.data.frame(x)
         Chrom = xdf$seqnames1
         Chrom = as.character(Chrom)
         Classification.Info$Chrom = Chrom[Classification.Info$MainIndex]

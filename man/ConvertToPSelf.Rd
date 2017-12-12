@@ -10,16 +10,19 @@ ConvertToPSelf(object, ...)
 
 \method{ConvertToPSelf}{default}(object, ...)
 
-\method{ConvertToPSelf}{GInteractions}(object, GenomePkg, BlackList, ...)
+\method{ConvertToPSelf}{GInteractions}(object, S2_BlackList, SA_prefix,
+  S2_AnalysisDir, ...)
 }
 \arguments{
 \item{object}{An object of \code{\link[InteractionSet]{GInteractions}} class.}
 
 \item{...}{not used.}
 
-\item{GenomePkg}{See  \code{\link{PeakCallerUlt}}.}
+\item{S2_BlackList}{See  \code{\link{MACPETUlt}}.}
 
-\item{BlackList}{See  \code{\link{PeakCallerUlt}}.}
+\item{SA_prefix}{See  \code{\link{MACPETUlt}}.}
+
+\item{S2_AnalysisDir}{The directory in which the object will be saved.}
 }
 \value{
 An object of class \code{\linkS4class{PSelf}}.
@@ -29,28 +32,45 @@ An object of class \code{\linkS4class{PSelf}}.
 class to \code{\linkS4class{PSelf}} object.
 }
 \details{
-\code{\link{PeakCallerUlt}} with Stage=0 is the first function the user can
-use for separating Inter-chromosomal, Intra-chromosomal and Self-ligated PETs by giving
-the whole paired-end BAM/SAM file as input. However the user might only have
+\code{\link{MACPETUlt}} at State 2 separates the Inter-chromosomal,
+ Intra-chromosomal and Self-ligated PETs by taking
+the paired-end BAM/SAM file as input. However the user might only have
 Self-ligated data available and already separated from the Inter/Intra-chromosomal
 PETs. \code{ConvertToPSelf} can then be used in the Self-ligated data to convert
 a \code{\link[InteractionSet]{GInteractions}} object containing only the Self-ligated
-PETs to a \code{\linkS4class{PSelf}} class for further analysis.
+PETs to a \code{\linkS4class{PSelf}} class for further analysis in Stage 3.
+The object will be saved in the \code{S2_AnalysisDir} directory with the
+ name \code{SA_prefix_pselfData}.
+Note that if \code{S2_BlackList==TRUE} then the \code{\link[InteractionSet]{GInteractions}}
+object given as input has to include the genome name in the \code{seqinfo} slot.
+Also, the sequences lengths are mandatory in the \code{seqinfo} slot since they
+are used in stage 3 of the analysis.
 }
 \examples{
 #load Self-ligated data: (class=PSelf)
-load(system.file('extdata', 'pselfData.rda', package = 'MACPET'))
-class(pselfData)
+load(system.file('extdata', 'MACPET_pselfData.rda', package = 'MACPET'))
+class(MACPET_pselfData)
 
-object=pselfData
+object=MACPET_pselfData
 #--remove information and convert to GInteractions:
 S4Vectors::metadata(object)=list(NULL)
 class(object)='GInteractions'
-GenomePkg='BSgenome.Hsapiens.UCSC.hg19' #genome of the data.
-BlackList='hg19'
+#----input parameters
+S2_BlackList=TRUE
+SA_prefix='MACPET'
+S2_AnalysisDir=file.path(tempdir(),'MACPETtest')
+if(!dir.exists(S2_AnalysisDir)) dir.create(S2_AnalysisDir)
 
-object=ConvertToPSelf(object=object,GenomePkg=GenomePkg,BlackList=BlackList)
-class(object)
+ConvertToPSelf(object=object,
+                      S2_BlackList=S2_BlackList,
+                      SA_prefix=SA_prefix,
+                      S2_AnalysisDir=S2_AnalysisDir)
+#load object:
+rm(MACPET_pselfData)#old object
+load(file.path(S2_AnalysisDir,'MACPET_pselfData'))
+class(MACPET_pselfData)
+#-----delete test directory:
+unlink(S2_AnalysisDir,recursive=TRUE)
 
 }
 \references{

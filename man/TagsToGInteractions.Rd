@@ -15,7 +15,7 @@ TagsToGInteractions(object, ...)
 \arguments{
 \item{object}{An object of class \code{\linkS4class{PSFit}}.}
 
-\item{...}{Further arguments to be passed to \code{TagsToGInteractions} (not used).}
+\item{...}{(not used).}
 
 \item{threshold}{A numeric for the FDR threshold used to take a subset of
 significant peaks/binding sites. If \code{threshold=NULL} then
@@ -35,9 +35,9 @@ class to \code{\linkS4class{GInteractions}} object.
 }
 \examples{
 #load Self-ligated data: (class=PSFit)
-load(system.file('extdata', 'psfitData.rda', package = 'MACPET'))
-class(psfitData)
-object=TagsToGInteractions(object=psfitData,threshold=1e-5)
+load(system.file('extdata', 'MACPET_psfitData.rda', package = 'MACPET'))
+class(MACPET_psfitData)
+object=TagsToGInteractions(object=MACPET_psfitData,threshold=1e-5)
 object
 S4Vectors::metadata(object)$Peaks.Info #peak/binding site information
 

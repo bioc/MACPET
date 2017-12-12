@@ -5,20 +5,41 @@
 
 using namespace Rcpp;
 
-// FitCallLocal_fun_Rcpp
-SEXP FitCallLocal_fun_Rcpp(SEXP& bppass_x_inn, SEXP& ChromInf_inn);
-RcppExport SEXP _MACPET_FitCallLocal_fun_Rcpp(SEXP bppass_x_innSEXP, SEXP ChromInf_innSEXP) {
+// FilterFastqYield_fun_Rcpp
+SEXP FilterFastqYield_fun_Rcpp(int& Curfastqyieldsize, std::vector<std::string>& SreadFastq1, Rcpp::NumericVector& WidthSreadFastq1, std::vector<std::string>& SreadFastq2, Rcpp::NumericVector& WidthSreadFastq2, std::string& S0_LinkerA, std::string& S0_LinkerB, int& S0_LinkerOccurence, int& S0_MinReadLength, int& S0_MaxReadLength);
+RcppExport SEXP _MACPET_FilterFastqYield_fun_Rcpp(SEXP CurfastqyieldsizeSEXP, SEXP SreadFastq1SEXP, SEXP WidthSreadFastq1SEXP, SEXP SreadFastq2SEXP, SEXP WidthSreadFastq2SEXP, SEXP S0_LinkerASEXP, SEXP S0_LinkerBSEXP, SEXP S0_LinkerOccurenceSEXP, SEXP S0_MinReadLengthSEXP, SEXP S0_MaxReadLengthSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< SEXP& >::type bppass_x_inn(bppass_x_innSEXP);
-    Rcpp::traits::input_parameter< SEXP& >::type ChromInf_inn(ChromInf_innSEXP);
-    rcpp_result_gen = Rcpp::wrap(FitCallLocal_fun_Rcpp(bppass_x_inn, ChromInf_inn));
+    Rcpp::traits::input_parameter< int& >::type Curfastqyieldsize(CurfastqyieldsizeSEXP);
+    Rcpp::traits::input_parameter< std::vector<std::string>& >::type SreadFastq1(SreadFastq1SEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector& >::type WidthSreadFastq1(WidthSreadFastq1SEXP);
+    Rcpp::traits::input_parameter< std::vector<std::string>& >::type SreadFastq2(SreadFastq2SEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector& >::type WidthSreadFastq2(WidthSreadFastq2SEXP);
+    Rcpp::traits::input_parameter< std::string& >::type S0_LinkerA(S0_LinkerASEXP);
+    Rcpp::traits::input_parameter< std::string& >::type S0_LinkerB(S0_LinkerBSEXP);
+    Rcpp::traits::input_parameter< int& >::type S0_LinkerOccurence(S0_LinkerOccurenceSEXP);
+    Rcpp::traits::input_parameter< int& >::type S0_MinReadLength(S0_MinReadLengthSEXP);
+    Rcpp::traits::input_parameter< int& >::type S0_MaxReadLength(S0_MaxReadLengthSEXP);
+    rcpp_result_gen = Rcpp::wrap(FilterFastqYield_fun_Rcpp(Curfastqyieldsize, SreadFastq1, WidthSreadFastq1, SreadFastq2, WidthSreadFastq2, S0_LinkerA, S0_LinkerB, S0_LinkerOccurence, S0_MinReadLength, S0_MaxReadLength));
+    return rcpp_result_gen;
+END_RCPP
+}
+// FitCallLocal_fun_Rcpp
+SEXP FitCallLocal_fun_Rcpp(Rcpp::DataFrame& bppass_x, Rcpp::DataFrame& ChromInf);
+RcppExport SEXP _MACPET_FitCallLocal_fun_Rcpp(SEXP bppass_xSEXP, SEXP ChromInfSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::DataFrame& >::type bppass_x(bppass_xSEXP);
+    Rcpp::traits::input_parameter< Rcpp::DataFrame& >::type ChromInf(ChromInfSEXP);
+    rcpp_result_gen = Rcpp::wrap(FitCallLocal_fun_Rcpp(bppass_x, ChromInf));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_MACPET_FilterFastqYield_fun_Rcpp", (DL_FUNC) &_MACPET_FilterFastqYield_fun_Rcpp, 10},
     {"_MACPET_FitCallLocal_fun_Rcpp", (DL_FUNC) &_MACPET_FitCallLocal_fun_Rcpp, 2},
     {NULL, NULL, 0}
 };

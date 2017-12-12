@@ -14,15 +14,14 @@ PETs from ChIA-PET experiment. Furthermore it also contains the following in the
  \describe{
  \item{\code{Self_info}}{ A data.frame with the count statistics for the total PETs in each chromosome.}
  \item{\code{SLmean}}{The mean size of the PETs in the data.}
- \item{\code{GenInfo}}{Information about the genome.}
  \item{\code{MaxSize}}{Maximum size of self-ligated PETs.}
  \item{\code{MinSize}}{Minimum size of self-ligated PETs.}
  }
 }
 \details{
 \code{\linkS4class{PSelf}} class is created by
-the \code{\link{PeakCallerUlt}}
-function at Stage=0.
+the \code{\link{MACPETUlt}}
+function at Stage 2.
 }
 \references{
 Vardaxis I, Drabløs F, Rye M and Lindqvist BH (2018). \emph{Model-based Analysis for ChIA-PET (MACPET)}.
@@ -31,7 +30,7 @@ To be published.
 \seealso{
 \code{\link{AnalysisStatistics}}, \code{\link{plot}},
 \code{\link{summary}},
-\code{\link{PeakCallerUlt}}
+\code{\link{MACPETUlt}}, \code{\link{ConvertToPSelf}}
 }
 \author{
 Ioannis Vardaxis, \email{ioannis.vardaxis@ntnu.no}

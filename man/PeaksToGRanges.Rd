@@ -42,9 +42,9 @@ the p-value and the FDR of each peak.
 }
 \examples{
 #load Self-ligated data: (class=PSFit)
-load(system.file('extdata', 'psfitData.rda', package = 'MACPET'))
-class(psfitData)
-PeaksToGRanges(object=psfitData,threshold=1e-5)
+load(system.file('extdata', 'MACPET_psfitData.rda', package = 'MACPET'))
+class(MACPET_psfitData)
+PeaksToGRanges(object=MACPET_psfitData,threshold=1e-5)
 
 
 }

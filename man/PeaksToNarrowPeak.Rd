@@ -49,9 +49,9 @@ dir.create(savedir)#where you will save the results
 file.out='MACPET_peaks.narrowPeak'
 
 #load Self-ligated data: (class=PSFit)
-load(system.file('extdata', 'psfitData.rda', package = 'MACPET'))
-class(psfitData)
-PeaksToNarrowPeak(object=psfitData,threshold=1e-5,file.out=file.out,savedir=savedir)
+load(system.file('extdata', 'MACPET_psfitData.rda', package = 'MACPET'))
+class(MACPET_psfitData)
+PeaksToNarrowPeak(object=MACPET_psfitData,threshold=1e-5,file.out=file.out,savedir=savedir)
 
 #-----delete test directory:
 unlink(savedir,recursive=TRUE)

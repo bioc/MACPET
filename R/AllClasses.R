@@ -13,17 +13,16 @@
 #'  \describe{
 #'  \item{\code{Self_info}}{ A data.frame with the count statistics for the total PETs in each chromosome.}
 #'  \item{\code{SLmean}}{The mean size of the PETs in the data.}
-#'  \item{\code{GenInfo}}{Information about the genome.}
 #'  \item{\code{MaxSize}}{Maximum size of self-ligated PETs.}
 #'  \item{\code{MinSize}}{Minimum size of self-ligated PETs.}
 #'  }
 #' @details \code{\linkS4class{PSelf}} class is created by
-#' the \code{\link{PeakCallerUlt}}
-#' function at Stage=0.
+#' the \code{\link{MACPETUlt}}
+#' function at Stage 2.
 #' @export
 #' @seealso \code{\link{AnalysisStatistics}}, \code{\link{plot}},
 #' \code{\link{summary}},
-#' \code{\link{PeakCallerUlt}}
+#' \code{\link{MACPETUlt}}, \code{\link{ConvertToPSelf}}
 PSelf = setClass("PSelf", contains = "GInteractions")
 #' @export
 #' @title PSFit S4 Class
@@ -41,7 +40,6 @@ PSelf = setClass("PSelf", contains = "GInteractions")
 #'  \item{\code{Self_info}}{Counts statistics for the total PETs,
 #'  total regions and total Peaks in each chromosome.}
 #'  \item{\code{SLmean}}{The mean size of the PETs in the data.}
-#'  \item{\code{GenInfo}}{Information about the genome.}
 #'  \item{\code{MaxSize}}{Maximum size of self-ligated PETs.}
 #'  \item{\code{MinSize}}{Minimum size of self-ligated PETs.}
 #'  \item{\code{Classification.Info}}{A matrix with information for the Data-row ID, region ID and Peak ID (0 represent noise)
@@ -76,9 +74,9 @@ PSelf = setClass("PSelf", contains = "GInteractions")
 #'  }
 #'  }
 #' @details \code{\linkS4class{PSFit}} class is created by the
-#' \code{\link{PeakCallerUlt}} function at Stage=1.
+#' \code{\link{MACPETUlt}} function at Stage 3.
 #' @seealso \code{\link{AnalysisStatistics}},\code{\link{plot}},
-#' \code{\link{summary}}, \code{\link{PeakCallerUlt}},
+#' \code{\link{summary}}, \code{\link{MACPETUlt}},
 #' \code{\link{exportPeaks}}, \code{\link{PeaksToGRanges}},
 #' \code{\link{TagsToGInteractions}}, \code{\link{PeaksToNarrowPeak}}
 PSFit = setClass("PSFit", contains = "GInteractions")
@@ -93,14 +91,14 @@ PSFit = setClass("PSFit", contains = "GInteractions")
 #' \code{\link[InteractionSet]{GInteractions}} class and it contains
 #' Inter-chromosomal data.
 #' @details \code{\linkS4class{PInter}} class is created by the
-#'  \code{\link{PeakCallerUlt}}
-#' function at Stage 0.
+#'  \code{\link{MACPETUlt}}
+#' function at Stage 2.
 #' @seealso \code{\link{AnalysisStatistics}}, \code{\link{plot}},
 #' \code{\link{summary}},
-#' \code{\link{PeakCallerUlt}}
+#' \code{\link{MACPETUlt}}
 PInter = setClass("PInter", contains = "GInteractions")
 #' @export
-#' @title PIntra Class
+#' @title PIntra S4 Class
 #' @author Ioannis Vardaxis, \email{ioannis.vardaxis@@ntnu.no}
 #' @references
 #' Vardaxis I, Drabløs F, Rye M and Lindqvist BH (2018). \emph{Model-based Analysis for ChIA-PET (MACPET)}.
@@ -110,9 +108,9 @@ PInter = setClass("PInter", contains = "GInteractions")
 #' \code{\link[InteractionSet]{GInteractions}} class and it contains
 #' Intra-chromosomal data.
 #' @details \code{\linkS4class{PIntra}} class is created by the
-#' \code{\link{PeakCallerUlt}}
-#' function at Stage 0.
+#' \code{\link{MACPETUlt}}
+#' function at Stage 2.
 #' @seealso \code{\link{AnalysisStatistics}}, \code{\link{plot}},
 #' \code{\link{summary}},
-#' \code{\link{PeakCallerUlt}}
+#' \code{\link{MACPETUlt}}
 PIntra = setClass("PIntra", contains = "GInteractions")

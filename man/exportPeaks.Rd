@@ -15,7 +15,7 @@ exportPeaks(object, ...)
 \arguments{
 \item{object}{An object of \code{\linkS4class{PSFit}}  class.}
 
-\item{...}{Further arguments to be passed to \code{exportPeaks} (not used).}
+\item{...}{(not used).}
 
 \item{file.out}{A string with the name of the output to be saved to
 \code{savedir}.}
@@ -28,7 +28,7 @@ significant peaks. If NULL all the peaks are returned.}
 \value{
 For \code{\linkS4class{PSFit}} class: a csv file named after the
 value of \code{file.out} with all the information about the peaks found by the
-\code{\link{PeakCallerUlt}} function, plus comments which
+\code{\link{MACPETUlt}} function, plus comments which
  explain the column names.
 }
 \description{
@@ -42,9 +42,9 @@ savedir=file.path(tempdir(),'MACPETtest')
 dir.create(savedir)#where you will save the results
 
 #load Self-ligated data: (class=PSFit)
-load(system.file('extdata', 'psfitData.rda', package = 'MACPET'))
-class(psfitData)
-exportPeaks(object=psfitData,file.out='Peaks',threshold=1e-5,savedir=savedir)
+load(system.file('extdata', 'MACPET_psfitData.rda', package = 'MACPET'))
+class(MACPET_psfitData)
+exportPeaks(object=MACPET_psfitData,file.out='Peaks',threshold=1e-5,savedir=savedir)
 
 #-----delete test directory:
 unlink(savedir,recursive=TRUE)

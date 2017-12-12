@@ -6,7 +6,7 @@
 \alias{plot.PIntra}
 \alias{plot.PSelf}
 \alias{plot.PSFit}
-\title{plot methods for MACPET package}
+\title{plot methods for MACPET classes}
 \usage{
 \method{plot}{PInter}(x, ...)
 
@@ -68,28 +68,28 @@ Different plot methods for the classes in the
 }
 \examples{
 #load Inter-chromosomal data:
-load(system.file('extdata', 'pinterData.rda', package = 'MACPET'))
-class(pinterData)
+load(system.file('extdata', 'MACPET_pinterData.rda', package = 'MACPET'))
+class(MACPET_pinterData)
 requireNamespace('igraph')
-plot(pinterData)
+plot(MACPET_pinterData)
 #load Intra-chromosomal data:
-load(system.file('extdata', 'pintraData.rda', package = 'MACPET'))
-class(pintraData)
+load(system.file('extdata', 'MACPET_pintraData.rda', package = 'MACPET'))
+class(MACPET_pintraData)
 requireNamespace('ggplot2')
-plot(pintraData)
+plot(MACPET_pintraData)
 #load Self-ligated data:
-load(system.file('extdata', 'pselfData.rda', package = 'MACPET'))
-class(pselfData)
+load(system.file('extdata', 'MACPET_pselfData.rda', package = 'MACPET'))
+class(MACPET_pselfData)
 requireNamespace('ggplot2')
-plot(pselfData)
+plot(MACPET_pselfData)
 #load Self-ligated data:
-load(system.file('extdata', 'psfitData.rda', package = 'MACPET'))
-class(psfitData)
+load(system.file('extdata', 'MACPET_psfitData.rda', package = 'MACPET'))
+class(MACPET_psfitData)
 requireNamespace('ggplot2')
-plot(psfitData,kind='PETcounts')
-plot(psfitData,kind='PeakCounts')
-plot(psfitData,kind='PeakPETs',RegIndex=1)
-plot(psfitData,kind='PeakTags',RegIndex=1)
+plot(MACPET_psfitData,kind='PETcounts')
+plot(MACPET_psfitData,kind='PeakCounts')
+plot(MACPET_psfitData,kind='PeakPETs',RegIndex=1)
+plot(MACPET_psfitData,kind='PeakTags',RegIndex=1)
 }
 \references{
 Vardaxis I, Drabløs F, Rye M and Lindqvist BH (2018). \emph{Model-based Analysis for ChIA-PET (MACPET)}.
