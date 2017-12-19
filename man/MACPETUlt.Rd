@@ -7,9 +7,9 @@
 MACPETUlt(SA_AnalysisDir = "", SA_stages = c(0:3), SA_prefix = "MACPET",
   S0_fastq1 = "", S0_fastq2 = "", S0_LinkerA = "GTTGGATAAG",
   S0_LinkerB = "GTTGGAATGT", S0_MinReadLength = 18, S0_MaxReadLength = 50,
-  S0_LinkerOccurence = 0, S0_image = TRUE, S0_fastqStream = 2000000,
+  S0_LinkerOccurence = 0, S0_image = TRUE, S0_fastqStream = 2e+06,
   S1_fastq1_usable_dir = "", S1_fastq2_usable_dir = "", S1_image = TRUE,
-  S1_BAMStream = 2000000, S1_rmSam = FALSE, S1_genome = "hg19",
+  S1_BAMStream = 2e+06, S1_makeSam = TRUE, S1_genome = "hg19",
   S1_RbowtieIndexBuild = FALSE, S1_RbowtieIndexDir = "",
   S1_RbowtieIndexPrefix = "", S1_RbowtieRefDir = "",
   S2_PairedEndBAMpath = "", S2_image = TRUE, S2_BlackList = TRUE,
@@ -70,8 +70,9 @@ This parameter is mandatory if Stage 1 is run.}
 to be loaded in R in a loop for pairing  (best to leave it at default because it might cause memory crash).
 This parameter is mandatory if Stage 1 is run.}
 
-\item{S1_rmSam}{Logical indicating if you want to delete the sam files after
-mapping with \code{\link[Rbowtie]{bowtie}} (default=FALSE)
+\item{S1_makeSam}{Logical indicating whether the resulted paired-end BAM file will be splitted to two
+SAM files (one for each read). The output SAM files can be used as input in the MANGO algorithm (default=TRUE).
+Note, that the user has to remove the SAM header before running MANGO. 
 This parameter is mandatory if Stage 1 is run.}
 
 \item{S1_genome}{String with the genome to be used in the bam file header (default='hg19').
@@ -139,8 +140,8 @@ All outputs are saved at the \code{SA_AnalysisDir}. The output depents of the st
 }
 \item{Stage 1: (outputs saved in a folder named \code{S1_results} in  \code{SA_AnalysisDir})}{
 \describe{
-\item{\code{SA_prefix_usable_1.sam: }}{sam file with the mapped 5-end reads (if \code{S1_rmSam==FALSE}).}
-\item{\code{SA_prefix_usable_2.sam: }}{sam file with the mapped 3-end reads (if \code{S1_rmSam==FALSE}).}
+\item{\code{SA_prefix_usable_1.sam: }}{sam file with the mapped 5-end reads (if \code{S1_makeSam==FALSE}).}
+\item{\code{SA_prefix_usable_2.sam: }}{sam file with the mapped 3-end reads (if \code{S1_makeSam==FALSE}).}
 \item{\code{SA_prefix_Paired_end.bam: }}{paired-end bam file with the mapped PETs. To be used in Stage 2}
 \item{\code{SA_prefix_Paired_end.bam.bai: }}{.bai file for \code{SA_prefix_Paired_end.bam}. To be used in Stage 2.}
 \item{\code{SA_prefix_stage_1_p1_image.jpg: }}{Pie-chart for the mapped/unmapped reads from \code{SA_prefix_usable_1.sam}, \code{SA_prefix_usable_2.sam} (if \code{S1_image==TRUE}).}

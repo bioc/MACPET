@@ -181,8 +181,8 @@
 #' }
 #' \item{Stage 1: (outputs saved in a folder named \code{S1_results} in  \code{SA_AnalysisDir})}{
 #' \describe{
-#' \item{\code{SA_prefix_usable_1.sam: }}{sam file with the mapped 5-end reads (if \code{S1_rmSam==FALSE}).}
-#' \item{\code{SA_prefix_usable_2.sam: }}{sam file with the mapped 3-end reads (if \code{S1_rmSam==FALSE}).}
+#' \item{\code{SA_prefix_usable_1.sam: }}{sam file with the mapped 5-end reads (if \code{S1_makeSam==FALSE}).}
+#' \item{\code{SA_prefix_usable_2.sam: }}{sam file with the mapped 3-end reads (if \code{S1_makeSam==FALSE}).}
 #' \item{\code{SA_prefix_Paired_end.bam: }}{paired-end bam file with the mapped PETs. To be used in Stage 2}
 #' \item{\code{SA_prefix_Paired_end.bam.bai: }}{.bai file for \code{SA_prefix_Paired_end.bam}. To be used in Stage 2.}
 #' \item{\code{SA_prefix_stage_1_p1_image.jpg: }}{Pie-chart for the mapped/unmapped reads from \code{SA_prefix_usable_1.sam}, \code{SA_prefix_usable_2.sam} (if \code{S1_image==TRUE}).}
@@ -257,8 +257,9 @@
 #'@param S1_BAMStream Positive integer for the total number of bam file lines
 #'to be loaded in R in a loop for pairing  (best to leave it at default because it might cause memory crash).
 #'This parameter is mandatory if Stage 1 is run.
-#'@param S1_rmSam Logical indicating if you want to delete the sam files after
-#' mapping with \code{\link[Rbowtie]{bowtie}} (default=FALSE)
+#'@param S1_makeSam Logical indicating whether the resulted paired-end BAM file will be splitted to two
+#'SAM files (one for each read). The output SAM files can be used as input in the MANGO algorithm (default=TRUE).
+#'Note, that the user has to remove the SAM header before running MANGO. 
 #'This parameter is mandatory if Stage 1 is run.
 #'@param S1_genome String with the genome to be used in the bam file header (default='hg19').
 #'This parameter is mandatory if Stage 1 is run (see details).
@@ -356,7 +357,7 @@ MACPETUlt = function(SA_AnalysisDir = "", SA_stages = c(0:3), SA_prefix = "MACPE
     S0_fastq1 = "", S0_fastq2 = "", S0_LinkerA = "GTTGGATAAG", S0_LinkerB = "GTTGGAATGT",
     S0_MinReadLength = 18, S0_MaxReadLength = 50, S0_LinkerOccurence = 0, S0_image = TRUE,
     S0_fastqStream = 2e+06, S1_fastq1_usable_dir = "", S1_fastq2_usable_dir = "",
-    S1_image = TRUE, S1_BAMStream = 2e+06, S1_rmSam = FALSE, S1_genome = "hg19",
+    S1_image = TRUE, S1_BAMStream = 2e+06, S1_makeSam = TRUE, S1_genome = "hg19",
     S1_RbowtieIndexBuild = FALSE, S1_RbowtieIndexDir = "", S1_RbowtieIndexPrefix = "",
     S1_RbowtieRefDir = "", S2_PairedEndBAMpath = "", S2_image = TRUE, S2_BlackList = TRUE,
     S3_fileSelfDir = "", S3_image = TRUE, S3_method = "BH") {
@@ -371,7 +372,7 @@ MACPETUlt = function(SA_AnalysisDir = "", SA_stages = c(0:3), SA_prefix = "MACPE
         S0_MinReadLength = S0_MinReadLength, S0_MaxReadLength = S0_MaxReadLength,
         S0_LinkerOccurence = S0_LinkerOccurence, S0_image = S0_image, S0_fastqStream = S0_fastqStream,
         S1_fastq1_usable_dir = S1_fastq1_usable_dir, S1_fastq2_usable_dir = S1_fastq2_usable_dir,
-        S1_image = S1_image, S1_BAMStream = S1_BAMStream, S1_rmSam = S1_rmSam, S1_genome = S1_genome,
+        S1_image = S1_image, S1_BAMStream = S1_BAMStream, S1_makeSam = S1_makeSam, S1_genome = S1_genome,
         S1_RbowtieIndexBuild = S1_RbowtieIndexBuild, S1_RbowtieIndexDir = S1_RbowtieIndexDir,
         S1_RbowtieIndexPrefix = S1_RbowtieIndexPrefix, S1_RbowtieRefDir = S1_RbowtieRefDir,
         S2_PairedEndBAMpath = S2_PairedEndBAMpath, S2_image = S2_image, S2_BlackList = S2_BlackList,

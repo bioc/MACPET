@@ -293,8 +293,8 @@ Input_check_S1_fun = function(InArg) {
     }
     write(paste("Building bowtie index?", InArg$S1_RbowtieIndexBuild, "\n"), file = InArg$SA_LogFile.dir,
         append = TRUE)
-    if (!methods::is(InArg$S1_rmSam, "logical")) {
-        stop("S1_rmSam: ", InArg$S1_rmSam, " has to be logical!", call. = FALSE)
+    if (!methods::is(InArg$S1_makeSam, "logical")) {
+        stop("S1_makeSam: ", InArg$S1_makeSam, " has to be logical!", call. = FALSE)
     }
     #------------
     # check S1_BAMStream:
@@ -596,7 +596,7 @@ Break_output_fun = function(InArg) {
     # Stage 1 output:
     #--------------
     S1names = c("S1_AnalysisDir", "SA_prefix", "S1_fastq1_usable_dir", "S1_fastq2_usable_dir",
-        "S1_image", "S1_rmSam", "S1_genome", "S1_RbowtieIndexBuild", "S1_RbowtieIndexDir",
+        "S1_image", "S1_makeSam", "S1_genome", "S1_RbowtieIndexBuild", "S1_RbowtieIndexDir",
         "S1_RbowtieIndexPrefix", "S1_RbowtieRefDir", "SA_LogFile.dir","S1_BAMStream")
     InArgS1 = InArg[which(names(InArg) %in% S1names)]
     #--------------

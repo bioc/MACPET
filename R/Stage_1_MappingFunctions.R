@@ -20,7 +20,7 @@
 # main function for aligning the reads from the fastq files and creating
 # pairedEnd BAM:
 Stage_1_Main_fun = function(SA_prefix, S1_fastq1_usable_dir, S1_fastq2_usable_dir,
-    S1_image, S1_BAMStream, S1_rmSam, S1_genome, S1_RbowtieIndexBuild, S1_RbowtieIndexDir,
+    S1_image, S1_BAMStream, S1_makeSam, S1_genome, S1_RbowtieIndexBuild, S1_RbowtieIndexDir,
     S1_RbowtieIndexPrefix, S1_RbowtieRefDir, SA_LogFile.dir, S1_AnalysisDir) {
     # Take time:
     Analysis.time.start = Sys.time()
@@ -54,7 +54,7 @@ Stage_1_Main_fun = function(SA_prefix, S1_fastq1_usable_dir, S1_fastq2_usable_di
     #----------------
     BAM12 = SAMtoBAM_convert_fun(S1_AnalysisDir = S1_AnalysisDir, SAMout12_M1 = SAMout12_M1,
         SA_LogFile.dir = SA_LogFile.dir, SA_prefix = SA_prefix, S1_image = S1_image,
-        S1_rmSam = S1_rmSam, BAMstats12V0 = BAMstats12V0)
+        BAMstats12V0 = BAMstats12V0)
     #----------------
     # Merge BAM files from the two reads
     #----------------
@@ -70,7 +70,16 @@ Stage_1_Main_fun = function(SA_prefix, S1_fastq1_usable_dir, S1_fastq2_usable_di
     PairedEndBAMpath = FixMates_main_fun(MergedBAM = MergedBAM, S1_AnalysisDir = S1_AnalysisDir,
         S1_BAMStream = S1_BAMStream, SA_LogFile.dir = SA_LogFile.dir, SA_prefix = SA_prefix,
         S1_image = S1_image, S1_genome = S1_genome)
+    #----------------
+    # If they need the sam files, convert PairedEndBAM to two SAM files:
+    #----------------
+    if(S1_makeSam){
+        GetSAMFiles_fun(PairedEndBAMpath=PairedEndBAMpath,
+                        S1_AnalysisDir=S1_AnalysisDir,SA_prefix=SA_prefix)
+    }
+    #----------------
     # print:
+    #----------------
     cat("=====================================\n")
     write("=====================================\n", file = SA_LogFile.dir, append = TRUE)
     LogFile = paste("Stage 1 is done!\n")
@@ -99,8 +108,8 @@ BuildBowtieIndex_fun = function(S1_RbowtieIndexBuild, S1_RbowtieRefDir, S1_Rbowt
         if (!dir.exists(S1_RbowtieIndexDir))
             dir.create(S1_RbowtieIndexDir)
         # create the index, C=FALSE for colorspace index
-        invisible(Rbowtie::bowtie_build(references = S1_RbowtieRefDir, outdir = S1_RbowtieIndexDir,
-            prefix = S1_RbowtieIndexPrefix, force = TRUE, strict = TRUE, C = FALSE))
+        Rbowtie::bowtie_build(references = S1_RbowtieRefDir, outdir = S1_RbowtieIndexDir,
+            prefix = S1_RbowtieIndexPrefix, force = TRUE, strict = TRUE, C = FALSE)
         cat("Done\n")
     }
     # indexes path:
@@ -325,7 +334,7 @@ Map_fastq_V1_sub_fun = function(S1_AnalysisDir, fastq_usable_dir, namefastqgz, n
 # function to convert the two sam files to bam for V1, and merging the BAM v1 and
 # v2
 SAMtoBAM_convert_fun = function(S1_AnalysisDir, SAMout12_M1, SA_LogFile.dir, SA_prefix,
-    S1_image, S1_rmSam, BAMstats12V0) {
+    S1_image, BAMstats12V0) {
     cat("==================================================\n")
     cat("Preparing files for merging...")
     # output/input files:
@@ -335,15 +344,13 @@ SAMtoBAM_convert_fun = function(S1_AnalysisDir, SAMout12_M1, SA_LogFile.dir, SA_
         paste(SA_prefix, "_usable_1_MR2.bam.bai", sep = "")), BAMout = file.path(S1_AnalysisDir,
         paste(SA_prefix, "_usable_1.bam", sep = "")), BAMV0 = file.path(S1_AnalysisDir,
         paste(SA_prefix, "_usable_1_V0.bam", sep = "")), BAMV1 = file.path(S1_AnalysisDir,
-        paste(SA_prefix, "_usable_1_V1.bam", sep = "")), SAMout = file.path(S1_AnalysisDir,
-        paste(SA_prefix, "_usable_1.sam", sep = "")), S1_rmSam = S1_rmSam)
+        paste(SA_prefix, "_usable_1_V1.bam", sep = "")))
     bpconvert[[2]] = list(SAMin = SAMout12_M1$SAMout2, BAMMR2 = file.path(S1_AnalysisDir,
         paste(SA_prefix, "_usable_2_MR2", sep = "")), BAMMR2bai = file.path(S1_AnalysisDir,
         paste(SA_prefix, "_usable_2_MR2.bam.bai", sep = "")), BAMout = file.path(S1_AnalysisDir,
         paste(SA_prefix, "_usable_2.bam", sep = "")), BAMV0 = file.path(S1_AnalysisDir,
         paste(SA_prefix, "_usable_2_V0.bam", sep = "")), BAMV1 = file.path(S1_AnalysisDir,
-        paste(SA_prefix, "_usable_2_V1.bam", sep = "")), SAMout = file.path(S1_AnalysisDir,
-        paste(SA_prefix, "_usable_2.sam", sep = "")), S1_rmSam = S1_rmSam)
+        paste(SA_prefix, "_usable_2_V1.bam", sep = "")))
     #---------
     # convert to BAM, merge and filter etc:
     #---------
@@ -368,14 +375,9 @@ SAMtoBAM_convert_fun = function(S1_AnalysisDir, SAMout12_M1, SA_LogFile.dir, SA_
         #----------------
         # merge the V1 and V0 files:
         #----------------
-        invisible(Rsamtools::mergeBam(files = c(y$BAMV0, y$BAMV1), destination = y$BAMout,
+        suppressWarnings(Rsamtools::mergeBam(files = c(y$BAMV0, y$BAMV1), destination = y$BAMout,
             overwrite = TRUE, byQname = FALSE, indexDestination = FALSE))
-        #----------------
-        # If needed convert to SAM:
-        #----------------
-        if (!y$S1_rmSam) {
-            invisible(Rsamtools::asSam(file = y$BAMout, overwrite = TRUE, denstination = y$SAMout))
-        }
+
         # unlink:
         unlink(x = c(y$SAMin, y$BAMMR2, y$BAMMR2bai, y$BAMV0, y$BAMV1), recursive = TRUE,
             force = TRUE)
@@ -486,7 +488,7 @@ MergeBAMfiles_fun = function(S1_AnalysisDir, BAM12, SA_prefix) {
     # output:
     MergedBAMpath = file.path(S1_AnalysisDir, paste(SA_prefix, "_usable_merged.bam",
         sep = ""))
-    invisible(Rsamtools::mergeBam(files = unlist(BAM12), destination = MergedBAMpath,
+    suppressWarnings(Rsamtools::mergeBam(files = unlist(BAM12), destination = MergedBAMpath,
         overwrite = TRUE, byQname = FALSE, indexDestination = TRUE))
     cat("Done\n")
     cat("Removing unnecessary files...\n")
@@ -503,9 +505,7 @@ SortBAMQname_fun = function(MergedBAM) {
     cat("Sorting ", basename(MergedBAM$BAM), " file by Qname...", sep = "")
     # output:
     SortBAM = unlist(strsplit(MergedBAM$BAM, ".bam"))
-    options(warn = -1)
-    invisible(Rsamtools::sortBam(file = MergedBAM$BAM, destination = SortBAM, byQname = TRUE))
-    options(warn = 0)
+    suppressWarnings(Rsamtools::sortBam(file = MergedBAM$BAM, destination = SortBAM, byQname = TRUE))
     cat("Done\n")
 }
 # done
@@ -856,3 +856,43 @@ Get_image_S1_P2_fun = function(S1_AnalysisDir, SA_prefix, TotPairsFound100) {
     ggplot2::ggsave(plot = S1_image_p2, file = S1_P2_image_dir, scale = 2)
 }
 # done
+#-------------
+#-------------
+# function for splitting the paired-end bam file into two sam files
+GetSAMFiles_fun=function(PairedEndBAMpath,S1_AnalysisDir,SA_prefix){
+    cat("Creating SAM files from paired-end BAM...")
+    #----------------
+    # make mates list input:
+    #----------------
+    FilterMATE=list()
+    FilterMATE[[1]]=list(PairedBAM=PairedEndBAMpath,
+                         PairedBAMbai=paste(PairedEndBAMpath,".bai",sep=""),
+                         firstmate=TRUE,BAMread=file.path(S1_AnalysisDir,paste(SA_prefix,"_usable_1",sep="")),
+                         BAMreadIndex=file.path(S1_AnalysisDir,paste(SA_prefix,"_usable_1",sep="")),
+                         SAMout=file.path(S1_AnalysisDir,paste(SA_prefix,"_usable_1.sam",sep="")))
+    FilterMATE[[2]]=list(PairedBAM=PairedEndBAMpath,
+                         PairedBAMbai=paste(PairedEndBAMpath,".bai",sep=""),
+                         firstmate=FALSE,BAMread=file.path(S1_AnalysisDir,paste(SA_prefix,"_usable_2",sep="")),
+                         BAMreadIndex=file.path(S1_AnalysisDir,paste(SA_prefix,"_usable_2",sep="")),
+                         SAMout=file.path(S1_AnalysisDir,paste(SA_prefix,"_usable_2.sam",sep="")))
+    #----------------
+    # split:
+    #----------------
+    BiocParallel::bplapply(X = FilterMATE, FUN = function(y){
+        # make flag:
+        MateFlag = Rsamtools::scanBamFlag(isFirstMateRead=y$firstmate,isSecondMateRead=!y$firstmate,isDuplicate=FALSE)
+        # make ScanBamParam:
+        SBparam = Rsamtools::ScanBamParam(flag = MateFlag)
+        # filter, dont need index since they will be merged:
+        Rsamtools::filterBam(file = y$PairedBAM, index = y$PairedBAMbai, destination = paste(y$BAMread,".bam",sep=""),
+                             param = SBparam, indexDestination = TRUE)
+        # sort by Qname, done already
+        Rsamtools::sortBam(file= paste(y$BAMread,".bam",sep=""),destination= y$BAMread,byQname=TRUE)
+        # convert to sam:
+        Rsamtools::asSam(file =  paste(y$BAMread,".bam",sep=""), overwrite = TRUE, denstination = y$SAMout)
+        # delete files:
+        unlink(x =  paste(y$BAMread,c(".bam",".bam.bai"),sep=""), recursive = TRUE, force = TRUE)
+    })
+    cat("Done\n")
+}
+#done

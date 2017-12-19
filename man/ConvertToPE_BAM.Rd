@@ -5,8 +5,8 @@
 \title{Convert two BAM files into one paired-end BAM file.}
 \usage{
 ConvertToPE_BAM(S1_AnalysisDir = "", SA_prefix = "MACPET",
-  S1_BAMStream = 2000000, S1_image = TRUE, S1_genome = "hg19",
-  BAM_file_1 = "", BAM_file_2 = "")
+  S1_BAMStream = 2e+06, S1_image = TRUE, S1_genome = "hg19",
+  BAM_file_1 = "", BAM_file_2 = "", S1_makeSam = FALSE)
 }
 \arguments{
 \item{S1_AnalysisDir}{The directory where the resulted paired-end BAM file will be saved.}
@@ -22,6 +22,8 @@ ConvertToPE_BAM(S1_AnalysisDir = "", SA_prefix = "MACPET",
 \item{BAM_file_1}{The directory of the BAM file with the first reads. Their Qnames have to end with /1.}
 
 \item{BAM_file_2}{The directory of the BAM file with the second reads. Their Qnames have to end with /2.}
+
+\item{S1_makeSam}{see \code{\link{MACPETUlt}}.}
 }
 \value{
 A paired-end BAM file named \code{SA_prefix_MACPET_Paired_end.bam} and

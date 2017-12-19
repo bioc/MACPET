@@ -39,6 +39,7 @@
 #'@param S1_genome see \code{\link{MACPETUlt}}.
 #'@param BAM_file_1 The directory of the BAM file with the first reads. Their Qnames have to end with /1.
 #'@param BAM_file_2 The directory of the BAM file with the second reads. Their Qnames have to end with /2.
+#'@param S1_makeSam see \code{\link{MACPETUlt}}.
 #'
 #'@importFrom methods is
 #'@importFrom Rsamtools scanBamHeader sortBam mergeBam filterBam
@@ -79,7 +80,7 @@
 #'
 #'
 ConvertToPE_BAM = function(S1_AnalysisDir = "", SA_prefix = "MACPET", S1_BAMStream = 2e+06,
-    S1_image = TRUE, S1_genome = "hg19", BAM_file_1 = "", BAM_file_2 = "") {
+    S1_image = TRUE, S1_genome = "hg19", BAM_file_1 = "", BAM_file_2 = "", S1_makeSam = FALSE) {
     cat("Checking inputs...")
     #------------
     # check directory:
@@ -107,6 +108,9 @@ ConvertToPE_BAM = function(S1_AnalysisDir = "", SA_prefix = "MACPET", S1_BAMStre
         if (!requireNamespace("ggplot2", quietly = TRUE)) {
             stop("ggplot2 is needed if S1_image==TRUE. Please install it.", call. = FALSE)
         }
+    }
+    if (!methods::is(S1_makeSam, "logical")) {
+        stop("S1_makeSam: ", S1_makeSam, " has to be logical!", call. = FALSE)
     }
     #------------
     # check S1_BAMStream:
@@ -223,15 +227,13 @@ ConvertToPE_BAM = function(S1_AnalysisDir = "", SA_prefix = "MACPET", S1_BAMStre
         BAM_file_1.sorted = file.path(S1_AnalysisDir, paste(SA_prefix, "_BAM_1_sorted",
             sep = ""))
         # sort:
-        options(warn = -1)
-        invisible(Rsamtools::sortBam(file = BAM_file_1, destination = BAM_file_1.sorted,
+        suppressWarnings(Rsamtools::sortBam(file = BAM_file_1, destination = BAM_file_1.sorted,
             byQname = FALSE))
-        options(warn = 0)
         cat("Done\n")
         BAM_file_1.sorted = paste(BAM_file_1.sorted, ".bam", sep = "")
         # create index:
         cat("Creating BAM index...")
-        invisible(Rsamtools::indexBam(file = BAM_file_1.sorted))
+        Rsamtools::indexBam(file = BAM_file_1.sorted)
         cat("Done\n")
         BAM_file_1 = BAM_file_1.sorted
         BAM_file_1.bai = paste(BAM_file_1, ".bai", sep = "")
@@ -246,15 +248,13 @@ ConvertToPE_BAM = function(S1_AnalysisDir = "", SA_prefix = "MACPET", S1_BAMStre
         BAM_file_2.sorted = file.path(S1_AnalysisDir, paste(SA_prefix, "_BAM_2_sorted",
             sep = ""))
         # sort:
-        options(warn = -1)
-        invisible(Rsamtools::sortBam(file = BAM_file_2, destination = BAM_file_2.sorted,
+        suppressWarnings(Rsamtools::sortBam(file = BAM_file_2, destination = BAM_file_2.sorted,
             byQname = FALSE))
-        options(warn = 0)
         cat("Done\n")
         BAM_file_2.sorted = paste(BAM_file_2.sorted, ".bam", sep = "")
         # create index:
         cat("Creating BAM index...")
-        invisible(Rsamtools::indexBam(file = BAM_file_2.sorted))
+        Rsamtools::indexBam(file = BAM_file_2.sorted)
         cat("Done\n")
         BAM_file_2 = BAM_file_2.sorted
         BAM_file_2.bai = paste(BAM_file_2, ".bai", sep = "")
@@ -273,12 +273,12 @@ ConvertToPE_BAM = function(S1_AnalysisDir = "", SA_prefix = "MACPET", S1_BAMStre
     SBparam = Rsamtools::ScanBamParam(flag = MappedFlag)
     # split bam 1:
     cat("Filtering ", basename(BAM_file_1), "...")
-    invisible(Rsamtools::filterBam(file = BAM_file_1, index = BAM_file_1.bai, destination = BAMfilt1,
+    suppressWarnings(Rsamtools::filterBam(file = BAM_file_1, index = BAM_file_1.bai, destination = BAMfilt1,
         param = SBparam, indexDestination = FALSE))
     cat("Done\n")
     # split bam 2:
     cat("Filtering ", basename(BAM_file_2), "...")
-    invisible(Rsamtools::filterBam(file = BAM_file_2, index = BAM_file_2.bai, destination = BAMfilt2,
+    suppressWarnings(Rsamtools::filterBam(file = BAM_file_2, index = BAM_file_2.bai, destination = BAMfilt2,
         param = SBparam, indexDestination = FALSE))
     cat("Done\n")
     # add to FileToDelete:
@@ -290,7 +290,7 @@ ConvertToPE_BAM = function(S1_AnalysisDir = "", SA_prefix = "MACPET", S1_BAMStre
     # output:
     MergedBAMpath = file.path(S1_AnalysisDir, paste(SA_prefix, "_usable_merged.bam",
         sep = ""))
-    invisible(Rsamtools::mergeBam(files = c(BAMfilt1, BAMfilt2), destination = MergedBAMpath,
+    suppressWarnings(Rsamtools::mergeBam(files = c(BAMfilt1, BAMfilt2), destination = MergedBAMpath,
         overwrite = TRUE, byQname = FALSE, indexDestination = TRUE))
     cat("Done\n")
     MergedBAMpath.bai = paste(MergedBAMpath, ".bai", sep = "")
@@ -300,10 +300,8 @@ ConvertToPE_BAM = function(S1_AnalysisDir = "", SA_prefix = "MACPET", S1_BAMStre
     # sort by Qname:
     #----------------
     cat("Sorting ", basename(MergedBAMpath), " file by Qname...", sep = "")
-    options(warn = -1)
-    invisible(Rsamtools::sortBam(file = MergedBAMpath, destination = unlist(strsplit(MergedBAMpath,
+    suppressWarnings(Rsamtools::sortBam(file = MergedBAMpath, destination = unlist(strsplit(MergedBAMpath,
         ".bam")), byQname = TRUE))
-    options(warn = 0)
     cat("Done\n")
     #----------------
     # fix mates
@@ -314,5 +312,12 @@ ConvertToPE_BAM = function(S1_AnalysisDir = "", SA_prefix = "MACPET", S1_BAMStre
         S1_image = S1_image, S1_genome = S1_genome)
     cat("Deleting unnecessary files.")
     unlink(x = FileToDelete, recursive = TRUE, force = TRUE)
+    #----------------
+    # If they need the sam files, convert PairedEndBAM to two SAM files:
+    #----------------
+    if(S1_makeSam){
+        GetSAMFiles_fun(PairedEndBAMpath=PairedEndBAMpath,
+                        S1_AnalysisDir=S1_AnalysisDir,SA_prefix=SA_prefix)
+    }
     cat("The paired-end BAM is in: \n", PairedEndBAMpath, "\n")
 }

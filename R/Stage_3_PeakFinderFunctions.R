@@ -476,7 +476,7 @@ PoissonLocalInference_fun = function(bppass_x, windows) {
     #-------------
     # ------ find maximum:
     #-------------
-    OptimalLambda = plyr::llply(1:nrow(Peaks_Info_x), function(i, lambdaUpW1, lambdaUpW2,
+    OptimalLambda = plyr::llply(seq_len(nrow(Peaks_Info_x)), function(i, lambdaUpW1, lambdaUpW2,
         lambdaBGC_Up, lambdaDownW1, lambdaDownW2, lambdaBGC_Down) {
         UpMax = max(c(2, lambdaUpW1[i], lambdaUpW2[i], lambdaBGC_Up[i]))
         DownMax = max(c(2, lambdaDownW1[i], lambdaDownW2[i], lambdaBGC_Down[i]))
