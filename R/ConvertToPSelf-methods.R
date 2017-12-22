@@ -161,7 +161,7 @@ ConvertToPSelf.GInteractions = function(object, S2_BlackList, SA_prefix, S2_Anal
     #-----Convert to PSelf class:
     #-------------------------
     SelfIndicator = 1:Nreduced  #all the data
-    Nself = FindSelf_fun(S2_PairedData = object, SelfIndicator = SelfIndicator, SA_LogFile.dir = NULL, 
-        S2_AnalysisDir = S2_AnalysisDir, SA_prefix = SA_prefix)
+    Nself = FindSelf_fun(S2_PairedData = object, SelfIndicator = SelfIndicator, S2_AnalysisDir = S2_AnalysisDir, 
+        SA_prefix = SA_prefix)
     cat("The PSelf object is saved in: \n", S2_AnalysisDir)
 }

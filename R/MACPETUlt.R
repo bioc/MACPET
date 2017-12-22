@@ -259,7 +259,7 @@
 #'This parameter is mandatory if Stage 1 is run.
 #'@param S1_makeSam Logical indicating whether the resulted paired-end BAM file will be splitted to two
 #'SAM files (one for each read). The output SAM files can be used as input in the MANGO algorithm (default=TRUE).
-#'Note, that the user has to remove the SAM header before running MANGO. 
+#'Note, that the user has to remove the SAM header before running MANGO.
 #'This parameter is mandatory if Stage 1 is run.
 #'@param S1_genome String with the genome to be used in the bam file header (default='hg19').
 #'This parameter is mandatory if Stage 1 is run (see details).
@@ -392,13 +392,11 @@ MACPETUlt = function(SA_AnalysisDir = "", SA_stages = c(0:3), SA_prefix = "MACPE
         InArgS0 = InArg$InArgS0
         # for the log file.
         LogFile = list()
-        LogFile[1] = "|%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%|\n"
-        LogFile[2] = "|-------------------Filtering Linkers-------------------|\n"
-        LogFile[3] = "|-----------------------Stage 0-------------------------|\n"
-        LogFile[4] = "|%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%|\n"
-        for (lf in seq_len(4)) cat(LogFile[[lf]])
-        for (lf in seq_len(4)) write(LogFile[[lf]], file = InArgS0$SA_LogFile.dir,
-            append = TRUE)
+        LogFile[1] = "|%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%|"
+        LogFile[2] = "|-------------------Filtering Linkers-------------------|"
+        LogFile[3] = "|-----------------------Stage 0-------------------------|"
+        LogFile[4] = "|%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%|"
+        for (lf in seq_len(4))  futile.logger::flog.info(LogFile[[lf]], name="SA_LogFile",capture=FALSE)
         # call Stage 0:
         do.call(what = Stage_0_Main_fun, args = InArgS0)
         SA_LogFile.dir = InArgS0$SA_LogFile.dir  #used in the at the end
@@ -411,13 +409,11 @@ MACPETUlt = function(SA_AnalysisDir = "", SA_stages = c(0:3), SA_prefix = "MACPE
         InArgS1 = InArg$InArgS1
         # for the log file.
         LogFile = list()
-        LogFile[1] = "|%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%|\n"
-        LogFile[2] = "|--Mapping to Ref. Genome And building paired-end BAM---|\n"
-        LogFile[3] = "|-----------------------Stage 1-------------------------|\n"
-        LogFile[4] = "|%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%|\n"
-        for (lf in seq_len(4)) cat(LogFile[[lf]])
-        for (lf in seq_len(4)) write(LogFile[[lf]], file = InArgS1$SA_LogFile.dir,
-            append = TRUE)
+        LogFile[1] = "|%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%|"
+        LogFile[2] = "|--Mapping to Ref. Genome And building paired-end BAM---|"
+        LogFile[3] = "|-----------------------Stage 1-------------------------|"
+        LogFile[4] = "|%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%|"
+        for (lf in seq_len(4)) futile.logger::flog.info(LogFile[[lf]], name="SA_LogFile",capture=FALSE)
         # call Stage 1:
         do.call(what = Stage_1_Main_fun, args = InArgS1)
         SA_LogFile.dir = InArgS1$SA_LogFile.dir  #used in the at the end
@@ -430,17 +426,15 @@ MACPETUlt = function(SA_AnalysisDir = "", SA_stages = c(0:3), SA_prefix = "MACPE
         InArgS2 = InArg$InArgS2
         # for the log file.
         LogFile = list()
-        LogFile[1] = "|%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%|\n"
-        LogFile[2] = "|--------------PET Classification Analysis--------------|\n"
-        LogFile[3] = "|-----------------------Stage 2-------------------------|\n"
-        LogFile[4] = "|%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%|\n"
-        for (lf in seq_len(4)) cat(LogFile[[lf]])
-        for (lf in seq_len(4)) write(LogFile[[lf]], file = InArgS2$SA_LogFile.dir,
-            append = TRUE)
+        LogFile[1] = "|%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%|"
+        LogFile[2] = "|--------------PET Classification Analysis--------------|"
+        LogFile[3] = "|-----------------------Stage 2-------------------------|"
+        LogFile[4] = "|%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%|"
+        for (lf in seq_len(4)) futile.logger::flog.info(LogFile[[lf]], name="SA_LogFile",capture=FALSE)
         # load data, it is saved from stage 1 else it is already loaded:
         if (c(1) %in% SA_stages) {
             S2_PairedData = LoadBAM_FromMACPETUlt_fun(S2_PairedEndBAMpath = InArgS2$S2_PairedEndBAMpath,
-                SA_LogFile.dir = InArgS2$SA_LogFile.dir, S2_BlackList = InArgS2$S2_BlackList,
+                S2_BlackList = InArgS2$S2_BlackList,
                 S2_image = InArgS2$S2_image, S2_AnalysisDir = InArgS2$S2_AnalysisDir,
                 SA_prefix = InArgS2$SA_prefix)
             InArgS2$S2_PairedData = S2_PairedData
@@ -458,13 +452,11 @@ MACPETUlt = function(SA_AnalysisDir = "", SA_stages = c(0:3), SA_prefix = "MACPE
         # take arguments:
         InArgS3 = InArg$InArgS3
         LogFile = list()  #for the log file.
-        LogFile[1] = "|%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%|\n"
-        LogFile[2] = "|----------------Binding Site Analysis------------------|\n"
-        LogFile[3] = "|-----------------------Stage 3-------------------------|\n"
-        LogFile[4] = "|%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%|\n"
-        for (lf in seq_len(4)) cat(LogFile[[lf]])
-        for (lf in seq_len(4)) write(LogFile[[lf]], file = InArgS3$SA_LogFile.dir,
-            append = TRUE)
+        LogFile[1] = "|%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%|"
+        LogFile[2] = "|----------------Binding Site Analysis------------------|"
+        LogFile[3] = "|-----------------------Stage 3-------------------------|"
+        LogFile[4] = "|%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%|"
+        for (lf in seq_len(4)) futile.logger::flog.info(LogFile[[lf]], name="SA_LogFile",capture=FALSE)
         # if stage 2 is run then the pself is saved, so load it
         if (c(2) %in% SA_stages) {
             # then load the data:
@@ -479,18 +471,12 @@ MACPETUlt = function(SA_AnalysisDir = "", SA_stages = c(0:3), SA_prefix = "MACPE
     #------------------------
     # finallize:
     #------------------------
-    cat("|%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%|\n")
-    write("|%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%|\n", file = SA_LogFile.dir,
-        append = TRUE)
-    LogFile = paste("Global analysis is done!\n")
-    cat(LogFile)
-    write(LogFile, file = SA_LogFile.dir, append = TRUE)
+    futile.logger::flog.info("|%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%|", name="SA_LogFile",capture=FALSE)
+    futile.logger::flog.info("Global analysis is done!", name="SA_LogFile",capture=FALSE)
     # take time:
     Analysis.time.end = Sys.time()
     Total.Time = Analysis.time.end - Analysis.time.start
-    LogFile = paste("Global analysis time: ", Total.Time, " ", units(Total.Time),
-        "\n", sep = "")
-    cat(LogFile)
-    write(LogFile, file = SA_LogFile.dir, append = TRUE)
+    LogFile = paste("Global analysis time:", Total.Time, " ", units(Total.Time))
+    futile.logger::flog.info(LogFile, name="SA_LogFile",capture=FALSE)
 }
 # done

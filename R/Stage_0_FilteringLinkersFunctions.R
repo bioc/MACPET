@@ -3,45 +3,40 @@
 #' @importClassesFrom ShortRead FastqStreamer ShortReadQ SFastqQuality SRFilterResult
 #' @importClassesFrom Biostrings DNAStringSet BStringSet
 ############################################## Main functions for stage 0
-Stage_0_Main_fun = function(SA_prefix, S0_fastq1, S0_fastq2, S0_LinkerA, S0_LinkerB,
-    S0_MinReadLength, S0_MaxReadLength, S0_LinkerOccurence, S0_image, S0_fastqStream,
-    SA_LogFile.dir, S0_Totfastqreads, S0_AnalysisDir) {
+Stage_0_Main_fun = function(SA_prefix, S0_fastq1, S0_fastq2, S0_LinkerA, S0_LinkerB, 
+    S0_MinReadLength, S0_MaxReadLength, S0_LinkerOccurence, S0_image, S0_fastqStream, 
+    S0_Totfastqreads, S0_AnalysisDir) {
     # Take time:
     Analysis.time.start = Sys.time()
     #----------------
     # create names to save the resulted fastq:
     #----------------
-    if (!dir.exists(S0_AnalysisDir))
+    if (!dir.exists(S0_AnalysisDir)) 
         dir.create(S0_AnalysisDir)
     FastqWriteList = Create_fastq_list_fun(S0_AnalysisDir = S0_AnalysisDir, SA_prefix = SA_prefix)
     # image dir:
-    S0_image_dir = file.path(S0_AnalysisDir, paste(SA_prefix, "_stage_0_image.jpg",
+    S0_image_dir = file.path(S0_AnalysisDir, paste(SA_prefix, "_stage_0_image.jpg", 
         sep = ""))
     #----------------
     # break and filter fastq files:
     #----------------
     cat("Filtering fastq files...\n")
-    Parse_fastqfiles_main_fun(S0_fastq1 = S0_fastq1, S0_fastq2 = S0_fastq2, S0_LinkerA = S0_LinkerA,
-        S0_LinkerB = S0_LinkerB, S0_MinReadLength = S0_MinReadLength, S0_MaxReadLength = S0_MaxReadLength,
-        S0_LinkerOccurence = S0_LinkerOccurence, S0_fastqStream = S0_fastqStream,
-        S0_Totfastqreads = S0_Totfastqreads, FastqWriteList = FastqWriteList, SA_LogFile.dir = SA_LogFile.dir,
-        S0_image = S0_image, SA_prefix = SA_prefix, S0_image_dir = S0_image_dir)
+    Parse_fastqfiles_main_fun(S0_fastq1 = S0_fastq1, S0_fastq2 = S0_fastq2, S0_LinkerA = S0_LinkerA, 
+        S0_LinkerB = S0_LinkerB, S0_MinReadLength = S0_MinReadLength, S0_MaxReadLength = S0_MaxReadLength, 
+        S0_LinkerOccurence = S0_LinkerOccurence, S0_fastqStream = S0_fastqStream, 
+        S0_Totfastqreads = S0_Totfastqreads, FastqWriteList = FastqWriteList, S0_image = S0_image, 
+        SA_prefix = SA_prefix, S0_image_dir = S0_image_dir)
     # print:
-    cat("=====================================\n")
-    write("=====================================\n", file = SA_LogFile.dir, append = TRUE)
-    LogFile = paste("Stage 0 is done!\n")
-    cat(LogFile)
-    write(LogFile, file = SA_LogFile.dir, append = TRUE)
-    LogFile = paste("Analysis results for stage 0 are in:\n", S0_AnalysisDir, "\n")
-    cat(LogFile)
-    write(LogFile, file = SA_LogFile.dir, append = TRUE)
+    futile.logger::flog.info("=====================================", name = "SA_LogFile", 
+        capture = FALSE)
+    futile.logger::flog.info("Stage 0 is done!", name = "SA_LogFile", capture = FALSE)
+    futile.logger::flog.info(paste("Analysis results for stage 0 are in:\n", S0_AnalysisDir), 
+        name = "SA_LogFile", capture = FALSE)
     # save time:
     Analysis.time.end = Sys.time()
     Total.Time = Analysis.time.end - Analysis.time.start
-    LogFile = paste("Total stage 0 time: ", Total.Time, " ", units(Total.Time), "\n",
-        sep = "")
-    cat(LogFile)
-    write(LogFile, file = SA_LogFile.dir, append = TRUE)
+    LogFile = paste("Total stage 0 time:", Total.Time, " ", units(Total.Time))
+    futile.logger::flog.info(LogFile, name = "SA_LogFile", capture = FALSE)
 }
 # done
 #-------------
@@ -51,36 +46,36 @@ Create_fastq_list_fun = function(S0_AnalysisDir, SA_prefix) {
     #-------------
     # those with A/A or B/B linkers:(used in subsequent stages)
     #-------------
-    fastq1_usable_dir = file.path(S0_AnalysisDir, paste(SA_prefix, "_usable_1.fastq.gz",
+    fastq1_usable_dir = file.path(S0_AnalysisDir, paste(SA_prefix, "_usable_1.fastq.gz", 
         sep = ""))
-    if (file.exists(fastq1_usable_dir))
+    if (file.exists(fastq1_usable_dir)) 
         unlink(x = fastq1_usable_dir, recursive = TRUE, force = TRUE)
-    fastq2_usable_dir = file.path(S0_AnalysisDir, paste(SA_prefix, "_usable_2.fastq.gz",
+    fastq2_usable_dir = file.path(S0_AnalysisDir, paste(SA_prefix, "_usable_2.fastq.gz", 
         sep = ""))
-    if (file.exists(fastq2_usable_dir))
+    if (file.exists(fastq2_usable_dir)) 
         unlink(x = fastq2_usable_dir, recursive = TRUE, force = TRUE)
     #-------------
     # those with A/B or B/A or one/two parts with no linkers
     #-------------
-    fastq1_chimeric_dir = file.path(S0_AnalysisDir, paste(SA_prefix, "_chimeric_1.fastq.gz",
+    fastq1_chimeric_dir = file.path(S0_AnalysisDir, paste(SA_prefix, "_chimeric_1.fastq.gz", 
         sep = ""))
-    if (file.exists(fastq1_chimeric_dir))
+    if (file.exists(fastq1_chimeric_dir)) 
         unlink(x = fastq1_chimeric_dir, recursive = TRUE, force = TRUE)
-    fastq2_chimeric_dir = file.path(S0_AnalysisDir, paste(SA_prefix, "_chimeric_2.fastq.gz",
+    fastq2_chimeric_dir = file.path(S0_AnalysisDir, paste(SA_prefix, "_chimeric_2.fastq.gz", 
         sep = ""))
-    if (file.exists(fastq2_chimeric_dir))
+    if (file.exists(fastq2_chimeric_dir)) 
         unlink(x = fastq2_chimeric_dir, recursive = TRUE, force = TRUE)
     #-------------
     # those with lack of linkers in each read sequence. (always discarded,except if
     # S0_KeepEmptyReads)
     #-------------
-    fastq1_ambiguous_dir = file.path(S0_AnalysisDir, paste(SA_prefix, "_ambiguous_1.fastq.gz",
+    fastq1_ambiguous_dir = file.path(S0_AnalysisDir, paste(SA_prefix, "_ambiguous_1.fastq.gz", 
         sep = ""))
-    if (file.exists(fastq1_ambiguous_dir))
+    if (file.exists(fastq1_ambiguous_dir)) 
         unlink(x = fastq1_ambiguous_dir, recursive = TRUE, force = TRUE)
-    fastq2_ambiguous_dir = file.path(S0_AnalysisDir, paste(SA_prefix, "_ambiguous_2.fastq.gz",
+    fastq2_ambiguous_dir = file.path(S0_AnalysisDir, paste(SA_prefix, "_ambiguous_2.fastq.gz", 
         sep = ""))
-    if (file.exists(fastq2_ambiguous_dir))
+    if (file.exists(fastq2_ambiguous_dir)) 
         unlink(x = fastq2_ambiguous_dir, recursive = TRUE, force = TRUE)
     #-------------
     # add to list:
@@ -98,9 +93,9 @@ Create_fastq_list_fun = function(S0_AnalysisDir, SA_prefix) {
 #-------------
 #-------------
 # function for cutting linkers from the yield fastq files
-Parse_fastqfiles_main_fun = function(S0_fastq1, S0_fastq2, S0_LinkerA, S0_LinkerB,
-    S0_MinReadLength, S0_MaxReadLength, S0_LinkerOccurence, S0_fastqStream, S0_Totfastqreads,
-    FastqWriteList, SA_LogFile.dir, S0_image, SA_prefix, S0_image_dir) {
+Parse_fastqfiles_main_fun = function(S0_fastq1, S0_fastq2, S0_LinkerA, S0_LinkerB, 
+    S0_MinReadLength, S0_MaxReadLength, S0_LinkerOccurence, S0_fastqStream, S0_Totfastqreads, 
+    FastqWriteList, S0_image, SA_prefix, S0_image_dir) {
     #----------------
     # Stream the fastq files:
     #----------------
@@ -134,7 +129,7 @@ Parse_fastqfiles_main_fun = function(S0_fastq1, S0_fastq2, S0_LinkerA, S0_Linker
         fastq2yield = ShortRead::yield(Streamfastq2)
         # break if empty, all is read
         Curfastqyieldsize = length(fastq1yield)
-        if (Curfastqyieldsize == 0)
+        if (Curfastqyieldsize == 0) 
             break
         TotfastqLinesRead = TotfastqLinesRead + Curfastqyieldsize
         #----------------
@@ -142,14 +137,15 @@ Parse_fastqfiles_main_fun = function(S0_fastq1, S0_fastq2, S0_LinkerA, S0_Linker
         #----------------
         SortedReads = Check_If_sorted_fun(fastq1yield = fastq1yield, fastq2yield = fastq2yield)
         if (!SortedReads) {
-            stop("S0_fastq1 and S0_fastq2 files are not sorted by ID, or their IDs before /1 and /2 are not identical.", call. = FALSE)
+            stop("S0_fastq1 and S0_fastq2 files are not sorted by ID, or their IDs before /1 and /2 are not identical.", 
+                call. = FALSE)
         }
         #----------------
         # Find fastq linker and split (c++11):
         #----------------
-        FilteringResults = FilterFastqYield_fun_Rcpp(Curfastqyieldsize, as.character(fastq1yield@sread),
-            Biostrings::width(fastq1yield@sread), as.character(fastq2yield@sread),
-            Biostrings::width(fastq2yield@sread), S0_LinkerA, S0_LinkerB, S0_LinkerOccurence,
+        FilteringResults = FilterFastqYield_fun_Rcpp(Curfastqyieldsize, as.character(fastq1yield@sread), 
+            Biostrings::width(fastq1yield@sread), as.character(fastq2yield@sread), 
+            Biostrings::width(fastq2yield@sread), S0_LinkerA, S0_LinkerB, S0_LinkerOccurence, 
             S0_MinReadLength, S0_MaxReadLength)
         #----------------
         # check the whole Yield is NNs and skip:
@@ -157,11 +153,11 @@ Parse_fastqfiles_main_fun = function(S0_fastq1, S0_fastq2, S0_LinkerA, S0_Linker
         if (FilteringResults$TotNsYield == Curfastqyieldsize) {
             TotNs = TotNs + FilteringResults$TotNsYield
             # print:
-            cat(cat1, TotfastqLinesRead, "(", TotfastqLinesRead/S0_Totfastqreads *
-                100, "%)|| ", cat2, Totusable, "(", Totusable/TotfastqLinesRead *
-                100, "%)|| ", cat3, Totchimeric, "(", Totchimeric/TotfastqLinesRead *
-                100, "%)|| ", cat4, Totambi, "(", Totambi/TotfastqLinesRead * 100,
-                "%)|| ", cat5, TotNs, "(", TotNs/TotfastqLinesRead * 100, "%)||\r",
+            cat(cat1, TotfastqLinesRead, "(", TotfastqLinesRead/S0_Totfastqreads * 
+                100, "%)|| ", cat2, Totusable, "(", Totusable/TotfastqLinesRead * 
+                100, "%)|| ", cat3, Totchimeric, "(", Totchimeric/TotfastqLinesRead * 
+                100, "%)|| ", cat4, Totambi, "(", Totambi/TotfastqLinesRead * 100, 
+                "%)|| ", cat5, TotNs, "(", TotNs/TotfastqLinesRead * 100, "%)||\r", 
                 sep = "")
             # go to next
             next
@@ -169,13 +165,13 @@ Parse_fastqfiles_main_fun = function(S0_fastq1, S0_fastq2, S0_LinkerA, S0_Linker
         #----------------
         # narrow results
         #----------------
-        fastq1yield@sread = Biostrings::narrow(fastq1yield@sread, start = 1, end = FilteringResults$NarrowingPos[,
+        fastq1yield@sread = Biostrings::narrow(fastq1yield@sread, start = 1, end = FilteringResults$NarrowingPos[, 
             1])
-        fastq1yield@quality = Biostrings::narrow(fastq1yield@quality, start = 1,
+        fastq1yield@quality = Biostrings::narrow(fastq1yield@quality, start = 1, 
             end = FilteringResults$NarrowingPos[, 1])
-        fastq2yield@sread = Biostrings::narrow(fastq2yield@sread, start = 1, end = FilteringResults$NarrowingPos[,
+        fastq2yield@sread = Biostrings::narrow(fastq2yield@sread, start = 1, end = FilteringResults$NarrowingPos[, 
             2])
-        fastq2yield@quality = Biostrings::narrow(fastq2yield@quality, start = 1,
+        fastq2yield@quality = Biostrings::narrow(fastq2yield@quality, start = 1, 
             end = FilteringResults$NarrowingPos[, 2])
         #----------------
         # add counts:
@@ -203,16 +199,16 @@ Parse_fastqfiles_main_fun = function(S0_fastq1, S0_fastq2, S0_LinkerA, S0_Linker
         # fastq2yield_chimeric
         #----------------
         for (i in seq_len(6)) {
-            ShortRead::writeFastq(object = FastqWriteList[[i]]$object, file = FastqWriteList[[i]]$file,
+            ShortRead::writeFastq(object = FastqWriteList[[i]]$object, file = FastqWriteList[[i]]$file, 
                 mode = WrittingMode, compress = TRUE)
         }
         # change mode to append now:
         WrittingMode = "a"
         # print:
-        cat(cat1, TotfastqLinesRead, "(", TotfastqLinesRead/S0_Totfastqreads * 100,
-            "%)|| ", cat2, Totusable, "(", Totusable/TotfastqLinesRead * 100, "%)|| ",
-            cat3, Totchimeric, "(", Totchimeric/TotfastqLinesRead * 100, "%)|| ",
-            cat4, Totambi, "(", Totambi/TotfastqLinesRead * 100, "%)|| ", cat5, TotNs,
+        cat(cat1, TotfastqLinesRead, "(", TotfastqLinesRead/S0_Totfastqreads * 100, 
+            "%)|| ", cat2, Totusable, "(", Totusable/TotfastqLinesRead * 100, "%)|| ", 
+            cat3, Totchimeric, "(", Totchimeric/TotfastqLinesRead * 100, "%)|| ", 
+            cat4, Totambi, "(", Totambi/TotfastqLinesRead * 100, "%)|| ", cat5, TotNs, 
             "(", TotNs/TotfastqLinesRead * 100, "%)||\r", sep = "")
     }
     # close connections:
@@ -227,22 +223,20 @@ Parse_fastqfiles_main_fun = function(S0_fastq1, S0_fastq2, S0_LinkerA, S0_Linker
     Totambi100 = Totambi/TotfastqLinesRead * 100
     TotNs100 = TotNs/TotfastqLinesRead * 100
     LogFile = list()
-    LogFile[[1]] = paste("Total lines processed:", TotfastqLinesRead, "(", TotfastqLinesRead100,
-        "%)", "\n")
-    LogFile[[2]] = paste("Total usable reads:", Totusable, "(", Totusable100, "%)",
-        "\n")
-    LogFile[[3]] = paste("Total chimeric reads:", Totchimeric, "(", Totchimeric100,
-        "%)", "\n")
-    LogFile[[4]] = paste("Total ambiguous reads:", Totambi, "(", Totambi100, "%)",
-        "\n")
-    LogFile[[5]] = paste("Total NNs reads:", TotNs, "(", TotNs100, "%)", "\n")
-    for (i in seq_len(5)) cat(LogFile[[i]])
-    for (i in seq_len(5)) write(LogFile[[i]], file = SA_LogFile.dir, append = TRUE)
+    LogFile[[1]] = paste("Total lines processed:", TotfastqLinesRead, "(", TotfastqLinesRead100, 
+        "%)")
+    LogFile[[2]] = paste("Total usable reads:", Totusable, "(", Totusable100, "%)")
+    LogFile[[3]] = paste("Total chimeric reads:", Totchimeric, "(", Totchimeric100, 
+        "%)")
+    LogFile[[4]] = paste("Total ambiguous reads:", Totambi, "(", Totambi100, "%)")
+    LogFile[[5]] = paste("Total NNs reads:", TotNs, "(", TotNs100, "%)")
+    for (lf in seq_len(5)) futile.logger::flog.info(LogFile[[lf]], name = "SA_LogFile", 
+        capture = FALSE)
     #----------------
     # plot image:
     #----------------
     if (S0_image) {
-        Get_image_S0_fun(Totusable100 = Totusable100, Totchimeric100 = Totchimeric100,
+        Get_image_S0_fun(Totusable100 = Totusable100, Totchimeric100 = Totchimeric100, 
             Totambi100 = Totambi100, TotNs100 = TotNs100, S0_image_dir = S0_image_dir)
     }
 }
@@ -273,20 +267,20 @@ Get_image_S0_fun = function(Totusable100, Totchimeric100, Totambi100, TotNs100, 
     #-------------
     # create data:
     #-------------
-    S0_imagedata = data.frame(Kind = c(paste("Usable (", round(Totusable100, digits = 1),
-        "%)", sep = ""), paste("Chimeric (", round(Totchimeric100, digits = 1), "%)",
-        sep = ""), paste("Ambiguous (", round(Totambi100, digits = 1), "%)", sep = ""),
-        paste("NNs (", round(TotNs100, digits = 1), "%)", sep = "")), Value = c(round(Totusable100),
+    S0_imagedata = data.frame(Kind = c(paste("Usable (", round(Totusable100, digits = 1), 
+        "%)", sep = ""), paste("Chimeric (", round(Totchimeric100, digits = 1), "%)", 
+        sep = ""), paste("Ambiguous (", round(Totambi100, digits = 1), "%)", sep = ""), 
+        paste("NNs (", round(TotNs100, digits = 1), "%)", sep = "")), Value = c(round(Totusable100), 
         round(Totchimeric100), round(Totambi100), round(TotNs100)))
     #-------------
     # plot the split:
     #-------------
-    S0_image = ggplot2::ggplot(S0_imagedata, ggplot2::aes(x = "", y = Value, fill = factor(Kind))) +
-        ggplot2::geom_bar(width = 1, stat = "identity") + ggplot2::coord_polar(theta = "y") +
-        ggplot2::theme(axis.title = ggplot2::element_blank(), plot.title = ggplot2::element_text(size = 20,
-            color = "black"), legend.title = ggplot2::element_blank(), legend.text = ggplot2::element_text(size = 17),
-            axis.text = ggplot2::element_blank(), legend.position = "bottom", legend.direction = "vertical",
-            axis.ticks = ggplot2::element_blank()) + ggplot2::ggtitle("Pie chart for fastq files") +
+    S0_image = ggplot2::ggplot(S0_imagedata, ggplot2::aes(x = "", y = Value, fill = factor(Kind))) + 
+        ggplot2::geom_bar(width = 1, stat = "identity") + ggplot2::coord_polar(theta = "y") + 
+        ggplot2::theme(axis.title = ggplot2::element_blank(), plot.title = ggplot2::element_text(size = 20, 
+            color = "black"), legend.title = ggplot2::element_blank(), legend.text = ggplot2::element_text(size = 17), 
+            axis.text = ggplot2::element_blank(), legend.position = "bottom", legend.direction = "vertical", 
+            axis.ticks = ggplot2::element_blank()) + ggplot2::ggtitle("Pie chart for fastq files") + 
         ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5)) + ggplot2::scale_fill_brewer(palette = "Dark2")
     # save:
     ggplot2::ggsave(plot = S0_image, file = S0_image_dir, scale = 2)

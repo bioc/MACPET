@@ -7,9 +7,9 @@
 MACPETUlt(SA_AnalysisDir = "", SA_stages = c(0:3), SA_prefix = "MACPET",
   S0_fastq1 = "", S0_fastq2 = "", S0_LinkerA = "GTTGGATAAG",
   S0_LinkerB = "GTTGGAATGT", S0_MinReadLength = 18, S0_MaxReadLength = 50,
-  S0_LinkerOccurence = 0, S0_image = TRUE, S0_fastqStream = 2e+06,
+  S0_LinkerOccurence = 0, S0_image = TRUE, S0_fastqStream = 2000000,
   S1_fastq1_usable_dir = "", S1_fastq2_usable_dir = "", S1_image = TRUE,
-  S1_BAMStream = 2e+06, S1_makeSam = TRUE, S1_genome = "hg19",
+  S1_BAMStream = 2000000, S1_makeSam = TRUE, S1_genome = "hg19",
   S1_RbowtieIndexBuild = FALSE, S1_RbowtieIndexDir = "",
   S1_RbowtieIndexPrefix = "", S1_RbowtieRefDir = "",
   S2_PairedEndBAMpath = "", S2_image = TRUE, S2_BlackList = TRUE,
@@ -72,7 +72,7 @@ This parameter is mandatory if Stage 1 is run.}
 
 \item{S1_makeSam}{Logical indicating whether the resulted paired-end BAM file will be splitted to two
 SAM files (one for each read). The output SAM files can be used as input in the MANGO algorithm (default=TRUE).
-Note, that the user has to remove the SAM header before running MANGO. 
+Note, that the user has to remove the SAM header before running MANGO.
 This parameter is mandatory if Stage 1 is run.}
 
 \item{S1_genome}{String with the genome to be used in the bam file header (default='hg19').

@@ -17,76 +17,57 @@
 ############################################## Main function for Stage 2:
 #-------------
 #-------------
-Stage_2_Main_fun = function(SA_prefix, S2_image, SA_LogFile.dir, S2_AnalysisDir,
-    S2_PairedData) {
+Stage_2_Main_fun = function(SA_prefix, S2_image, S2_AnalysisDir, S2_PairedData) {
     # Take time:
     Analysis.time.start = Sys.time()
     #--------------------------------------------
     #---------------Find Inter PETs:
     #--------------------------------------------
-    Ninter = FindInter_fun(S2_PairedData = S2_PairedData,
-                           SA_LogFile.dir = SA_LogFile.dir,
-                           S2_AnalysisDir = S2_AnalysisDir,
-                           SA_prefix = SA_prefix)
+    Ninter = FindInter_fun(S2_PairedData = S2_PairedData, S2_AnalysisDir = S2_AnalysisDir,
+        SA_prefix = SA_prefix)
     #--------------------------------------------
     #---------------Classify Self/Intra:
     #--------------------------------------------
     # remove inter:
     S2_PairedData = subset(S2_PairedData, !is.na(S2_PairedData$Dist))
     # classify:
-    SelfIndicator = SepSelfIntra_fun(S2_PairedData = S2_PairedData,
-                                     SA_LogFile.dir = SA_LogFile.dir,
-                                     SA_prefix = SA_prefix, S2_image = S2_image,
-                                     S2_AnalysisDir = S2_AnalysisDir)
+    SelfIndicator = SepSelfIntra_fun(S2_PairedData = S2_PairedData, SA_prefix = SA_prefix,
+        S2_image = S2_image, S2_AnalysisDir = S2_AnalysisDir)
     #--------------------------------------------
     #---------------Find Intra PETs:
     #--------------------------------------------
-    Nintra = FindIntra_fun(S2_PairedData = S2_PairedData,
-                           SelfIndicator = SelfIndicator,
-                           SA_LogFile.dir = SA_LogFile.dir,
-                           S2_AnalysisDir = S2_AnalysisDir,
-                           SA_prefix = SA_prefix)
+    Nintra = FindIntra_fun(S2_PairedData = S2_PairedData, SelfIndicator = SelfIndicator,
+        S2_AnalysisDir = S2_AnalysisDir, SA_prefix = SA_prefix)
     #--------------------------------------------
     #---------------Find Self PETs:
     #--------------------------------------------
-    Nself = FindSelf_fun(S2_PairedData = S2_PairedData,
-                         SelfIndicator = SelfIndicator,
-                         SA_LogFile.dir = SA_LogFile.dir,
-                         S2_AnalysisDir = S2_AnalysisDir,
-                         SA_prefix = SA_prefix)
+    Nself = FindSelf_fun(S2_PairedData = S2_PairedData, SelfIndicator = SelfIndicator,
+        S2_AnalysisDir = S2_AnalysisDir, SA_prefix = SA_prefix)
     #--------------------------------------------
     #---------------plot and print:
     #--------------------------------------------
     LogFile = list()
-    LogFile[[1]] = paste("===========>PET statistics<==========\n")
-    LogFile[[2]] = paste("Total Self-ligated PETs:", Nself, "\n")
-    LogFile[[3]] = paste("Total Intra-chromosomal PETs:", Nintra, "\n")
-    LogFile[[4]] = paste("Total Inter-chromosomal PETs:", Ninter, "\n")
-    LogFile[[5]] = "=====================================\n"
-    for (lf in seq_len(5)) cat(LogFile[[lf]])
-    for (lf in seq_len(5)) write(LogFile[[lf]], file = SA_LogFile.dir,
-                                 append = TRUE)
+    LogFile[[1]] = paste("===========>PET statistics<==========")
+    LogFile[[2]] = paste("Total Self-ligated PETs:", Nself)
+    LogFile[[3]] = paste("Total Intra-chromosomal PETs:", Nintra)
+    LogFile[[4]] = paste("Total Inter-chromosomal PETs:", Ninter)
+    for (lf in seq_len(4)) futile.logger::flog.info(LogFile[[lf]], name = "SA_LogFile",
+        capture = FALSE)
     if (S2_image) {
-        Get_image_S2_P3_fun(S2_AnalysisDir = S2_AnalysisDir,
-                            SA_prefix = SA_prefix, Nself = Nself,
-                            Nintra = Nintra, Ninter = Ninter)
+        Get_image_S2_P3_fun(S2_AnalysisDir = S2_AnalysisDir, SA_prefix = SA_prefix,
+            Nself = Nself, Nintra = Nintra, Ninter = Ninter)
     }
     #-----------------------------------------------------------------------#
-    LogFile = paste("Stage 2 is done!\n")
-    cat(LogFile)
-    write(LogFile, file = SA_LogFile.dir, append = TRUE)
-    LogFile = paste("Analysis results for stage 2 are in:\n",
-                    S2_AnalysisDir, "\n")
-    cat(LogFile)
-    write(LogFile, file = SA_LogFile.dir, append = TRUE)
-    # take time:
+    futile.logger::flog.info("=====================================", name = "SA_LogFile",
+        capture = FALSE)
+    futile.logger::flog.info("Stage 2 is done!", name = "SA_LogFile", capture = FALSE)
+    futile.logger::flog.info(paste("Analysis results for stage 2 are in:\n", S2_AnalysisDir),
+        name = "SA_LogFile", capture = FALSE)
+    # save time:
     Analysis.time.end = Sys.time()
     Total.Time = Analysis.time.end - Analysis.time.start
-    LogFile = paste("Total stage 2 time: ", Total.Time, " ",
-                    units(Total.Time), "\n",
-                    sep = "")
-    cat(LogFile)
-    write(LogFile, file = SA_LogFile.dir, append = TRUE)
+    LogFile = paste("Total stage 2 time:", Total.Time, " ", units(Total.Time))
+    futile.logger::flog.info(LogFile, name = "SA_LogFile", capture = FALSE)
 }
 # done
 #-------------
@@ -96,7 +77,7 @@ Stage_2_Main_fun = function(SA_prefix, S2_image, SA_LogFile.dir, S2_AnalysisDir,
 #-------------
 # function for loading BAM file is stage 2 is run only, loaded at InputChecks
 LoadBAM_FromInputChecks_fun = function(SA_AnalysisDir, S2_AnalysisDir, SA_prefix,
-    S2_PairedEndBAMpath, Format, SA_LogFile.dir, S2_BlackList, S2_image) {
+    S2_PairedEndBAMpath, Format, S2_BlackList, S2_image) {
     #------------
     #--Find the file and maybe convert sam to bam:
     #------------
@@ -111,10 +92,8 @@ LoadBAM_FromInputChecks_fun = function(SA_AnalysisDir, S2_AnalysisDir, SA_prefix
         # convert:
         PairedEndBAMpath = file.path(S1_AnalysisDir, paste(SA_prefix, "_Paired_end",
             sep = ""))
-        suppressWarnings(Rsamtools::asBam(file = S2_PairedEndBAMpath,
-                                          destination = PairedEndBAMpath,
-                                          overwrite = FALSE,
-                                          indexDestination = TRUE))
+        suppressWarnings(Rsamtools::asBam(file = S2_PairedEndBAMpath, destination = PairedEndBAMpath,
+            overwrite = FALSE, indexDestination = TRUE))
         # update path:
         S2_PairedEndBAMpath = paste(PairedEndBAMpath, ".bam", sep = "")
     } else if (Format == "bam") {
@@ -127,8 +106,7 @@ LoadBAM_FromInputChecks_fun = function(SA_AnalysisDir, S2_AnalysisDir, SA_prefix
     #------------
     #---Test if paired-end data:
     #------------
-    IsPairedEnd = Rsamtools::testPairedEndBam(file = S2_PairedEndBAMpath,
-                                              index = S2_PairedEndBAMpath)
+    IsPairedEnd = Rsamtools::testPairedEndBam(file = S2_PairedEndBAMpath, index = S2_PairedEndBAMpath)
     if (!IsPairedEnd) {
         stop("S2_PairedEndBAMpath bam file is not paired-end file!", call. = FALSE)
     } else {
@@ -138,8 +116,8 @@ LoadBAM_FromInputChecks_fun = function(SA_AnalysisDir, S2_AnalysisDir, SA_prefix
     #---Load the data:
     #------------
     S2_PairedData = LoadBAM_FromMACPETUlt_fun(S2_PairedEndBAMpath = S2_PairedEndBAMpath,
-        SA_LogFile.dir = SA_LogFile.dir, S2_BlackList = S2_BlackList, S2_image = S2_image,
-        S2_AnalysisDir = S2_AnalysisDir, SA_prefix = SA_prefix)
+        S2_BlackList = S2_BlackList, S2_image = S2_image, S2_AnalysisDir = S2_AnalysisDir,
+        SA_prefix = SA_prefix)
     return(S2_PairedData)
 }
 # done
@@ -147,8 +125,8 @@ LoadBAM_FromInputChecks_fun = function(SA_AnalysisDir, S2_AnalysisDir, SA_prefix
 #-------------
 # function for loading BAM file is stage 1:2 are in sequence, used in MACPETUlt
 # function
-LoadBAM_FromMACPETUlt_fun = function(S2_PairedEndBAMpath, SA_LogFile.dir, S2_BlackList,
-    S2_image, S2_AnalysisDir, SA_prefix) {
+LoadBAM_FromMACPETUlt_fun = function(S2_PairedEndBAMpath, S2_BlackList, S2_image,
+    S2_AnalysisDir, SA_prefix) {
     # then I know that the BAM file is paired correctly and it is bam format
     #-------------
     # create directory
@@ -159,7 +137,7 @@ LoadBAM_FromMACPETUlt_fun = function(S2_PairedEndBAMpath, SA_LogFile.dir, S2_Bla
     # check the header and return black list:
     #-------------
     S2_BL_genome = Check_BAM_Header_fun(S2_PairedEndBAMpath = S2_PairedEndBAMpath,
-        S2_BlackList = S2_BlackList, SA_LogFile.dir = SA_LogFile.dir)
+        S2_BlackList = S2_BlackList)
     #-------------
     # Load data:
     #-------------
@@ -169,11 +147,11 @@ LoadBAM_FromMACPETUlt_fun = function(S2_PairedEndBAMpath, SA_LogFile.dir, S2_Bla
     #-------------
     # BAM instance:
     #-------------
-    bamfile = Rsamtools::BamFile(file = S2_PairedEndBAMpath,
-                                 index = S2_PairedEndBAMpath, asMates = TRUE)
+    bamfile = Rsamtools::BamFile(file = S2_PairedEndBAMpath, index = S2_PairedEndBAMpath,
+        asMates = TRUE)
     FlagsParam = Rsamtools::scanBamFlag(isPaired = TRUE, isUnmappedQuery = FALSE,
-        hasUnmappedMate = FALSE, isSecondaryAlignment = FALSE,
-        isNotPassingQualityControls = FALSE, isDuplicate = FALSE)
+        hasUnmappedMate = FALSE, isSecondaryAlignment = FALSE, isNotPassingQualityControls = FALSE,
+        isDuplicate = FALSE)
     ReadParam = Rsamtools::ScanBamParam(flag = FlagsParam)
     S2_PairedData = GenomicAlignments::readGAlignmentPairs(file = bamfile, use.names = FALSE,
         with.which_label = FALSE, strandMode = 1, param = ReadParam)
@@ -181,9 +159,8 @@ LoadBAM_FromMACPETUlt_fun = function(S2_PairedEndBAMpath, SA_LogFile.dir, S2_Bla
     TotPETB_BL = length(S2_PairedData)
     TotPCR = TotPETs - TotPETB_BL
     # call Ginteractions convert and remove black list too.:
-    S2_PairedData = GInteractionsCovnert_fun(S2_PairedData = S2_PairedData,
-                                             S2_BlackList = S2_BL_genome$S2_BlackList,
-                                             PselfConvert = FALSE)
+    S2_PairedData = GInteractionsCovnert_fun(S2_PairedData = S2_PairedData, S2_BlackList = S2_BL_genome$S2_BlackList,
+        PselfConvert = FALSE)
     TotPETfinal = length(S2_PairedData)
     TotBL = TotPETB_BL - TotPETfinal
     # set the genome:
@@ -195,14 +172,14 @@ LoadBAM_FromMACPETUlt_fun = function(S2_PairedEndBAMpath, SA_LogFile.dir, S2_Bla
     NPCR100 = TotPCR/TotPETs * 100
     NBL100 = TotBL/TotPETs * 100
     LogFile = list()
-    LogFile[[1]] = paste("===========>PET statistics<==========\n")
-    LogFile[[2]] = paste("Total PETs in data:", TotPETs, "(", 100, "%)", "\n")
-    LogFile[[3]] = paste("Total PCR replicates:", TotPCR, "(", NPCR100, "%)", "\n")
-    LogFile[[4]] = paste("Total Black-listed PETs:", TotBL, "(", NBL100, "%)", "\n")
+    LogFile[[1]] = paste("===========>PET statistics<==========")
+    LogFile[[2]] = paste("Total PETs in data:", TotPETs, "(", 100, "%)")
+    LogFile[[3]] = paste("Total PCR replicates:", TotPCR, "(", NPCR100, "%)")
+    LogFile[[4]] = paste("Total Black-listed PETs:", TotBL, "(", NBL100, "%)")
     LogFile[[5]] = paste("Total valid PETs left:", TotPETfinal, "(", NPETfinal100,
-        "%)", "\n")
-    for (lf in seq_len(5)) cat(LogFile[[lf]])
-    for (lf in seq_len(5)) write(LogFile[[lf]], file = SA_LogFile.dir, append = TRUE)
+        "%)")
+    for (lf in seq_len(5)) futile.logger::flog.info(LogFile[[lf]], name = "SA_LogFile",
+        capture = FALSE)
     #-------------
     # plot:
     #-------------
@@ -219,7 +196,7 @@ LoadBAM_FromMACPETUlt_fun = function(S2_PairedEndBAMpath, SA_LogFile.dir, S2_Bla
 #-------------
 #-------------
 # function for testing the header of the bam file:
-Check_BAM_Header_fun = function(S2_PairedEndBAMpath, S2_BlackList, SA_LogFile.dir) {
+Check_BAM_Header_fun = function(S2_PairedEndBAMpath, S2_BlackList) {
     cat("Checking the bam file header for the genome....")
     HeaderBAM = Rsamtools::scanBamHeader(file = S2_PairedEndBAMpath, what = "text")
     HeaderBAM = HeaderBAM[[1]]$text
@@ -239,9 +216,8 @@ Check_BAM_Header_fun = function(S2_PairedEndBAMpath, S2_BlackList, SA_LogFile.di
         stop("Bam file header is missing the LN entry!\n", call. = FALSE)
     }
     if (length(ASpos) == 0 && isTRUE(S2_BlackList)) {
-        LogFile = "The bam file is missing the 'AS' genome header. No black-listed regions will be removed from the data\n"
-        warning(LogFile)
-        write(paste("WARNING:", LogFile), file = SA_LogFile.dir, append = TRUE)
+        LogFile = "WARNING: The bam file is missing the 'AS' genome header. No black-listed regions will be removed from the data."
+        futile.logger::flog.warn(LogFile, name = "SA_LogFile", capture = FALSE)
         S2_BlackList = NULL
         S1_genome = NA
     } else if (length(ASpos) != 0) {
@@ -250,10 +226,9 @@ Check_BAM_Header_fun = function(S2_PairedEndBAMpath, S2_BlackList, SA_LogFile.di
         S1_genome = strsplit(S1_genome, "AS:")
         S1_genome = unlist(S1_genome)[2]
         if (!S1_genome %in% names(sysdata) && isTRUE(S2_BlackList)) {
-            LogFile = paste("The bam file genome: ", S1_genome, " is not one of the following: ",
-                paste(names(sysdata), collapse = "/"), ". No black listed regions will be removed!\n")
-            warning(LogFile)
-            write(paste("WARNING:", LogFile), file = SA_LogFile.dir, append = TRUE)
+            LogFile = paste("WARNING: The bam file genome: ", S1_genome, " is not one of the following: ",
+                paste(names(sysdata), collapse = "/"), ". No black listed regions will be removed!")
+            futile.logger::flog.warn(LogFile, name = "SA_LogFile", capture = FALSE)
             S2_BlackList = NULL
         } else if (S1_genome %in% names(sysdata) && isTRUE(S2_BlackList)) {
             S2_BlackList = sysdata[[S1_genome]]
@@ -361,7 +336,7 @@ Get_image_S2_P1_fun = function(S2_AnalysisDir, SA_prefix, NPETs, NPETfinal100, N
 ############################################## PET classification functions:
 #-------------
 #-------------
-FindInter_fun = function(S2_PairedData, SA_LogFile.dir, S2_AnalysisDir, SA_prefix) {
+FindInter_fun = function(S2_PairedData, S2_AnalysisDir, SA_prefix) {
     cat("=====================================\n")
     cat("Separating Inter-chromosomal data...")
     #------------
@@ -411,19 +386,17 @@ FindInter_fun = function(S2_PairedData, SA_LogFile.dir, S2_AnalysisDir, SA_prefi
         assign(NamepinterData, pinterData)  #assign value.
         save(list = NamepinterData, file = file.path(S2_AnalysisDir, NamepinterData))
     } else {
-        warning("Inter-chromosomal data is empty!")
-        write("WARNING: Inter-chromosomal data is empty!\n", file = SA_LogFile.dir,
-            append = TRUE)
+        futile.logger::flog.warn("WARNING: Inter-chromosomal data is empty!", name = "SA_LogFile",
+            capture = FALSE)
     }
     cat("Done\n")
-    write("=====================================\n", file = SA_LogFile.dir, append = TRUE)
     return(Ninter)
 }
 # done
 #-------------
 #-------------
 # Function For SelfIntra classification using the elbow method:
-SepSelfIntra_fun = function(S2_PairedData, SA_LogFile.dir, SA_prefix, S2_image, S2_AnalysisDir) {
+SepSelfIntra_fun = function(S2_PairedData, SA_prefix, S2_image, S2_AnalysisDir) {
     # global variables for Rcheck:
     Freq = NULL
     Size = NULL
@@ -471,9 +444,8 @@ SepSelfIntra_fun = function(S2_PairedData, SA_LogFile.dir, SA_prefix, S2_image, 
     # print::
     #------------
     cat("Done\n")
-    LogFile = paste("Self-ligated cut-off at:", SelfBorder$MAX, "bp\n")
-    cat(LogFile)
-    write(LogFile, file = SA_LogFile.dir, append = TRUE)
+    futile.logger::flog.info(paste("Self-ligated cut-off at:", SelfBorder$MAX, "bp"),
+        name = "SA_LogFile", capture = FALSE)
     #------------
     # image:
     #------------
@@ -498,15 +470,15 @@ Get_image_S2_P2_fun = function(S2_AnalysisDir, SA_prefix, SpanDF, ElbowPoint, Se
     S2_image_p2 = ggplot2::ggplot(SpanDF, ggplot2::aes(x = Size, y = Freq)) + ggplot2::geom_rect(ggplot2::aes(xmin = SpanDF$Size -
         49, xmax = SpanDF$Size + 49, ymin = 0, ymax = SpanDF$Freq), size = 0.3, fill = "grey69",
         color = "black") + ggplot2::geom_line(color = "blue", size = 0.6) + ggplot2::geom_vline(xintercept = ElbowPoint$Size,
-        linetype = "dashed", color = "red", size = 0.6) + ggplot2::scale_x_log10(labels = function(co) round(log10(co)), expand = c(0,0)) +
-        ggplot2::ggtitle(paste("Elbow-point cut-off for Self/Intra Pets at: ", SelfBorder$MAX,
-            " bp")) + ggplot2::xlab("Sorted log-sizes of PET") + ggplot2::ylab("Frequency") +
+        linetype = "dashed", color = "red", size = 0.6) + ggplot2::scale_x_log10(labels = function(co) round(log10(co)),
+        expand = c(0, 0)) + ggplot2::ggtitle(paste("Elbow-point cut-off for Self/Intra Pets at: ",
+        SelfBorder$MAX, " bp")) + ggplot2::xlab("Sorted log-sizes of PET") + ggplot2::ylab("Frequency") +
         ggplot2::theme_bw() + ggplot2::theme(axis.line = ggplot2::element_line(colour = "black"),
         panel.grid.major = ggplot2::element_blank(), panel.grid.minor = ggplot2::element_blank(),
         panel.background = ggplot2::element_blank()) + ggplot2::theme(axis.text = ggplot2::element_text(size = 15,
         color = "black"), axis.title = ggplot2::element_text(size = 18, color = "black"),
-        plot.title = ggplot2::element_text(size = 18, color = "black")) + ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))+
-        ggplot2::scale_y_continuous(expand = c(0,0))
+        plot.title = ggplot2::element_text(size = 18, color = "black")) + ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5)) +
+        ggplot2::scale_y_continuous(expand = c(0, 0))
     # save:
     ggplot2::ggsave(plot = S2_image_p2, file = S2_P2_image_dir, scale = 2)
 }
@@ -514,8 +486,7 @@ Get_image_S2_P2_fun = function(S2_AnalysisDir, SA_prefix, SpanDF, ElbowPoint, Se
 #-------------
 #-------------
 # Function for Intra PETs
-FindIntra_fun = function(S2_PairedData, SelfIndicator, SA_LogFile.dir, S2_AnalysisDir,
-    SA_prefix) {
+FindIntra_fun = function(S2_PairedData, SelfIndicator, S2_AnalysisDir, SA_prefix) {
     cat("Separating Intra-chromosomal data...")
     #------------
     # keep intra:
@@ -566,9 +537,8 @@ FindIntra_fun = function(S2_PairedData, SelfIndicator, SA_LogFile.dir, S2_Analys
         assign(NamepintraData, pintraData)  #assign value.
         save(list = NamepintraData, file = file.path(S2_AnalysisDir, NamepintraData))
     } else {
-        warning("Intra-chromosomal data is empty!")
-        write("WARNING: Intra-chromosomal data is empty!\n", file = SA_LogFile.dir,
-            append = TRUE)
+        futile.logger::flog.warn("WARNING: Intra-chromosomal data is empty!", name = "SA_LogFile",
+            capture = FALSE)
     }
     cat("Done\n")
     return(Nintra)
@@ -576,8 +546,7 @@ FindIntra_fun = function(S2_PairedData, SelfIndicator, SA_LogFile.dir, S2_Analys
 #-------------
 #-------------
 # Function for Self PETs
-FindSelf_fun = function(S2_PairedData, SelfIndicator, SA_LogFile.dir, S2_AnalysisDir,
-    SA_prefix) {
+FindSelf_fun = function(S2_PairedData, SelfIndicator, S2_AnalysisDir, SA_prefix) {
     cat("Separating Self-ligated data...")
     #------------
     # keep self:
@@ -625,18 +594,12 @@ FindSelf_fun = function(S2_PairedData, SelfIndicator, SA_LogFile.dir, S2_Analysi
         assign(NamepselfData, pselfData)  #assign value.
         save(list = NamepselfData, file = file.path(S2_AnalysisDir, NamepselfData))
     } else {
-        warning("Self-ligated data is empty!")
-        if (!is.null(SA_LogFile.dir)) {
-            write("WARNING: Self-ligated data is empty!\n", file = SA_LogFile.dir,
-                append = TRUE)
-        }
+        futile.logger::flog.warn("WARNING: Self-ligated data is empty!", name = "SA_LogFile",
+            capture = FALSE)
     }
     cat("Done\n")
-    LogFile = paste("Self-ligated mean length: ", SLmean, "\n")
-    cat(LogFile)
-    if (!is.null(SA_LogFile.dir)) {
-        write(LogFile, file = SA_LogFile.dir, append = TRUE)
-    }
+    futile.logger::flog.info(paste("Self-ligated mean length: ", SLmean), name = "SA_LogFile",
+        capture = FALSE)
     return(Nself)
 }
 # done
