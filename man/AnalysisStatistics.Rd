@@ -5,7 +5,7 @@
 \title{Count Statistics for ChIA-PET.}
 \usage{
 AnalysisStatistics(x.self, x.intra = NULL, x.inter = NULL,
-  file.out = NULL, threshold = 0.00001, savedir = NULL)
+  file.out = NULL, threshold = 1e-05, savedir = NULL)
 }
 \arguments{
 \item{x.self}{An object of class \code{\linkS4class{PSelf}} or

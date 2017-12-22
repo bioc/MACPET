@@ -5,7 +5,7 @@
 \title{Convert two BAM files into one paired-end BAM file.}
 \usage{
 ConvertToPE_BAM(S1_AnalysisDir = "", SA_prefix = "MACPET",
-  S1_BAMStream = 2000000, S1_image = TRUE, S1_genome = "hg19",
+  S1_BAMStream = 2e+06, S1_image = TRUE, S1_genome = "hg19",
   BAM_file_1 = "", BAM_file_2 = "", S1_makeSam = FALSE)
 }
 \arguments{
