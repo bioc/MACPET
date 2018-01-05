@@ -79,7 +79,7 @@
 #'
 #'
 #'
-ConvertToPE_BAM = function(S1_AnalysisDir = "", SA_prefix = "MACPET", S1_BAMStream = 2e+06, 
+ConvertToPE_BAM = function(S1_AnalysisDir = "", SA_prefix = "MACPET", S1_BAMStream = 2e+06,
     S1_image = TRUE, S1_genome = "hg19", BAM_file_1 = "", BAM_file_2 = "", S1_makeSam = FALSE) {
     cat("Checking inputs...")
     #------------
@@ -96,7 +96,7 @@ ConvertToPE_BAM = function(S1_AnalysisDir = "", SA_prefix = "MACPET", S1_BAMStre
     if (!methods::is(SA_prefix, "character")) {
         stop("SA_prefix: ", SA_prefix, " variable has to be a string!", call. = FALSE)
     } else if (nchar(SA_prefix) == 0) {
-        stop("SA_prefix: ", SA_prefix, " variable has to be a non-empty string!", 
+        stop("SA_prefix: ", SA_prefix, " variable has to be a non-empty string!",
             call. = FALSE)
     }
     #------------
@@ -128,8 +128,8 @@ ConvertToPE_BAM = function(S1_AnalysisDir = "", SA_prefix = "MACPET", S1_BAMStre
     if (!methods::is(S1_genome, "character")) {
         stop("S1_genome: ", S1_genome, " has to be a character!", call. = FALSE)
     } else if (!S1_genome %in% names(sysdata)) {
-        LogFile = paste("S1_genome: ", S1_genome, ", is not a part of ", paste(names(sysdata), 
-            collapse = "/"), ". If S2_BlackList==TRUE at stage 2, then no black-listed regions will be removed from the data.\n", 
+        LogFile = paste("S1_genome: ", S1_genome, ", is not a part of ", paste(names(sysdata),
+            collapse = "/"), ". If S2_BlackList==TRUE at stage 2, then no black-listed regions will be removed from the data.\n",
             sep = "")
         warning(LogFile)
     }
@@ -137,7 +137,7 @@ ConvertToPE_BAM = function(S1_AnalysisDir = "", SA_prefix = "MACPET", S1_BAMStre
     # check BAM_file_1:
     #------------
     if (!methods::is(BAM_file_1, "character")) {
-        stop("BAM_file_1: ", BAM_file_1, " variable has to be a file directory!", 
+        stop("BAM_file_1: ", BAM_file_1, " variable has to be a file directory!",
             call. = FALSE)
     } else if (!file.exists(BAM_file_1)) {
         stop("BAM_file_1: ", BAM_file_1, " file does not exist!", call. = FALSE)
@@ -155,7 +155,7 @@ ConvertToPE_BAM = function(S1_AnalysisDir = "", SA_prefix = "MACPET", S1_BAMStre
         Header_1 = Header_1[[1]]$text
         Header_1 = Header_1[which(names(Header_1) %in% "@SQ")]
         if (length(Header_1) == 0) {
-            stop("The BAM file ", BAM_file_1, " is missing the header section!", 
+            stop("The BAM file ", BAM_file_1, " is missing the header section!",
                 call. = FALSE)
         }
         Header_1 = do.call(rbind, Header_1)
@@ -173,7 +173,7 @@ ConvertToPE_BAM = function(S1_AnalysisDir = "", SA_prefix = "MACPET", S1_BAMStre
     # check BAM_file_2:
     #------------
     if (!methods::is(BAM_file_2, "character")) {
-        stop("BAM_file_2: ", BAM_file_2, " variable has to be a file directory!", 
+        stop("BAM_file_2: ", BAM_file_2, " variable has to be a file directory!",
             call. = FALSE)
     } else if (!file.exists(BAM_file_2)) {
         stop("BAM_file_2: ", BAM_file_2, " file does not exist!", call. = FALSE)
@@ -191,7 +191,7 @@ ConvertToPE_BAM = function(S1_AnalysisDir = "", SA_prefix = "MACPET", S1_BAMStre
         Header_2 = Header_2[[1]]$text
         Header_2 = Header_2[which(names(Header_2) %in% "@SQ")]
         if (length(Header_2) == 0) {
-            stop("The BAM file ", BAM_file_2, " is missing the header section!", 
+            stop("The BAM file ", BAM_file_2, " is missing the header section!",
                 call. = FALSE)
         }
         Header_2 = do.call(rbind, Header_2)
@@ -224,10 +224,10 @@ ConvertToPE_BAM = function(S1_AnalysisDir = "", SA_prefix = "MACPET", S1_BAMStre
     if (!file.exists(BAM_file_1.bai)) {
         cat("Sorting ", basename(BAM_file_1), " for index creation...")
         # create output bam:
-        BAM_file_1.sorted = file.path(S1_AnalysisDir, paste(SA_prefix, "_BAM_1_sorted", 
+        BAM_file_1.sorted = file.path(S1_AnalysisDir, paste(SA_prefix, "_BAM_1_sorted",
             sep = ""))
         # sort:
-        suppressWarnings(Rsamtools::sortBam(file = BAM_file_1, destination = BAM_file_1.sorted, 
+        suppressWarnings(Rsamtools::sortBam(file = BAM_file_1, destination = BAM_file_1.sorted,
             byQname = FALSE))
         cat("Done\n")
         BAM_file_1.sorted = paste(BAM_file_1.sorted, ".bam", sep = "")
@@ -245,10 +245,10 @@ ConvertToPE_BAM = function(S1_AnalysisDir = "", SA_prefix = "MACPET", S1_BAMStre
     if (!file.exists(BAM_file_2.bai)) {
         cat("Sorting ", basename(BAM_file_2), " for index creation...")
         # create output bam:
-        BAM_file_2.sorted = file.path(S1_AnalysisDir, paste(SA_prefix, "_BAM_2_sorted", 
+        BAM_file_2.sorted = file.path(S1_AnalysisDir, paste(SA_prefix, "_BAM_2_sorted",
             sep = ""))
         # sort:
-        suppressWarnings(Rsamtools::sortBam(file = BAM_file_2, destination = BAM_file_2.sorted, 
+        suppressWarnings(Rsamtools::sortBam(file = BAM_file_2, destination = BAM_file_2.sorted,
             byQname = FALSE))
         cat("Done\n")
         BAM_file_2.sorted = paste(BAM_file_2.sorted, ".bam", sep = "")
@@ -267,18 +267,18 @@ ConvertToPE_BAM = function(S1_AnalysisDir = "", SA_prefix = "MACPET", S1_BAMStre
     BAMfilt1 = file.path(S1_AnalysisDir, paste(SA_prefix, "_usable_1_filt.bam", sep = ""))
     BAMfilt2 = file.path(S1_AnalysisDir, paste(SA_prefix, "_usable_2_filt.bam", sep = ""))
     # make flag for keeping the mapped only:
-    MappedFlag = Rsamtools::scanBamFlag(isUnmappedQuery = FALSE, isSecondaryAlignment = FALSE, 
+    MappedFlag = Rsamtools::scanBamFlag(isUnmappedQuery = FALSE, isSecondaryAlignment = FALSE,
         isNotPassingQualityControls = FALSE, isDuplicate = FALSE)
     # make ScanBamParam:
     SBparam = Rsamtools::ScanBamParam(flag = MappedFlag)
     # split bam 1:
     cat("Filtering ", basename(BAM_file_1), "...")
-    suppressWarnings(Rsamtools::filterBam(file = BAM_file_1, index = BAM_file_1.bai, 
+    suppressWarnings(Rsamtools::filterBam(file = BAM_file_1, index = BAM_file_1.bai,
         destination = BAMfilt1, param = SBparam, indexDestination = FALSE))
     cat("Done\n")
     # split bam 2:
     cat("Filtering ", basename(BAM_file_2), "...")
-    suppressWarnings(Rsamtools::filterBam(file = BAM_file_2, index = BAM_file_2.bai, 
+    suppressWarnings(Rsamtools::filterBam(file = BAM_file_2, index = BAM_file_2.bai,
         destination = BAMfilt2, param = SBparam, indexDestination = FALSE))
     cat("Done\n")
     # add to FileToDelete:
@@ -288,9 +288,9 @@ ConvertToPE_BAM = function(S1_AnalysisDir = "", SA_prefix = "MACPET", S1_BAMStre
     #----------------
     cat("Merging ", basename(BAMfilt1), ", ", basename(BAMfilt2), " files...", sep = "")
     # output:
-    MergedBAMpath = file.path(S1_AnalysisDir, paste(SA_prefix, "_usable_merged.bam", 
+    MergedBAMpath = file.path(S1_AnalysisDir, paste(SA_prefix, "_usable_merged.bam",
         sep = ""))
-    suppressWarnings(Rsamtools::mergeBam(files = c(BAMfilt1, BAMfilt2), destination = MergedBAMpath, 
+    suppressWarnings(Rsamtools::mergeBam(files = c(BAMfilt1, BAMfilt2), destination = MergedBAMpath,
         overwrite = TRUE, byQname = FALSE, indexDestination = TRUE))
     cat("Done\n")
     MergedBAMpath.bai = paste(MergedBAMpath, ".bai", sep = "")
@@ -300,15 +300,18 @@ ConvertToPE_BAM = function(S1_AnalysisDir = "", SA_prefix = "MACPET", S1_BAMStre
     # sort by Qname:
     #----------------
     cat("Sorting ", basename(MergedBAMpath), " file by Qname...", sep = "")
-    suppressWarnings(Rsamtools::sortBam(file = MergedBAMpath, destination = unlist(strsplit(MergedBAMpath, 
+    suppressWarnings(Rsamtools::sortBam(file = MergedBAMpath, destination = unlist(strsplit(MergedBAMpath,
         ".bam")), byQname = TRUE))
     cat("Done\n")
     #----------------
     # fix mates
     #----------------
+    # option for logger:
+    futile.logger::flog.layout(futile.logger::layout.format("~m"))
+    # input and run:
     MergedBAM = list(BAM = MergedBAMpath, BAMbai = MergedBAMpath.bai)
-    PairedEndBAMpath = FixMates_main_fun(MergedBAM = MergedBAM, S1_AnalysisDir = S1_AnalysisDir, 
-        S1_BAMStream = S1_BAMStream, CalledFromConvToPE_BAM = TRUE, SA_prefix = SA_prefix, 
+    PairedEndBAMpath = FixMates_main_fun(MergedBAM = MergedBAM, S1_AnalysisDir = S1_AnalysisDir,
+        S1_BAMStream = S1_BAMStream, CalledFromConvToPE_BAM = TRUE, SA_prefix = SA_prefix,
         S1_image = S1_image, S1_genome = S1_genome)
     cat("Deleting unnecessary files.")
     unlink(x = FileToDelete, recursive = TRUE, force = TRUE)
@@ -316,7 +319,7 @@ ConvertToPE_BAM = function(S1_AnalysisDir = "", SA_prefix = "MACPET", S1_BAMStre
     # If they need the sam files, convert PairedEndBAM to two SAM files:
     #----------------
     if (S1_makeSam) {
-        GetSAMFiles_fun(PairedEndBAMpath = PairedEndBAMpath, S1_AnalysisDir = S1_AnalysisDir, 
+        GetSAMFiles_fun(PairedEndBAMpath = PairedEndBAMpath, S1_AnalysisDir = S1_AnalysisDir,
             SA_prefix = SA_prefix)
     }
     cat("The paired-end BAM is in: \n", PairedEndBAMpath, "\n")
