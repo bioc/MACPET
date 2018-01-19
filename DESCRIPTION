@@ -1,8 +1,8 @@
 Package: MACPET
 Type: Package
 Title: Model based analysis for paired-end data
-Version: 0.99.10
-Date: 2017-25-10
+Version: 0.99.11
+Date: 2018-05-01
 Author: Ioannis Vardaxis
 Maintainer: Ioannis Vardaxis <ioannis.vardaxis@ntnu.no>
 Description: The MACPET package can be used for binding site analysis for ChIA-PET data. MACPET reads ChIA-PET data in BAM or SAM format and separates the data into Self-ligated, Intra- and Inter-chromosomal PETs. Furthermore, MACPET breaks the genome into regions and applies 2D mixture models for identifying candidate peaks/binding sites using skewed generalized students-t distributions (SGT). It then uses a local poisson model for finding significant binding sites. MACPET is mainly written in C++, and it supports the BiocParallel package.
@@ -11,7 +11,7 @@ Encoding: UTF-8
 LazyData: true
 ByteCompile: true
 RoxygenNote: 6.0.1
-biocViews: Software, DNA3DStructure, PeakDetection, StatisticalMethod, Bayesian, Clustering, Classification, HiC
+biocViews: Software, DNA3DStructure, PeakDetection, StatisticalMethod, Clustering, Classification, HiC
 Depends: R (>= 3.5), InteractionSet (>= 1.7.0)
 Imports: intervals (>= 0.15.1), plyr (>= 1.8.4),  Rsamtools (>= 1.31.1), stats (>= 3.5.0), utils (>= 3.5.0), methods (>= 3.5.0), GenomicRanges (>= 1.31.3), S4Vectors (>= 0.17.15), IRanges (>= 2.13.4), GenomeInfoDb (>= 1.15.1), gtools (>= 3.5.0), GenomicAlignments (>= 1.15.2), knitr (>= 1.18), Rcpp (>= 0.12.14), rtracklayer (>= 1.39.4), BiocParallel (>= 1.13.1), Rbowtie (>= 1.19.0), GEOquery (>= 2.47.16), Biostrings (>= 2.47.1), ShortRead (>= 1.37.0), rbamtools (>= 2.16.6), futile.logger (>= 1.4.3)
 Suggests: ggplot2 (>= 2.2.1), igraph (>= 1.1.2), rmarkdown (>= 1.8), reshape2 (>= 1.4.3), BiocStyle (>= 2.7.2)
