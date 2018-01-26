@@ -4,12 +4,13 @@
 #' @importFrom Rsamtools mergeBam sortBam countBam asBam scanBamFlag ScanBamParam filterBam scanBamWhat BamFile asSam
 #' @importFrom GenomicAlignments readGAlignments
 #' @importFrom rtracklayer export
-#' @importFrom Biostrings BStringSet width narrow intersect
+#' @importFrom Biostrings BStringSet width intersect
 #' @importFrom S4Vectors mcols
 #' @importFrom GenomeInfoDb genome seqinfo
 #' @importFrom methods as
 #' @importFrom InteractionSet GInteractions
 #' @importFrom rbamtools bamReader readerToFastq
+#' @importFrom IRanges narrow
 #' @importClassesFrom Rsamtools BamFile
 #' @importClassesFrom GenomicAlignments GAlignments
 #' @importClassesFrom GenomeInfoDb Seqinfo
@@ -668,9 +669,9 @@ Get_Paired_names_fun = function(BAMyield, Nyield) {
     #----------------
     Namesyield = Biostrings::BStringSet(x = names(BAMyield), start = 1)
     NamesyieldWidth = Biostrings::width(Namesyield)
-    NamesyieldPref = Biostrings::narrow(Namesyield, start = 1, end = NamesyieldWidth -
+    NamesyieldPref = IRanges::narrow(Namesyield, start = 1, end = NamesyieldWidth -
         2)
-    NamesyieldSuf = Biostrings::narrow(Namesyield, start = NamesyieldWidth, end = NamesyieldWidth)
+    NamesyieldSuf = IRanges::narrow(Namesyield, start = NamesyieldWidth, end = NamesyieldWidth)
     NamesyieldSuf = as.character(NamesyieldSuf)
     # get read1 and read2 positions:
     Which_r1 = which(NamesyieldSuf == "1")
