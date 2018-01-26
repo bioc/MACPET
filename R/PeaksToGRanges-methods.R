@@ -1,7 +1,7 @@
 #' @title Convert peaks to GRanges object
 #' @author Ioannis Vardaxis, \email{ioannis.vardaxis@@ntnu.no}
 #' @references
-#' Vardaxis I, Drabløs F, Rye M and Lindqvist BH (2018). \emph{Model-based Analysis for ChIA-PET (MACPET)}.
+#' Vardaxis I, Drabløs F, Rye M and Lindqvist BH (2018). \emph{MACPET: Model-based Analysis for ChIA-PET}.
 #' To be published.
 #'
 #' @description \code{PeaksToGRanges} converts peaks of an object of \code{\linkS4class{PSFit}}
@@ -72,7 +72,7 @@ PeaksToGRanges.PSFit = function(object, threshold = NULL, ...) {
     # keep seqinfo:
     Seqinformation = GenomicRanges::seqinfo(object)
     # make GRanges:
-    RES = GenomicRanges::GRanges(seqnames = Peaks$Chrom, seqinfo = Seqinformation, 
+    RES = GenomicRanges::GRanges(seqnames = Peaks$Chrom, seqinfo = Seqinformation,
         ranges = IRanges::IRanges(start = round(Peaks$CIQ.Up.start), end = round(Peaks$CIQ.Down.end)))
     # reduce unused levels:
     LevelsUsed = GenomeInfoDb::seqlevelsInUse(RES)

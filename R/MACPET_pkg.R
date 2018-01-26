@@ -8,7 +8,7 @@
 #' In stage 0, MACPET identifies the linkers in the fastq files and classifies the
 #' reads as usable, chimeric or ambiguous. Usable reads are considered in the
 #' subsequent stages. In stage 1, MACPET maps the usable reads to the reference
-#' genome using \code{\link[Rbowtie]{bowtie}} and produces a paired-end BAM file. This BAM file is further used in
+#' genome using \code{\link[Rbowtie:bowtie]{bowtie}} and produces a paired-end BAM file. This BAM file is further used in
 #' stage 2 to classify the PETs as self-ligated/intra- or inter-chromosomal.
 #' Self-ligated PETs are used in stage 3 for the identification of significant peaks.
 #' In stage 3, MACPET segments the genome into regions and
@@ -64,7 +64,7 @@
 #' @author Ioannis Vardaxis, \email{ioannis.vardaxis@@ntnu.no}
 #--#' make reference on the article:
 #' @references
-#' Vardaxis I, Drabløs F, Rye M and Lindqvist BH (2018). \emph{Model-based Analysis for ChIA-PET (MACPET)}.
+#' Vardaxis I, Drabløs F, Rye M and Lindqvist BH (2018). \emph{MACPET: Model-based Analysis for ChIA-PET}.
 #' To be published.
 #'
 #' @import Rcpp

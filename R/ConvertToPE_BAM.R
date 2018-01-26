@@ -4,7 +4,7 @@
 #' @author Ioannis Vardaxis, \email{ioannis.vardaxis@@ntnu.no}
 #----------#' make reference on the article:
 #' @references
-#' Vardaxis I, Drabløs F, Rye M and Lindqvist BH (2018). \emph{Model-based Analysis for ChIA-PET (MACPET)}.
+#' Vardaxis I, Drabløs F, Rye M and Lindqvist BH (2018). \emph{MACPET: Model-based Analysis for ChIA-PET}.
 #' To be published.
 #'
 #----------#' for the current function to be exported on the NAMESPACE:

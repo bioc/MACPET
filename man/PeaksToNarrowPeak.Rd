@@ -57,7 +57,7 @@ PeaksToNarrowPeak(object=MACPET_psfitData,threshold=1e-5,file.out=file.out,saved
 unlink(savedir,recursive=TRUE)
 }
 \references{
-Vardaxis I, Drabløs F, Rye M and Lindqvist BH (2018). \emph{Model-based Analysis for ChIA-PET (MACPET)}.
+Vardaxis I, Drabløs F, Rye M and Lindqvist BH (2018). \emph{MACPET: Model-based Analysis for ChIA-PET}.
 To be published.
 }
 \seealso{

@@ -3,13 +3,13 @@
 #' @title PSelf S4 Class
 #' @author Ioannis Vardaxis, \email{ioannis.vardaxis@@ntnu.no}
 #' @references
-#' Vardaxis I, Drabløs F, Rye M and Lindqvist BH (2018). \emph{Model-based Analysis for ChIA-PET (MACPET)}.
+#' Vardaxis I, Drabløs F, Rye M and Lindqvist BH (2018). \emph{MACPET: Model-based Analysis for ChIA-PET}.
 #' To be published.
 #' @description  \code{\linkS4class{PSelf}} class in a S4 class which
 #'  inherits from the
-#' \code{\link[InteractionSet]{GInteractions}} class and it contains Self-ligated
+#' \code{\link[InteractionSet:GInteractions]{GInteractions}} class and it contains Self-ligated
 #' PETs from ChIA-PET experiment. Furthermore it also contains the following in the
-#' \code{\link[S4Vectors]{metadata}} field:
+#' \code{\link[S4Vectors:metadata]{metadata}} field:
 #'  \describe{
 #'  \item{\code{Self_info}}{ A data.frame with the count statistics for the total PETs in each chromosome.}
 #'  \item{\code{SLmean}}{The mean size of the PETs in the data.}
@@ -28,14 +28,14 @@ PSelf = setClass("PSelf", contains = "GInteractions")
 #' @title PSFit S4 Class
 #' @author Ioannis Vardaxis, \email{ioannis.vardaxis@@ntnu.no}
 #' @references
-#' Vardaxis I, Drabløs F, Rye M and Lindqvist BH (2018). \emph{Model-based Analysis for ChIA-PET (MACPET)}.
+#' Vardaxis I, Drabløs F, Rye M and Lindqvist BH (2018). \emph{MACPET: Model-based Analysis for ChIA-PET}.
 #' To be published.
 #' @description \code{\linkS4class{PSFit}} class in a S4 class which
 #' inherits from the
-#' \code{\link[InteractionSet]{GInteractions}} class and it contains Self-ligated
+#' \code{\link[InteractionSet:GInteractions]{GInteractions}} class and it contains Self-ligated
 #' PETs from ChIA-PET experiment and information about the
 #' genome of the data. Furthermore it also contains the following in the
-#' \code{\link[S4Vectors]{metadata}} field:
+#' \code{\link[S4Vectors:metadata]{metadata}} field:
 #'  \describe{
 #'  \item{\code{Self_info}}{Counts statistics for the total PETs,
 #'  total regions and total Peaks in each chromosome.}
@@ -84,11 +84,11 @@ PSFit = setClass("PSFit", contains = "GInteractions")
 #' @title PInter S4 Class
 #' @author Ioannis Vardaxis, \email{ioannis.vardaxis@@ntnu.no}
 #' @references
-#' Vardaxis I, Drabløs F, Rye M and Lindqvist BH (2018). \emph{Model-based Analysis for ChIA-PET (MACPET)}.
+#' Vardaxis I, Drabløs F, Rye M and Lindqvist BH (2018). \emph{MACPET: Model-based Analysis for ChIA-PET}.
 #' To be published.
 #' @description \code{\linkS4class{PInter}} class in a S4 class which
 #'  inherits from the
-#' \code{\link[InteractionSet]{GInteractions}} class and it contains
+#' \code{\link[InteractionSet:GInteractions]{GInteractions}} class and it contains
 #' Inter-chromosomal data.
 #' @details \code{\linkS4class{PInter}} class is created by the
 #'  \code{\link{MACPETUlt}}
@@ -101,11 +101,11 @@ PInter = setClass("PInter", contains = "GInteractions")
 #' @title PIntra S4 Class
 #' @author Ioannis Vardaxis, \email{ioannis.vardaxis@@ntnu.no}
 #' @references
-#' Vardaxis I, Drabløs F, Rye M and Lindqvist BH (2018). \emph{Model-based Analysis for ChIA-PET (MACPET)}.
+#' Vardaxis I, Drabløs F, Rye M and Lindqvist BH (2018). \emph{MACPET: Model-based Analysis for ChIA-PET}.
 #' To be published.
 #' @description \code{\linkS4class{PIntra}} class in a S4 class which
 #' inherits from the
-#' \code{\link[InteractionSet]{GInteractions}} class and it contains
+#' \code{\link[InteractionSet:GInteractions]{GInteractions}} class and it contains
 #' Intra-chromosomal data.
 #' @details \code{\linkS4class{PIntra}} class is created by the
 #' \code{\link{MACPETUlt}}

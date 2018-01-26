@@ -8,10 +8,10 @@
 \description{
 \code{\linkS4class{PSFit}} class in a S4 class which
 inherits from the
-\code{\link[InteractionSet]{GInteractions}} class and it contains Self-ligated
+\code{\link[InteractionSet:GInteractions]{GInteractions}} class and it contains Self-ligated
 PETs from ChIA-PET experiment and information about the
 genome of the data. Furthermore it also contains the following in the
-\code{\link[S4Vectors]{metadata}} field:
+\code{\link[S4Vectors:metadata]{metadata}} field:
  \describe{
  \item{\code{Self_info}}{Counts statistics for the total PETs,
  total regions and total Peaks in each chromosome.}
@@ -55,7 +55,7 @@ genome of the data. Furthermore it also contains the following in the
 \code{\link{MACPETUlt}} function at Stage 3.
 }
 \references{
-Vardaxis I, Drabløs F, Rye M and Lindqvist BH (2018). \emph{Model-based Analysis for ChIA-PET (MACPET)}.
+Vardaxis I, Drabløs F, Rye M and Lindqvist BH (2018). \emph{MACPET: Model-based Analysis for ChIA-PET}.
 To be published.
 }
 \seealso{

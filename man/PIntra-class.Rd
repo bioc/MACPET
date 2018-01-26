@@ -8,7 +8,7 @@
 \description{
 \code{\linkS4class{PIntra}} class in a S4 class which
 inherits from the
-\code{\link[InteractionSet]{GInteractions}} class and it contains
+\code{\link[InteractionSet:GInteractions]{GInteractions}} class and it contains
 Intra-chromosomal data.
 }
 \details{
@@ -17,7 +17,7 @@ Intra-chromosomal data.
 function at Stage 2.
 }
 \references{
-Vardaxis I, Drabløs F, Rye M and Lindqvist BH (2018). \emph{Model-based Analysis for ChIA-PET (MACPET)}.
+Vardaxis I, Drabløs F, Rye M and Lindqvist BH (2018). \emph{MACPET: Model-based Analysis for ChIA-PET}.
 To be published.
 }
 \seealso{

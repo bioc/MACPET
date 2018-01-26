@@ -121,7 +121,7 @@ This parameter is mandatory if Stage 3 is run.}
 
 \item{S3_method}{String with the FDR method used for finding
 p-values of significant peaks in the data.
-See  \code{\link[stats]{p.adjust.methods}} (default= 'BH').
+See  \code{\link[stats:p.adjust.methods]{p.adjust.methods}} (default= 'BH').
 This parameter is mandatory if Stage 3 is run.}
 }
 \value{
@@ -235,7 +235,7 @@ files: \code{S1_RbowtieIndexPrefix.1.ebwt}, \code{S1_RbowtieIndexPrefix.2.ebwt},
 or with .ebwtl. Where \code{S1_RbowtieIndexPrefix} is also given as input.
 
 If \code{S1_RbowtieIndexBuild==TRUE} then the bowtie index will be build using the
-\code{\link[Rbowtie]{bowtie_build}} function. This function will need the .fa files
+\code{\link[Rbowtie:bowtie_build]{bowtie_build}} function. This function will need the .fa files
 which should be given as input in the \code{S1_RbowtieRefDir} vector. This is a character vector
 with the directories of the .fa files to use. The output index will be saved in
 \code{S1_RbowtieIndexDir}. if  \code{S1_RbowtieIndexBuild==FALSE} then  \code{S1_RbowtieRefDir}
@@ -246,7 +246,7 @@ Stage 1 right before (SA_Stages=c(2) or c(2,3), not c(1,2) or c(0,1,2) for examp
 If this is the case, the \code{S2_PairedEndBAMpath} has to be the path to the BAM/SAM paired-end file.
 The file has to include the header with the 'SN', 'LN' and 'AS' columns. Moreover the mate flags
 of the file have to be correct and also the duplicated PETs must be flagged too. Stage 2 will
-upload the whole data in R using \code{\link[GenomicAlignments]{readGAlignmentPairs}} function
+upload the whole data in R using \code{\link[GenomicAlignments:readGAlignmentPairs]{readGAlignmentPairs}} function
 with flags \code{isDuplicate=FALSE} and \code{isPaired=TRUE}. So if duplicated PETs are not
 flagged, they will be used in the analysis. If the previous
 stages are run in sequence, then  \code{S2_PairedEndBAMpath} will be overwritten with
@@ -285,7 +285,7 @@ Linker identification stage: This stage uses the two fastq files for the 5- and 
 }
 \item{Stage 1:}{
 PET mapping stage: This stage uses the usable PETs identified by stage 0. It maps them separately to the
-reference genome using  the \code{\link[Rbowtie]{bowtie}} function with no mismatch per read,
+reference genome using  the \code{\link[Rbowtie:bowtie]{bowtie}} function with no mismatch per read,
 and keeps the uniquely mapped reads only. It then maps the unmapped reads to the reference genome
 with at most one mismatch and keeps the uniquely mapped reads. Uniquely mapped reads with
 zero or one mismatch are then merged and paired, their duplicates are marked and a paired-end bam file
@@ -315,7 +315,7 @@ significance of the candidate peaks using a local Poisson model.}
 \section{Parallel}{
 
 All stages can be run in parallel using the
-\code{\link[BiocParallel]{register}}
+\code{\link[BiocParallel:register]{register}}
 function. The user has to register a parallel backhead before starting the
 function.
 }
@@ -373,7 +373,7 @@ class(SelfFitObject) # see methods for this class
 unlink(SA_AnalysisDir,recursive=TRUE)
 }
 \references{
-Vardaxis I, Drabløs F, Rye M and Lindqvist BH (2018). \emph{Model-based Analysis for ChIA-PET (MACPET)}.
+Vardaxis I, Drabløs F, Rye M and Lindqvist BH (2018). \emph{MACPET: Model-based Analysis for ChIA-PET}.
 To be published.
 
 Consortium EP (2012) \emph{An integrated encyclopedia of DNA elements in the human genome.}.

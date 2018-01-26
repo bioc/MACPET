@@ -2,7 +2,7 @@
 #' @author Ioannis Vardaxis, \email{ioannis.vardaxis@@ntnu.no}
 #'
 #' @references
-#' Vardaxis I, Drabløs F, Rye M and Lindqvist BH (2018). \emph{Model-based Analysis for ChIA-PET (MACPET)}.
+#' Vardaxis I, Drabløs F, Rye M and Lindqvist BH (2018). \emph{MACPET: Model-based Analysis for ChIA-PET}.
 #' To be published.
 #' @description \code{exportPeaks} is an S3 method for the  \linkS4class{PSFit}
 #' class. It exports peak information to a csv file in a given directory.
@@ -64,7 +64,7 @@ exportPeaks.PSFit = function(object, file.out, savedir, threshold = NULL, ...) {
         message("No threshold given, all the peaks are returned.")
     }
     if (nrow(x) == 0) {
-        stop("Threshold too low: No significant peaks in data. Try a higher threshold.", 
+        stop("Threshold too low: No significant peaks in data. Try a higher threshold.",
             call. = FALSE)
     }
     x = x[, -which(colnames(x) %in% c("Region", "Peak"))]
@@ -94,13 +94,13 @@ exportPeaks.PSFit = function(object, file.out, savedir, threshold = NULL, ...) {
     FDRDown = "#FDRDown: FDR correction for the right-stream Peak region."
     FDR = "#FDR:  FDR correction for the Peak."
     skip = "\n"
-    writeLines(paste(Desc1, Desc2, skip, Chrom, Pets, Peak.Summit, Up.Summit, Down.Summit, 
-        CIQ.Up.start, CIQ.Up.end, CIQ.Up.size, CIQ.Down.start, CIQ.Down.end, CIQ.Down.size, 
-        CIQ.Peak.size, lambdaUp, FoldEnrichUp, p.valueUp, lambdaDown, FoldEnrichDown, 
-        p.valueDown, p.value, FDRUp, FDRDown, FDR, skip, sep = "\n"), file.path(savedir, 
+    writeLines(paste(Desc1, Desc2, skip, Chrom, Pets, Peak.Summit, Up.Summit, Down.Summit,
+        CIQ.Up.start, CIQ.Up.end, CIQ.Up.size, CIQ.Down.start, CIQ.Down.end, CIQ.Down.size,
+        CIQ.Peak.size, lambdaUp, FoldEnrichUp, p.valueUp, lambdaDown, FoldEnrichDown,
+        p.valueDown, p.value, FDRUp, FDRDown, FDR, skip, sep = "\n"), file.path(savedir,
         paste(file.out, ".csv", sep = "")))
-    suppressWarnings(utils::write.table(x, quote = FALSE, file = file.path(savedir, 
-        paste(file.out, ".csv", sep = "")), sep = ";", col.names = TRUE, row.names = FALSE, 
+    suppressWarnings(utils::write.table(x, quote = FALSE, file = file.path(savedir,
+        paste(file.out, ".csv", sep = "")), sep = ";", col.names = TRUE, row.names = FALSE,
         qmethod = "double", append = TRUE))
     return("The output is saved at savedir")
 }

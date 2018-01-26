@@ -1,7 +1,7 @@
 #' @title Convert PETs to GInteractions object
 #' @author Ioannis Vardaxis, \email{ioannis.vardaxis@@ntnu.no}
 #' @references
-#' Vardaxis I, Drabløs F, Rye M and Lindqvist BH (2018). \emph{Model-based Analysis for ChIA-PET (MACPET)}.
+#' Vardaxis I, Drabløs F, Rye M and Lindqvist BH (2018). \emph{MACPET: Model-based Analysis for ChIA-PET}.
 #' To be published.
 #'
 #' @description \code{TagsToGInteractions} converts the PETs of an object of \code{\linkS4class{PSFit}}
@@ -49,7 +49,7 @@ TagsToGInteractions.default = function(object, ...) {
 #'  the peaks found in the data (removing noisy and insignificant PETs).
 #'  Furthermore, it also includes information about
 #'  the binding sites which can be accessed via the
-#'  \code{\link[S4Vectors]{metadata}} function.
+#'  \code{\link[S4Vectors:metadata]{metadata}} function.
 #' @export
 TagsToGInteractions.PSFit = function(object, threshold = NULL, ...) {
     # global variables for Rcheck:
