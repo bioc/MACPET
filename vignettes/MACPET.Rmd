@@ -11,7 +11,7 @@ abstract: |
     vignette an introduction of MACPET classes, methods and functions will be given.
 references:
 - id: macpet
-  title: Model based analysis for paired-end data
+  title: MACPET Model-based Analysis for ChIA-PET
   author:
   - family: Vardaxis
     given: Ioannis
