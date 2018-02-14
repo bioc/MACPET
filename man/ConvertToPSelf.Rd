@@ -14,7 +14,7 @@ ConvertToPSelf(object, ...)
   S2_AnalysisDir, ...)
 }
 \arguments{
-\item{object}{An object of \code{\link[InteractionSet:GInteractions]{GInteractions}} class.}
+\item{object}{An object of \code{\link[InteractionSet:GInteractions-class]{GInteractions}} class.}
 
 \item{...}{not used.}
 
@@ -28,7 +28,7 @@ ConvertToPSelf(object, ...)
 An object of class \code{\linkS4class{PSelf}}.
 }
 \description{
-\code{ConvertToPSelf} converts a GInteractions object to
+\code{ConvertToPSelf} converts a \code{\link[InteractionSet:GInteractions-class]{GInteractions}} object to
 class to \code{\linkS4class{PSelf}} object.
 }
 \details{
@@ -37,11 +37,11 @@ class to \code{\linkS4class{PSelf}} object.
 the paired-end BAM/SAM file as input. However the user might only have
 Self-ligated data available and already separated from the Inter/Intra-chromosomal
 PETs. \code{ConvertToPSelf} can then be used in the Self-ligated data to convert
-a \code{\link[InteractionSet:GInteractions]{GInteractions}} object containing only the Self-ligated
+a \code{\link[InteractionSet:GInteractions-class]{GInteractions}} object containing only the Self-ligated
 PETs to a \code{\linkS4class{PSelf}} class for further analysis in Stage 3.
 The object will be saved in the \code{S2_AnalysisDir} directory with the
  name \code{SA_prefix_pselfData}.
-Note that if \code{S2_BlackList==TRUE} then the \code{\link[InteractionSet:GInteractions]{GInteractions}}
+Note that if \code{S2_BlackList==TRUE} then the \code{\link[InteractionSet:GInteractions-class]{GInteractions}}
 object given as input has to include the genome name in the \code{seqinfo} slot.
 Also, the sequences lengths are mandatory in the \code{seqinfo} slot since they
 are used in stage 3 of the analysis.

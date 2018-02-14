@@ -83,6 +83,10 @@ exportPeaks.PSFit = function(object, file.out, savedir, threshold = NULL, ...) {
     CIQ.Down.end = "#CIQ.Down.end: End of 95 Quantile confidence interval for the right-stream PETs."
     CIQ.Down.size = "#CIQ.Down.size: Size of 95 Quantile confidence interval for the right-stream PETs."
     CIQ.Peak.size = "#CIQ.Peak.size: Size of the Peak based on the interval (CIQ.Up.start,CIQ.Down.end)."
+    sdx = "#sdx: The standard deviation of the upstream PETs."
+    lambdax = "#lambdax: The skewness of the upstream PETs."
+    sdy = "#sdy: The standard deviation of the downstream PETs."
+    lambday = "#lambday: The skewness of the downstream PETs."
     lambdaUp = "#lambdaUp: The expected number of PETs in the left-stream Peak region by random chance."
     FoldEnrichUp = "#FoldEnrichUp: Fold enrichment for the left-stream Peak region."
     p.valueUp = "#p.valueUp: p-value for the left-stream Peak region."
@@ -96,9 +100,9 @@ exportPeaks.PSFit = function(object, file.out, savedir, threshold = NULL, ...) {
     skip = "\n"
     writeLines(paste(Desc1, Desc2, skip, Chrom, Pets, Peak.Summit, Up.Summit, Down.Summit,
         CIQ.Up.start, CIQ.Up.end, CIQ.Up.size, CIQ.Down.start, CIQ.Down.end, CIQ.Down.size,
-        CIQ.Peak.size, lambdaUp, FoldEnrichUp, p.valueUp, lambdaDown, FoldEnrichDown,
-        p.valueDown, p.value, FDRUp, FDRDown, FDR, skip, sep = "\n"), file.path(savedir,
-        paste(file.out, ".csv", sep = "")))
+        CIQ.Peak.size, sdx, lambdax, sdy, lambday, lambdaUp, FoldEnrichUp, p.valueUp,
+        lambdaDown, FoldEnrichDown, p.valueDown, p.value, FDRUp, FDRDown, FDR,
+        skip, sep = "\n"), file.path(savedir, paste(file.out, ".csv", sep = "")))
     suppressWarnings(utils::write.table(x, quote = FALSE, file = file.path(savedir,
         paste(file.out, ".csv", sep = "")), sep = ";", col.names = TRUE, row.names = FALSE,
         qmethod = "double", append = TRUE))

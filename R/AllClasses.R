@@ -7,7 +7,7 @@
 #' To be published.
 #' @description  \code{\linkS4class{PSelf}} class in a S4 class which
 #'  inherits from the
-#' \code{\link[InteractionSet:GInteractions]{GInteractions}} class and it contains Self-ligated
+#' \code{\link[InteractionSet:GInteractions-class]{GInteractions}} class and it contains Self-ligated
 #' PETs from ChIA-PET experiment. Furthermore it also contains the following in the
 #' \code{\link[S4Vectors:metadata]{metadata}} field:
 #'  \describe{
@@ -32,7 +32,7 @@ PSelf = setClass("PSelf", contains = "GInteractions")
 #' To be published.
 #' @description \code{\linkS4class{PSFit}} class in a S4 class which
 #' inherits from the
-#' \code{\link[InteractionSet:GInteractions]{GInteractions}} class and it contains Self-ligated
+#' \code{\link[InteractionSet:GInteractions-class]{GInteractions}} class and it contains Self-ligated
 #' PETs from ChIA-PET experiment and information about the
 #' genome of the data. Furthermore it also contains the following in the
 #' \code{\link[S4Vectors:metadata]{metadata}} field:
@@ -60,6 +60,10 @@ PSelf = setClass("PSelf", contains = "GInteractions")
 #'   \item{\code{CIQ.Down.end}}{End of the 95 Quantile confidence interval for the right-stream PETs.}
 #'   \item{\code{CIQ.Down.size}}{Size of the 95 Quantile confidence interval for the right-stream PETs.}
 #'   \item{\code{CIQ.Peak.size}}{Size of the Peak based on the interval (CIQ.Up.start,CIQ.Down.end).}
+#'   \item{\code{sdx}}{The standard deviation of the upstream PETs. }
+#'   \item{\code{lambdax}}{The skewness of the upstream PETs.}
+#'   \item{\code{sdy}}{The standard deviation of the downstream PETs.}
+#'   \item{\code{lambday}}{The skewness of the downstream PETs.}
 #'   \item{\code{lambdaUp}}{The expected number of PETs in the left-stream Peak region by random chance.}
 #'   \item{\code{FoldEnrichUp}}{Fold enrichment for the left-stream Peak region.}
 #'   \item{\code{p.valueUp}}{p-value for the left-stream Peak region.}
@@ -88,7 +92,7 @@ PSFit = setClass("PSFit", contains = "GInteractions")
 #' To be published.
 #' @description \code{\linkS4class{PInter}} class in a S4 class which
 #'  inherits from the
-#' \code{\link[InteractionSet:GInteractions]{GInteractions}} class and it contains
+#' \code{\link[InteractionSet:GInteractions-class]{GInteractions}} class and it contains
 #' Inter-chromosomal data.
 #' @details \code{\linkS4class{PInter}} class is created by the
 #'  \code{\link{MACPETUlt}}
@@ -105,7 +109,7 @@ PInter = setClass("PInter", contains = "GInteractions")
 #' To be published.
 #' @description \code{\linkS4class{PIntra}} class in a S4 class which
 #' inherits from the
-#' \code{\link[InteractionSet:GInteractions]{GInteractions}} class and it contains
+#' \code{\link[InteractionSet:GInteractions-class]{GInteractions}} class and it contains
 #' Intra-chromosomal data.
 #' @details \code{\linkS4class{PIntra}} class is created by the
 #' \code{\link{MACPETUlt}}

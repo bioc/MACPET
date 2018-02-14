@@ -33,11 +33,11 @@
 #' \item{\code{\link{plot}}}{Method for plotting different objects.}
 #' \item{\code{\link{summary}}}{Method for summarizing different objects.}
 #' \item{\code{\link{TagsToGInteractions}}}{Method for converting Tags to
-#' \code{\linkS4class{GInteractions}} class.}
+#' \code{\link[InteractionSet:GInteractions-class]{GInteractions}} class.}
 #' \item{\code{\link{PeaksToGRanges}}}{Method for converting peaks to
 #' \code{\linkS4class{GRanges}} class.}
 #' \item{\code{\link{exportPeaks}}}{Method for exporting peaks in cvs file format.}
-#' \item{\code{\link{ConvertToPSelf}}}{Method for converting a GInteractions class of
+#' \item{\code{\link{ConvertToPSelf}}}{Method for converting a \code{\link[InteractionSet:GInteractions-class]{GInteractions}} class of
 #' Self-ligated PETs to object of \code{\linkS4class{PSelf}} class.}
 #' \item{\code{\link{PeaksToNarrowPeak}}}{Method for converting peaks to narrowPeak (BED) format for use in
 #' interaction analysis using the MANGO algorithm.}

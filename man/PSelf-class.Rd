@@ -8,7 +8,7 @@
 \description{
 \code{\linkS4class{PSelf}} class in a S4 class which
  inherits from the
-\code{\link[InteractionSet:GInteractions]{GInteractions}} class and it contains Self-ligated
+\code{\link[InteractionSet:GInteractions-class]{GInteractions}} class and it contains Self-ligated
 PETs from ChIA-PET experiment. Furthermore it also contains the following in the
 \code{\link[S4Vectors:metadata]{metadata}} field:
  \describe{

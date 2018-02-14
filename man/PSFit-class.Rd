@@ -8,7 +8,7 @@
 \description{
 \code{\linkS4class{PSFit}} class in a S4 class which
 inherits from the
-\code{\link[InteractionSet:GInteractions]{GInteractions}} class and it contains Self-ligated
+\code{\link[InteractionSet:GInteractions-class]{GInteractions}} class and it contains Self-ligated
 PETs from ChIA-PET experiment and information about the
 genome of the data. Furthermore it also contains the following in the
 \code{\link[S4Vectors:metadata]{metadata}} field:
@@ -36,6 +36,10 @@ genome of the data. Furthermore it also contains the following in the
   \item{\code{CIQ.Down.end}}{End of the 95 Quantile confidence interval for the right-stream PETs.}
   \item{\code{CIQ.Down.size}}{Size of the 95 Quantile confidence interval for the right-stream PETs.}
   \item{\code{CIQ.Peak.size}}{Size of the Peak based on the interval (CIQ.Up.start,CIQ.Down.end).}
+  \item{\code{sdx}}{The standard deviation of the upstream PETs. }
+  \item{\code{lambdax}}{The skewness of the upstream PETs.}
+  \item{\code{sdy}}{The standard deviation of the downstream PETs.}
+  \item{\code{lambday}}{The skewness of the downstream PETs.}
   \item{\code{lambdaUp}}{The expected number of PETs in the left-stream Peak region by random chance.}
   \item{\code{FoldEnrichUp}}{Fold enrichment for the left-stream Peak region.}
   \item{\code{p.valueUp}}{p-value for the left-stream Peak region.}

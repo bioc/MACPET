@@ -8,7 +8,7 @@
 \description{
 \code{\linkS4class{PInter}} class in a S4 class which
  inherits from the
-\code{\link[InteractionSet:GInteractions]{GInteractions}} class and it contains
+\code{\link[InteractionSet:GInteractions-class]{GInteractions}} class and it contains
 Inter-chromosomal data.
 }
 \details{

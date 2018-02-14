@@ -5,7 +5,7 @@
 #' To be published.
 #'
 #' @description \code{TagsToGInteractions} converts the PETs of an object of \code{\linkS4class{PSFit}}
-#' class to \code{\linkS4class{GInteractions}} object.
+#' class to \code{\link[InteractionSet:GInteractions-class]{GInteractions}} object.
 #'
 #'
 #' @param object An object of class \code{\linkS4class{PSFit}}.
@@ -45,7 +45,7 @@ TagsToGInteractions.default = function(object, ...) {
 #' @rdname TagsToGInteractions
 #' @method TagsToGInteractions PSFit
 #' @return For \code{\linkS4class{PSFit}} class:
-#' A \code{\linkS4class{GInteractions}} object containing PETs from all
+#' A \code{\link[InteractionSet:GInteractions-class]{GInteractions}} object containing PETs from all
 #'  the peaks found in the data (removing noisy and insignificant PETs).
 #'  Furthermore, it also includes information about
 #'  the binding sites which can be accessed via the
