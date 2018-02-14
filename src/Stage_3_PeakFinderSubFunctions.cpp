@@ -1684,7 +1684,7 @@ Rcpp::DataFrame GetPeakInf_Rcpp(Rcpp::List const &OptParam,
     //---------
     // initiate the output matrix:
     //---------
-    Rcpp::NumericMatrix GlobalPeaksInfo(Gused,13);
+    Rcpp::NumericMatrix GlobalPeaksInfo(Gused,17);
     int PeakID=0;//PeakID(for peak name and matrix index)
     for(int g=0;g<G;g++){//loop to all and skip the empty
         if(OptClassTot[g]>=2&&!std::isnan(sdx_g[g])&&
@@ -1692,7 +1692,7 @@ Rcpp::DataFrame GetPeakInf_Rcpp(Rcpp::List const &OptParam,
            !std::isnan(sdy_g[g])&&!std::isnan(lambday_g[g])&&
            !std::isnan(my_g[g])){//non-empty:NOTE: This removes both empty clusters and NAN clusters.
 
-           GlobalPeaksInfo(PeakID,0)=Region;
+            GlobalPeaksInfo(PeakID,0)=Region;
             GlobalPeaksInfo(PeakID,1)=PeakID+1;
             GlobalPeaksInfo(PeakID,2)=OptClassTot[g];
             GlobalPeaksInfo(PeakID,3)=std::round((mx_g[g]+my_g[g])/2.0);//Peak.Summit
@@ -1702,6 +1702,12 @@ Rcpp::DataFrame GetPeakInf_Rcpp(Rcpp::List const &OptParam,
             GetQuantilesCI_Rcpp(sdx_g[g],lambdax_g[g],mx_g[g],sdy_g[g],
                                 lambday_g[g],my_g[g],GlobalPeaksInfo,PeakID,
                                 ChromSize);
+            // Add the 4 other parameters, note that mx and my are named as up/down summits:
+            GlobalPeaksInfo(PeakID,13)=sdx_g[g];
+            GlobalPeaksInfo(PeakID,14)=lambdax_g[g];
+            GlobalPeaksInfo(PeakID,15)=sdy_g[g];
+            GlobalPeaksInfo(PeakID,16)=lambday_g[g];
+
             // save old peak name to fix the classes:
             OldPeakNames.push_back(g+1);
             // increase PeakID and index:
@@ -1723,7 +1729,11 @@ Rcpp::DataFrame GetPeakInf_Rcpp(Rcpp::List const &OptParam,
                                                 Rcpp::Named("CIQ.Down.start")=GlobalPeaksInfo(_,9),
                                                 Rcpp::Named("CIQ.Down.end")=GlobalPeaksInfo(_,10),
                                                 Rcpp::Named("CIQ.Down.size")=GlobalPeaksInfo(_,11),
-                                                Rcpp::Named("CIQ.Peak.size")=GlobalPeaksInfo(_,12));
+                                                Rcpp::Named("CIQ.Peak.size")=GlobalPeaksInfo(_,12),
+                                                Rcpp::Named("sdx")=GlobalPeaksInfo(_,13),
+                                                Rcpp::Named("lambdax")=GlobalPeaksInfo(_,14),
+                                                Rcpp::Named("sdy")=GlobalPeaksInfo(_,15),
+                                                Rcpp::Named("lambday")=GlobalPeaksInfo(_,16));
 
     return Res;
 

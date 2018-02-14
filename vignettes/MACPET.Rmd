@@ -176,6 +176,10 @@ a data.frame with the following entries:
 * CIQ.Down.end: End of 95 Quantile confidence interval for the right-stream PETs.
 * CIQ.Down.size: Size of 95 Quantile confidence interval for the right-stream PETs.
 * CIQ.Peak.size: Size of the Peak based on the interval (CIQ.Up.start,CIQ.Down.end).
+* sdx: The standard deviation of the upstream PETs.
+* lambdax: The skewness of the upstream PETs. 
+* sdy: The standard deviation of the downstream PETs.
+* lambday: The skewness of the downstream PETs.
 * lambdaUp: The expected number of PETs in the left-stream Peak region by random chance.
 * FoldEnrichUp: Fold enrichment for the left-stream Peak region.
 * p.valueUp: p-value for the left-stream Peak region.
