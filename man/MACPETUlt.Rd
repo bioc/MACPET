@@ -235,7 +235,7 @@ files: \code{S1_RbowtieIndexPrefix.1.ebwt}, \code{S1_RbowtieIndexPrefix.2.ebwt},
 or with .ebwtl. Where \code{S1_RbowtieIndexPrefix} is also given as input.
 
 If \code{S1_RbowtieIndexBuild==TRUE} then the bowtie index will be build using the
-\code{\link[Rbowtie:bowtie_build]{bowtie_build}} function. This function will need the .fa files
+\code{\link[Rbowtie:Rbowtie]{bowtie_build}} function. This function will need the .fa files
 which should be given as input in the \code{S1_RbowtieRefDir} vector. This is a character vector
 with the directories of the .fa files to use. The output index will be saved in
 \code{S1_RbowtieIndexDir}. if  \code{S1_RbowtieIndexBuild==FALSE} then  \code{S1_RbowtieRefDir}
@@ -285,7 +285,7 @@ Linker identification stage: This stage uses the two fastq files for the 5- and 
 }
 \item{Stage 1:}{
 PET mapping stage: This stage uses the usable PETs identified by stage 0. It maps them separately to the
-reference genome using  the \code{\link[Rbowtie:bowtie_build]{bowtie}} function with no mismatch per read,
+reference genome using  the \code{\link[Rbowtie:Rbowtie]{bowtie}} function with no mismatch per read,
 and keeps the uniquely mapped reads only. It then maps the unmapped reads to the reference genome
 with at most one mismatch and keeps the uniquely mapped reads. Uniquely mapped reads with
 zero or one mismatch are then merged and paired, their duplicates are marked and a paired-end bam file
