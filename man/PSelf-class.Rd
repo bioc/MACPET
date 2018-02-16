@@ -10,7 +10,7 @@
  inherits from the
 \code{\link[InteractionSet:GInteractions-class]{GInteractions}} class and it contains Self-ligated
 PETs from ChIA-PET experiment. Furthermore it also contains the following in the
-\code{\link[S4Vectors:metadata]{metadata}} field:
+\code{\link[S4Vectors:Annotated-class]{metadata}} field:
  \describe{
  \item{\code{Self_info}}{ A data.frame with the count statistics for the total PETs in each chromosome.}
  \item{\code{SLmean}}{The mean size of the PETs in the data.}

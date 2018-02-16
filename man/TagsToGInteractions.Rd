@@ -27,7 +27,7 @@ A \code{\link[InteractionSet:GInteractions-class]{GInteractions}} object contain
  the peaks found in the data (removing noisy and insignificant PETs).
  Furthermore, it also includes information about
  the binding sites which can be accessed via the
- \code{\link[S4Vectors:metadata]{metadata}} function.
+ \code{\link[S4Vectors:Annotated-class]{metadata}} function.
 }
 \description{
 \code{TagsToGInteractions} converts the PETs of an object of \code{\linkS4class{PSFit}}

@@ -11,7 +11,7 @@ inherits from the
 \code{\link[InteractionSet:GInteractions-class]{GInteractions}} class and it contains Self-ligated
 PETs from ChIA-PET experiment and information about the
 genome of the data. Furthermore it also contains the following in the
-\code{\link[S4Vectors:metadata]{metadata}} field:
+\code{\link[S4Vectors:Annotated-class]{metadata}} field:
  \describe{
  \item{\code{Self_info}}{Counts statistics for the total PETs,
  total regions and total Peaks in each chromosome.}

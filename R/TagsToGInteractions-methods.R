@@ -49,7 +49,7 @@ TagsToGInteractions.default = function(object, ...) {
 #'  the peaks found in the data (removing noisy and insignificant PETs).
 #'  Furthermore, it also includes information about
 #'  the binding sites which can be accessed via the
-#'  \code{\link[S4Vectors:metadata]{metadata}} function.
+#'  \code{\link[S4Vectors:Annotated-class]{metadata}} function.
 #' @export
 TagsToGInteractions.PSFit = function(object, threshold = NULL, ...) {
     # global variables for Rcheck:
