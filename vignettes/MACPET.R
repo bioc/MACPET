@@ -45,6 +45,14 @@ MACPET_pintraData#print method
 metadata(MACPET_pintraData)
 
 ## --------------------------------------------------------------------------
+load(system.file("extdata", "MACPET_GenomeMapData.rda", package = "MACPET"))
+class(MACPET_GenomeMapData) #example name
+MACPET_GenomeMapData #print method
+
+## --------------------------------------------------------------------------
+metadata(MACPET_GenomeMapData)
+
+## --------------------------------------------------------------------------
 class(MACPET_pselfData)
 summary(MACPET_pselfData)
 
@@ -63,6 +71,10 @@ class(MACPET_pinterData)
 requireNamespace("ggplot2")
 requireNamespace("reshape2")
 summary(MACPET_pinterData,heatmap=TRUE)
+
+## --------------------------------------------------------------------------
+class(MACPET_GenomeMapData)
+summary(MACPET_GenomeMapData)
 
 ## --------------------------------------------------------------------------
 requireNamespace("ggplot2")
@@ -89,6 +101,12 @@ class(MACPET_pinterData)
 requireNamespace("igraph")
 #network plot:
 plot(MACPET_pinterData)
+
+## --------------------------------------------------------------------------
+class(MACPET_GenomeMapData)
+requireNamespace("igraph")
+#network plot:
+plot(MACPET_GenomeMapData,Type='network-circle')
 
 ## ----eval=TRUE,echo=TRUE---------------------------------------------------
 class(MACPET_psfitData)#PSFit class
@@ -129,6 +147,12 @@ rm(MACPET_pselfData)#old object
 load(file.path(S2_AnalysisDir,"MACPET_pselfData"))
 class(MACPET_pselfData)
 
+
+## ----eval=TRUE,echo=TRUE---------------------------------------------------
+class(MACPET_GenomeMapData)#GenomeMap class
+GetSignInteractions(object=MACPET_GenomeMapData,
+                     threshold = NULL,
+                     ReturnedAs='GInteractions')
 
 ## ----echo=TRUE,eval=TRUE---------------------------------------------------
 AnalysisStatistics(x.self=MACPET_psfitData,
@@ -181,14 +205,19 @@ SA_prefix="MACPET"
 #snow <- BiocParallel::SnowParam(workers = 4, type = 'SOCK', progressbar=FALSE)
 #BiocParallel::register(snow, default=TRUE)
 
+# packages for plotting:
+requireNamespace('ggplot2')
+
 #-run for the whole binding site analysis:
 MACPETUlt(SA_AnalysisDir=SA_AnalysisDir,
-       SA_stages=c(2:3),
+       SA_stages=c(2:4),
        SA_prefix=SA_prefix,
        S2_PairedEndBAMpath=S2_PairedEndBAMpath,
        S2_image=TRUE,
        S2_BlackList=TRUE,
-       S3_image=TRUE)
+       S3_image=TRUE,
+       S4_image=TRUE,
+       S4_FDR_peak=1)# the data is small so use all the peaks found.
 
 #load results:
 SelfObject=paste(SA_prefix,"_pselfData",sep="")
@@ -210,6 +239,12 @@ SelfFitObject=paste(SA_prefix,"_psfitData",sep="")
 load(file.path(SA_AnalysisDir,"S3_results",SelfFitObject))
 SelfFitObject=get(SelfFitObject)
 class(SelfFitObject) # see methods for this class
+
+GenomeMapObject=paste(SA_prefix,"_GenomeMapData",sep="")
+load(file.path(SA_AnalysisDir,"S4_results",GenomeMapObject))
+GenomeMapObject=get(GenomeMapObject)
+class(GenomeMapObject) # see methods for this class
+
 #-----delete test directory:
 unlink(SA_AnalysisDir,recursive=TRUE)
 

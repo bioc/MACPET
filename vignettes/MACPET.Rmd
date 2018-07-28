@@ -48,7 +48,7 @@ BiocStyle::latex2
 \section{Introduction}
 
 The \Biocpkg{MACPET} package can be used for general analysis of paired-end (PET) data like ChIA-PET.
-\Biocpkg{MACPET} currently implements the following four stages:
+\Biocpkg{MACPET} currently implements the following five stages:
 
 * Stage 0 (Linker filtering): Identifies linkers A and B in the fastq files and classifies the
 reads as usable (A/A,B/B), chimeric (A/B,B/A) and ambiguous (non/A, non/B, A/non, B/non).
@@ -63,10 +63,10 @@ regions. It then uses both reads of each PET and applies 2D mixture models for i
 clusters which represent candidate binding sites using the
 skewed generalized students-t distributions (SGT). Finally, it uses a local Poisson
 model for finding significant binding sites. 
+* Stage 4 (Interaction-calling): This stage uses the intra- and inter-chromosomal PETs found in State 2, as well as the significant Peaks found in Stage 3 for calling for significant interactions. NOTE: currently inter-chromosomal PETs are not supported.
 
 
-\Biocpkg{MACPET} identifies binding site locations more accurately than other algorithms which use only one end (like MACS) [@macpet]. The output from \Biocpkg{MACPET} can be used for interaction analysis using either MANGO or MICC. However there are plans to extend the package and include interaction analysis in the future. Note that in the case of using the output from \Biocpkg{MACPET} in MANGO or MICC for interaction analysis, the user should use the self-ligated cut-off found by \Biocpkg{MACPET}, and not the one found in MANGO or MICC. Both of those algorithms allow the user to specify the self-ligated cut-off. MACPET is mainly written in C++,
-and it supports the  \Biocpkg{BiocParallel}  package.
+\Biocpkg{MACPET} identifies binding site locations more accurately than other algorithms which use only one end (like MACS) [@macpet]. The output from Stage 3 in \Biocpkg{MACPET} can be used for interaction analysis using either MANGO or MICC, or the user can run State 4 in \Biocpkg{MACPET} for interaction analysis. Note that in the case of using the output from \Biocpkg{MACPET} in MANGO or MICC for interaction analysis, the user should use the self-ligated cut-off found by \Biocpkg{MACPET}, and not the one found in MANGO or MICC. Both of those algorithms allow the user to specify the self-ligated cut-off. MACPET is mainly written in C++, and it supports the  \Biocpkg{BiocParallel}  package.
 
 
 Before starting with examples of how to use \Biocpkg{MACPET}, create a 
@@ -87,7 +87,7 @@ library(MACPET)
 \section{\Biocpkg{MACPET} Classes}
 \label{sec:classes}
 
-\Biocpkg{MACPET} provides four different classes which all inherit from the 
+\Biocpkg{MACPET} provides five different classes which all inherit from the 
 \Rclass{GInteractions} class in the \Biocpkg{InteractionSet} package. Therefore, 
 every method associated with the \Rclass{GInteractions} class is also applicable 
 to the \Biocpkg{MACPET} classes. Every \Biocpkg{MACPET} class contains information 
@@ -112,7 +112,10 @@ function at stage 2.
 * \textcolor{LimeGreen}{\Rclass{PIntra}} class contains information about Intra-chromosomal
 PETs in the data. This class is created using the \Rfunction{MACPETUlt}
 function at stage 2.
-
+* \textcolor{LimeGreen}{\Rclass{GenomeMap}} class contains information about
+the interactions in the genome. This class is created using the \Rfunction{MACPETUlt}
+function at stage 4. Then the user can use the \Rfunction{GetSignInteractions} function for subseting the 
+significant interactions from the object and return a \Rclass{GInteractions} class object.
 
 \subsection{\textcolor{LimeGreen}{\Rclass{PSelf}} Class}
 
@@ -242,8 +245,27 @@ It also contains a two-element metadata list with the following elements:
 ```{r}
 metadata(MACPET_pintraData)
 ```
+\subsection{\textcolor{LimeGreen}{\Rclass{GenomeMap}} Class}
 
+The \textcolor{LimeGreen}{\Rclass{GenomeMap}} class contains all potential interactions between pairs
+of peaks, as well as the peaks' anchors.
+```{r}
+load(system.file("extdata", "MACPET_GenomeMapData.rda", package = "MACPET"))
+class(MACPET_GenomeMapData) #example name
+MACPET_GenomeMapData #print method
+```
+Extra information of this class is stored as list in the metadata entries with 
+the following elements: 
 
+* pvalue: The p-value of the interaction.
+* FDR: The FDR of the interaction.
+* Order: The order the interaction was entered into the model.
+* TotalInterPETs:  The total interaction PETs between every two interacting peaks.
+
+Each row in the metadata entry corresponds to the same row in the main object.
+```{r}
+metadata(MACPET_GenomeMapData)
+```
 <!--  methods -->
 \section{\Biocpkg{MACPET} Methods}
 
@@ -298,6 +320,15 @@ class(MACPET_pinterData)
 requireNamespace("ggplot2")
 requireNamespace("reshape2")
 summary(MACPET_pinterData,heatmap=TRUE)
+```
+\subsubsection{\textcolor{LimeGreen}{\Rclass{GenomeMap}} Class}
+
+\Rfunction{summary} for \textcolor{LimeGreen}{\Rclass{GenomeMap}} class prints information about
+the total number of interactions in the data. The user can provide a threshold for the FDR cut-off of the
+significant interactions to make the summary from. Alternatively if threshold=NULL all the interactions will be used for the summary.
+```{r}
+class(MACPET_GenomeMapData)
+summary(MACPET_GenomeMapData)
 ```
 
 <!-- plot -->
@@ -369,6 +400,20 @@ requireNamespace("igraph")
 plot(MACPET_pinterData)
 ```
 
+\subsubsection{\textcolor{LimeGreen}{\Rclass{GenomeMap}} Class}
+\Rfunction{plot} for \textcolor{LimeGreen}{\Rclass{GenomeMap}} Class.
+Different kind of plot can be created using the Type parameter.
+The user can also specify a threshold for the significant interactions to make the plots from.
+In the following example, each node represents a chromosome and the edges show which chromosomes
+have significant interactions between them.
+```{r}
+class(MACPET_GenomeMapData)
+requireNamespace("igraph")
+#network plot:
+plot(MACPET_GenomeMapData,Type='network-circle')
+```
+
+
 \subsection{exportPeaks methods}
 \textcolor{LimeGreen}{\Rclass{PSFit}} 
 class has a method which exports the binding site information stored in 
@@ -421,7 +466,7 @@ TagsToGInteractions(object=MACPET_psfitData,threshold=1e-5)
 class has a method which converts peaks of an object of \textcolor{LimeGreen}{\Rclass{PSFit}}
 class to narrowPeak object. 
 The object is saved in a user specified directory and can be used in the
-MANGO or MICC algorithms for interaction analysis.
+MANGO or MICC algorithms for interaction analysis. Alternatively, the user can use stage 4 in \Rfunction{MACPETUlt} for running the interaction analysis stage.
 
 ```{r,eval=TRUE,echo=TRUE}
 class(MACPET_psfitData)#PSFit class
@@ -459,6 +504,19 @@ load(file.path(S2_AnalysisDir,"MACPET_pselfData"))
 class(MACPET_pselfData)
 
 ```
+
+\subsection{GetSignInteractions methods}
+\textcolor{LimeGreen}{\Rclass{GenomeMap}} 
+class has a method which subsets the significant interactions given a user-specified FDR threshold and
+returns either a \textcolor{LimeGreen}{\Rclass{GInteractions}} class object for the interactions (each row corresponds to one interaction), or it saves the significant interactions into an excel file in a user specified directory. Metadata columns are also provided which given further information about each interaction.
+
+```{r,eval=TRUE,echo=TRUE}
+class(MACPET_GenomeMapData)#GenomeMap class
+GetSignInteractions(object=MACPET_GenomeMapData,
+                     threshold = NULL,
+                     ReturnedAs='GInteractions')
+```
+
 <!--  supplementary functions -->
 \section{\Biocpkg{MACPET} Supplementary functions}
 
@@ -484,6 +542,7 @@ AnalysisStatistics(x.self=MACPET_psfitData,
                    threshold=1e-5)
 
 ```
+
 \subsection{ConvertToPE\_BAM function}
 
 \Rfunction{ConvertToPE\_BAM} in case the user has two separate BAM files from 
@@ -525,10 +584,10 @@ GenomicAlignments::readGAlignmentPairs(file = bamfile,use.names = FALSE,
 \section{Peak Calling Workflow}
 
 The main function which the user can use for running a paired-end data 
-analysis is called \Rfunction{MACPETUlt}. It consists of the  four stages described
-in the introduction section. The user may run the whole pipeline/analysis at once using Stages=c(0:3) or step by step using a single stage at a time. The function supports the \Biocpkg{BiocParallel} package.
+analysis is called \Rfunction{MACPETUlt}. It consists of the  five stages described
+in the introduction section. The user may run the whole pipeline/analysis at once using Stages=c(0:4) or step by step using a single stage at a time. The function supports the \Biocpkg{BiocParallel} package.
 
-For the following example we run stages 2 and 3 of the \Rfunction{MACPETUlt} only.
+For the following example we run stages 2 and 4 of the \Rfunction{MACPETUlt} only.
 The reason is that for running state 1, the bowtie index is needed which is 
 too big for downloading it here.
 
@@ -547,14 +606,19 @@ SA_prefix="MACPET"
 #snow <- BiocParallel::SnowParam(workers = 4, type = 'SOCK', progressbar=FALSE)
 #BiocParallel::register(snow, default=TRUE)
 
+# packages for plotting:
+requireNamespace('ggplot2')
+
 #-run for the whole binding site analysis:
 MACPETUlt(SA_AnalysisDir=SA_AnalysisDir,
-       SA_stages=c(2:3),
+       SA_stages=c(2:4),
        SA_prefix=SA_prefix,
        S2_PairedEndBAMpath=S2_PairedEndBAMpath,
        S2_image=TRUE,
        S2_BlackList=TRUE,
-       S3_image=TRUE)
+       S3_image=TRUE,
+       S4_image=TRUE,
+       S4_FDR_peak=1)# the data is small so use all the peaks found.
 
 #load results:
 SelfObject=paste(SA_prefix,"_pselfData",sep="")
@@ -576,6 +640,12 @@ SelfFitObject=paste(SA_prefix,"_psfitData",sep="")
 load(file.path(SA_AnalysisDir,"S3_results",SelfFitObject))
 SelfFitObject=get(SelfFitObject)
 class(SelfFitObject) # see methods for this class
+
+GenomeMapObject=paste(SA_prefix,"_GenomeMapData",sep="")
+load(file.path(SA_AnalysisDir,"S4_results",GenomeMapObject))
+GenomeMapObject=get(GenomeMapObject)
+class(GenomeMapObject) # see methods for this class
+
 #-----delete test directory:
 unlink(SA_AnalysisDir,recursive=TRUE)
 
@@ -583,7 +653,7 @@ unlink(SA_AnalysisDir,recursive=TRUE)
 
 
  \Rfunction{MACPETUlt} saves its outputs in SA\_AnalysisDir in the folders
- S0\_results, S1\_results, S2\_results and S3\_results based on the stages run.
+ S0\_results, S1\_results, S2\_results, S3\_results and S4\_results based on the stages run.
  The output of \Rfunction{MACPETUlt} in those folders is the following:
  
 Stage 0: (output saved in a folder named S0\_results in  SA\_AnalysisDir)
@@ -629,7 +699,15 @@ Stage 3: (output saved in a folder named S3\_results in  SA\_AnalysisDir)
 * SA\_prefix\_stage\_3\_p3\_image.jpg: Comparison of binding site sizes given their FDR (if S3\_image==TRUE).
 * SA\_prefix\_stage\_3\_p4\_image.jpg: FDR for the upstream/donwstream peaks of the binding sites given the binding sites FDR (if S3\_image==TRUE).
 
-Stages 0:3:
+Stage 4: (output saved in a folder named S4\_results in  SA\_AnalysisDir)
+
+* SA\_prefix\_GenomeMapData: An object of \textcolor{LimeGreen}{\Rclass{GenomeMap}} class. This object contains all the interactions found in the data.
+* SA\_prefix\_stage\_4\_p1\_image.jpg: Pie charts for the total number of peaks used in the 
+interaction analysis as well as the total number of interaction PETs used (if S4\_image==TRUE).
+
+
+
+Stages 0:4:
 
 *  All the above outputs in separate folders.
  
