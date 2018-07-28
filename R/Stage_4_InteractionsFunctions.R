@@ -56,7 +56,7 @@ Stage_4_Main_fun = function(SA_prefix, S4_AnalysisDir, S4_FitObject, S4_IntraObj
     futile.logger::flog.info(paste("Total bi-products removed: ", InteractionResults$TotBiRem),
         name = "SA_LogFile", capture = FALSE)
     #--------------------------------------------
-    #-----Create Genome Map object (suppressWarnings for trimming)
+    #----Create Genome Map object (suppressWarnings for trimming)
     #--------------------------------------------
     suppressWarnings(Create_GenomeMapObject(InteractionResults = InteractionResults,
         SA_prefix = SA_prefix, S4_AnalysisDir = S4_AnalysisDir))
