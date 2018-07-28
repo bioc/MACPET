@@ -10,6 +10,16 @@ note = paste("R package version ", R.Version()$major, ".", R.Version()$minor, se
 textVersion = paste("I. Vardaxis, F. Drabløs, M. Rye, B.H Lindqvist (2018) MACPET: Model-based Analysis for ChIA-PET")
 	)
 
+citEntry(entry  = "unpublished",
+         title  = "MACPET: Complete pipeline for ChIA-PET",
+         author = c(person("Ioannis","Vardaxis"),
+		     person("Finn","Drabløs"),
+                    person("Morten","Rye"),
+                    person("Bo Henry","Lindqvist")),
+note = paste("R package version ", R.Version()$major, ".", R.Version()$minor, sep = ""),
+textVersion = paste("I. Vardaxis, F. Drabløs, M. Rye, B.H Lindqvist (2018) MACPET: Complete pipeline for ChIA-PET")
+	)
+
 citFooter("This free open-source software implements academic
 research by the authors. If you use it,
 please support the project by citing the appropriate
