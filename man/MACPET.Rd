@@ -7,8 +7,9 @@
 \title{An R-package for binding site analysis of ChIA-PET data.}
 \description{
 The MACPET package can be used for general analysis of paired-end (PET) data like ChIA-PET.
-MACPET currently implements the following four stages: Linker filtering (stage 0), mapping to
-the reference genome (stage 1), PET classification (stage 2) and peak-calling (stage 3).
+MACPET currently implements the following five stages: Linker filtering (stage 0), mapping to
+the reference genome (stage 1), PET classification (stage 2), peak-calling (stage 3) and interaction analysis (stage 4).
+The interaction analysis stage (4) currently supports only intra-chromosomal data.
 All of the MACPET stages can be run at once, or separately.
 In stage 0, MACPET identifies the linkers in the fastq files and classifies the
 reads as usable, chimeric or ambiguous. Usable reads are considered in the
@@ -19,7 +20,9 @@ Self-ligated PETs are used in stage 3 for the identification of significant peak
 In stage 3, MACPET segments the genome into regions and
 applies 2D mixture models for identifying candidate peaks using
 skewed generalized students-t distributions (SGT). It then uses a local poisson
-model for finding significant binding sites. MACPET is mainly written in C++,
+model for finding significant binding sites. Finally, in stage 4, MACPET uses the peaks from stage 3 as well as the
+Intra-chromosomal PETs from stage 2 to running an additive interaction-analysis model.
+  MACPET is mainly written in C++,
 and it supports the BiocParallel package.
 }
 \section{MACPET main function}{
@@ -34,6 +37,7 @@ and it supports the BiocParallel package.
 \item{\code{\linkS4class{PSFit}}}{S4 class for Self-ligated PETs after peak-calling.}
 \item{\code{\linkS4class{PInter}}}{S4 class for Inter-chromosomal PETs.}
 \item{\code{\linkS4class{PIntra}}}{S4 class for Intra-chromosomal PETs.}
+\item{\code{\linkS4class{GenomeMap}}}{S4 class for the interactions found in the data.}
 }
 }
 
@@ -49,8 +53,9 @@ and it supports the BiocParallel package.
 \item{\code{\link{exportPeaks}}}{Method for exporting peaks in cvs file format.}
 \item{\code{\link{ConvertToPSelf}}}{Method for converting a \code{\link[InteractionSet:GInteractions-class]{GInteractions}} class of
 Self-ligated PETs to object of \code{\linkS4class{PSelf}} class.}
+ \item{\code{\link{GetSignInteractions}}}{Method for subseting the significant interactions of a \code{\linkS4class{GenomeMap}} object.}
 \item{\code{\link{PeaksToNarrowPeak}}}{Method for converting peaks to narrowPeak (BED) format for use in
-interaction analysis using the MANGO algorithm.}
+interaction analysis using the MANGO/MICC algorithm. Alternatively the user can run stage 4 at \code{\link{MACPETUlt}}.}
 }
 }
 
@@ -73,11 +78,15 @@ objects.}
 \item{\code{\link{MACPET_pintraData.rda}}}{Sample \code{\linkS4class{PIntra}} data.}
 \item{\code{\link{MACPET_pselfData.rda}}}{Sample \code{\linkS4class{PSelf}} data.}
 \item{\code{\link{MACPET_psfitData.rda}}}{Sample \code{\linkS4class{PSFit}} data.}
+\item{\code{\link{MACPET_GenomeMapData.rda}}}{Sample \code{\linkS4class{GenomeMap}} data.}
 }
 }
 
 \references{
 Vardaxis I, Drabløs F, Rye M and Lindqvist BH (2018). \emph{MACPET: Model-based Analysis for ChIA-PET}.
+To be published.
+
+Vardaxis I, Drabløs F, Rye M and Lindqvist BH (2018). \emph{MACPET: Complete pipeline for ChIA-PET}.
 To be published.
 }
 \author{

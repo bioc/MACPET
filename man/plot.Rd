@@ -6,6 +6,7 @@
 \alias{plot.PIntra}
 \alias{plot.PSelf}
 \alias{plot.PSFit}
+\alias{plot.GenomeMap}
 \title{plot methods for MACPET classes}
 \usage{
 \method{plot}{PInter}(x, ...)
@@ -15,6 +16,8 @@
 \method{plot}{PSelf}(x, ...)
 
 \method{plot}{PSFit}(x, kind, RegIndex = NULL, threshold = NULL, ...)
+
+\method{plot}{GenomeMap}(x, Type, threshold = NULL, ...)
 }
 \arguments{
 \item{x}{An object of correct class used to create different plots.}
@@ -39,7 +42,11 @@
 \item{RegIndex}{an integer indicating which region to plot (1 means the biggest
 in terms of total PETs.)}
 
-\item{threshold}{The FDR cut-off when plotting the total significant peaks for each chromosome in the data.}
+\item{threshold}{The FDR cut-off when plotting the total significant peaks/interactions for each chromosome in the data.}
+
+\item{Type}{A string with one of the following values:
+\code{'heatmap'}, \code{'network-random'},\code{'network-circle'},\code{'network-sphere'}.
+Each one shows the relations between the chromosomes based on their interactions.}
 }
 \value{
 For the \code{\linkS4class{PInter}} class:
@@ -61,27 +68,35 @@ the data.
 
 For the \code{\linkS4class{PSFit}} class:
  Different plots depenting on the \code{kind} argument.
+
+For the \code{\linkS4class{GenomeMap}} class:
+A heatmap plot or different kinds of network plots showing the relations between
+different chromosomes based on the interactions between them.
 }
 \description{
 Different plot methods for the classes in the
 \code{\link{MACPET}} package.
 }
 \examples{
+
 #load Inter-chromosomal data:
 load(system.file('extdata', 'MACPET_pinterData.rda', package = 'MACPET'))
 class(MACPET_pinterData)
 requireNamespace('igraph')
 plot(MACPET_pinterData)
+
 #load Intra-chromosomal data:
 load(system.file('extdata', 'MACPET_pintraData.rda', package = 'MACPET'))
 class(MACPET_pintraData)
 requireNamespace('ggplot2')
 plot(MACPET_pintraData)
+
 #load Self-ligated data:
 load(system.file('extdata', 'MACPET_pselfData.rda', package = 'MACPET'))
 class(MACPET_pselfData)
 requireNamespace('ggplot2')
 plot(MACPET_pselfData)
+
 #load Self-ligated data:
 load(system.file('extdata', 'MACPET_psfitData.rda', package = 'MACPET'))
 class(MACPET_psfitData)
@@ -90,15 +105,26 @@ plot(MACPET_psfitData,kind='PETcounts')
 plot(MACPET_psfitData,kind='PeakCounts')
 plot(MACPET_psfitData,kind='PeakPETs',RegIndex=1)
 plot(MACPET_psfitData,kind='PeakTags',RegIndex=1)
+
+#load Interactions data:
+load(system.file('extdata', 'MACPET_GenomeMapData.rda', package = 'MACPET'))
+class(MACPET_GenomeMapData)
+requireNamespace('igraph')
+ requireNamespace('reshape2')
+plot(MACPET_GenomeMapData,Type='network-circle')
 }
 \references{
 Vardaxis I, Drabløs F, Rye M and Lindqvist BH (2018). \emph{MACPET: Model-based Analysis for ChIA-PET}.
+To be published.
+
+Vardaxis I, Drabløs F, Rye M and Lindqvist BH (2018). \emph{MACPET: Complete pipeline for ChIA-PET}.
 To be published.
 }
 \seealso{
 \code{\linkS4class{PSelf}},
 \code{\linkS4class{PSFit}}
-\code{\linkS4class{PInter}},\code{\linkS4class{PIntra}}
+\code{\linkS4class{PInter}}, \code{\linkS4class{PIntra}},
+\code{\linkS4class{GenomeMap}}
 }
 \author{
 Ioannis Vardaxis, \email{ioannis.vardaxis@ntnu.no}

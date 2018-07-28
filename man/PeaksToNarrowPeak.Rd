@@ -33,7 +33,7 @@ A \code{narrowPeak} object named after the value of \code{file.out} and saved in
 \description{
 \code{PeaksToNarrowPeak} converts peaks of an object of \code{\linkS4class{PSFit}}
 class to \code{narrowPeak} object. The object is saved in a user specified directory and can be used in the
-MANGO or MICC algorithms for interaction analysis.
+MANGO or MICC algorithms for interaction analysis. Alternatively, the user can run stage 4 at \code{\link{MACPETUlt}}.
 }
 \details{
 Each Peak in the narrowPeak object is represented by an interval starting from the 'CIQ.Up.start'

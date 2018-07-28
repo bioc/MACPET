@@ -13,7 +13,10 @@ MACPETUlt(SA_AnalysisDir = "", SA_stages = c(0:3), SA_prefix = "MACPET",
   S1_RbowtieIndexBuild = FALSE, S1_RbowtieIndexDir = "",
   S1_RbowtieIndexPrefix = "", S1_RbowtieRefDir = "",
   S2_PairedEndBAMpath = "", S2_image = TRUE, S2_BlackList = TRUE,
-  S3_fileSelfDir = "", S3_image = TRUE, S3_method = "BH")
+  S3_fileSelfDir = "", S3_image = TRUE, S3_method = "BH",
+  S4_filePSFitDir = "", S4_filePIntraDir = "", S4_filePInterDir = NULL,
+  S4_FDR_peak = 0.1, S4_method = "BH", S4_image = TRUE, S4_minPETs = 2,
+  S4_PeakExt = 1500)
 }
 \arguments{
 \item{SA_AnalysisDir}{A directory were all the ouput is to be saved.
@@ -123,6 +126,41 @@ This parameter is mandatory if Stage 3 is run.}
 p-values of significant peaks in the data.
 See  \code{\link[stats:p.adjust]{p.adjust.methods}} (default= 'BH').
 This parameter is mandatory if Stage 3 is run.}
+
+\item{S4_filePSFitDir}{A string with the directory of the object of
+class \code{\linkS4class{PSFit}}.
+This parameter is not mandatory if Stage 3 is run right before Stage 4.}
+
+\item{S4_filePIntraDir}{A string with the directory of the object of
+class \code{\linkS4class{PIntra}}.
+This parameter is not mandatory if Stages 2:3 are run right before Stage 4.}
+
+\item{S4_filePInterDir}{A string with the directory of the object of
+class \code{\linkS4class{PInter}}.
+This parameter is not mandatory if Stages 2:3 are run right before Stage 4.
+NOTE: Currently, inter-chromosomal interactions are not supported, so this parameter is ignored.}
+
+\item{S4_FDR_peak}{A numeric for the FDR cut-off value of significant peaks
+to be used in interaction analysis (default 0.1 because MACPET is more strict in peak-calling than MACS,
+higher threshold than 0.1 might also be appropriate).
+This parameter is mandatory if Stage 4 is run.}
+
+\item{S4_method}{String with the FDR method used for finding
+p-values of significant interactions in the data.
+See  \code{\link[stats:p.adjust]{p.adjust.methods}} (default= 'BH').
+This parameter is mandatory if Stage 4 is run.}
+
+\item{S4_image}{Logical indicating whether images for the total peaks and total
+intra- and inter-chromosomal PETs used in the interaction analysis will be created.
+This parameter is mandatory if Stage 4 is run.}
+
+\item{S4_minPETs}{The minimum total PETs allowed between every two peaks (default=2).
+This parameter is mandatory if Stage 4 is run.}
+
+\item{S4_PeakExt}{Integer. MACPET will use a window or 2*\code{S4_PeakExt} centered at the peak summit, before
+running the interaction analysis. This parameter has to be greater than 500 (bp), the default is 1500 (that is 3000 bp window),
+which is recomented. This parameter will both affect the interaction PETs falling into the peak and the merging of
+overlapping peaks.}
 }
 \value{
 All outputs are saved at the \code{SA_AnalysisDir}. The output depents of the stages run:
@@ -170,13 +208,20 @@ the Inter-chromosomal PETs.}
 \item{\code{SA_prefix_stage_3_p3_image.jpg: }}{FDR for the upstream/donwstream peaks of the binding sites given the binding sites FDR (if \code{S3_image==TRUE}).}
 }
 }
-\item{Stage 0:3 :}{ All the above outputs. Furthermore, a log file named \code{SA_prefix_analysis.log} is always
+\item{Stage 4: (outputs saved in a folder named \code{S4_results} in  \code{SA_AnalysisDir})}{
+\describe{
+\item{\code{SA_prefix_GenomeMapData: }}{An object of \code{\linkS4class{GenomeMap}} class with the interactions information.}
+\item{\code{SA_prefix_stage_4_p1_image.jpg: }}{Pie charts with the total peaks involved in the interactions and the total intra/inter-chromosomal PETs involved in the interactions (if \code{S4_image==TRUE}).}
+}
+}
+\item{Stage 0:4 :}{ All the above outputs. Furthermore, a log file named \code{SA_prefix_analysis.log} is always
 created in \code{SA_AnalysisDir} with information about the process.}
 }
 }
 \description{
 \code{MACPETUlt} is used for running analysis based on paired-end DNA data, including stages
-for linker removal, mapping to the reference genome, PET classification and binding site identification.
+for linker removal, mapping to the reference genome, PET classification, binding site identification and
+interaction analysis.
 }
 \details{
 Every stage has parameters associated with it. Parameters with prefix \code{SA} correspond to all
@@ -191,7 +236,7 @@ The fastq files in \code{S0_fastq1} and \code{S0_fastq2} have to be of same leng
 by their ID. Furthermore, the IDs in \code{S0_fastq1} have to end with /1 and the ones in
 \code{S0_fastq2} with /2, representing the 5- and 3-end tags respectively. In other words,
 for the same line in  \code{S0_fastq1} and  \code{S0_fastq2}, their IDs have to be
-identical, except form their suffixes /1 and /2 respectively. Moreover, the "/" symbol
+identical, except form their suffixes /1 and /2 respectively. Moreover, the '/' symbol
 can be replaced with any other symbol, this will not cause any problems.
 
 \code{S0_LinkerOccurence} parameter defines the linker-occurence mode and separates the
@@ -309,6 +354,19 @@ EM algorithm to find clusters which represent candidate peaks/binding sites in
 2 dimentional space using skewed generalized students-t distributions (SGT).
  After the peak-calling analysis is done, the algorithm assesses the
 significance of the candidate peaks using a local Poisson model.}
+
+\item{Stage 4:}{ Interaction analysis stage: This stage uses the peaks found in stage 3 and the intra/inter-chromosomal
+PETs found in stage 2 to discover interactions between those peaks. It first estimates the expected number of PETs in each
+interaction under H0 (everything is random), based on the depth of the peaks which interact and their distance.
+It then uses the Poisson distribution to call for significant interactions.
+The resulting object will include all potential interactions found in the data. Then the function
+\code{\link{GetSignInteractions}} can be used for subsetting significant interactions. Therefore,
+this stage needs only to be run once, then the FDR cut-off of the most significant interactions
+can be given multiple times in the \code{\link{GetSignInteractions}} function. This stages will estimate
+the interactions in circles. In each circle the most significant interactions
+will be added to the model (those with the lowest FDR). Then the distances between the peaks of the significant
+interactions will become 0 and the rest of the distances (for the interactions not added yet) will
+be adjusted based on that. Then the second circle will run and so on.}
 }
 }
 
@@ -376,17 +434,21 @@ unlink(SA_AnalysisDir,recursive=TRUE)
 Vardaxis I, Drabløs F, Rye M and Lindqvist BH (2018). \emph{MACPET: Model-based Analysis for ChIA-PET}.
 To be published.
 
+Vardaxis I, Drabløs F, Rye M and Lindqvist BH (2018). \emph{MACPET: Complete pipeline for ChIA-PET}.
+To be published.
+
 Consortium EP (2012) \emph{An integrated encyclopedia of DNA elements in the human genome.}.
  Nature, 489(7414), pp. 57–74. \url{http://dx.doi.org/10.1038/nature11247}.
 }
 \seealso{
 \linkS4class{PSelf}, \linkS4class{PIntra},
-\linkS4class{PInter},\code{\link{summary}},
+\linkS4class{PInter}, \linkS4class{PSFit}, \linkS4class{GenomeMap},
+\code{\link{summary}},
 \code{\link{AnalysisStatistics}}, \code{\link{plot}}
-\code{\link{BiocParallel}},\code{\link{ConvertToPSelf}},
-\code{\link{exportPeaks}},\code{\link{TagsToGInteractions}},
+\code{\link{BiocParallel}}, \code{\link{ConvertToPSelf}},
+\code{\link{exportPeaks}}, \code{\link{TagsToGInteractions}},
  \code{\link{PeaksToGRanges}},  \code{\link{PeaksToNarrowPeak}},
- \code{\link{ConvertToPE_BAM}}
+ \code{\link{ConvertToPE_BAM}}, \code{\link{GetSignInteractions}}
 }
 \author{
 Ioannis Vardaxis, \email{ioannis.vardaxis@ntnu.no}
