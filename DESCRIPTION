@@ -1,22 +1,22 @@
 Package: MACPET
 Type: Package
 Title: Model based analysis for paired-end data
-Version: 0.99.16
+Version: 1.0.1
 Date: 2018-05-01
 Author: Ioannis Vardaxis
 Maintainer: Ioannis Vardaxis <ioannis.vardaxis@ntnu.no>
-Description: The MACPET package can be used for binding site analysis for ChIA-PET data. MACPET reads ChIA-PET data in BAM or SAM format and separates the data into Self-ligated, Intra- and Inter-chromosomal PETs. Furthermore, MACPET breaks the genome into regions and applies 2D mixture models for identifying candidate peaks/binding sites using skewed generalized students-t distributions (SGT). It then uses a local poisson model for finding significant binding sites. MACPET is mainly written in C++, and it supports the BiocParallel package.
+Description: The MACPET package can be used for complete interaction analysis for ChIA-PET data. MACPET reads ChIA-PET data in BAM or SAM format and separates the data into Self-ligated, Intra- and Inter-chromosomal PETs. Furthermore, MACPET breaks the genome into regions and applies 2D mixture models for identifying candidate peaks/binding sites using skewed generalized students-t distributions (SGT). It then uses a local poisson model for finding significant binding sites. Finally it runs an additive interaction-analysis model for calling for significant interactions between those peaks. MACPET is mainly written in C++, and it supports the BiocParallel package.
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
 ByteCompile: true
 RoxygenNote: 6.0.1
 biocViews: Software, DNA3DStructure, PeakDetection, StatisticalMethod, Clustering, Classification, HiC
-Depends: R (>= 3.5), InteractionSet (>= 1.7.6)
-Imports: intervals (>= 0.15.1), plyr (>= 1.8.4),  Rsamtools (>= 1.31.3), stats (>= 3.5.0), utils (>= 3.5.0), methods (>= 3.5.0), GenomicRanges (>= 1.31.20), S4Vectors (>= 0.17.32), IRanges (>= 2.13.26), GenomeInfoDb (>= 1.15.5), gtools (>= 3.5.0), GenomicAlignments (>= 1.15.12), knitr (>= 1.19), Rcpp (>= 0.12.15), rtracklayer (>= 1.39.9), BiocParallel (>= 1.13.1), Rbowtie (>= 1.19.1), GEOquery (>= 2.47.17), Biostrings (>= 2.47.9), ShortRead (>= 1.37.1), rbamtools (>= 2.16.6), futile.logger (>= 1.4.3)
-Suggests: ggplot2 (>= 2.2.1), igraph (>= 1.1.2), rmarkdown (>= 1.8), reshape2 (>= 1.4.3), BiocStyle (>= 2.7.8)
+Depends: R (>= 3.5), InteractionSet (>= 1.8.0), bigmemory (>= 4.5.33), BH (>= 1.66.0.1), Rcpp (>= 0.12.17)
+Imports: intervals (>= 0.15.1), plyr (>= 1.8.4), Rsamtools (>= 1.32.0), stats (>= 3.5.0), utils (>= 3.5.0), methods (>= 3.5.0), GenomicRanges (>= 1.32.3), S4Vectors (>= 0.18.3), IRanges (>= 2.14.10), GenomeInfoDb (>= 1.16.0), gtools (>= 3.8.1), GenomicAlignments (>= 1.16.0), knitr (>= 1.20), rtracklayer (>= 1.40.3), BiocParallel (>= 1.14.1), Rbowtie (>= 1.20.0), GEOquery (>= 2.48.0), Biostrings (>= 2.48.0), ShortRead (>= 1.38.0), rbamtools (>= 2.16.11), futile.logger (>= 1.4.3)
+Suggests: ggplot2 (>= 3.0.0), igraph (>= 1.2.1), rmarkdown (>= 1.10), reshape2 (>= 1.4.3), BiocStyle (>= 2.8.2)
 VignetteBuilder: knitr
-LinkingTo: Rcpp
+LinkingTo: Rcpp, bigmemory, BH
 SystemRequirements: C++11
 Collate: 
     'ALLData.R'
@@ -24,6 +24,7 @@ Collate:
     'AnalysisStatistics.R'
     'ConvertToPE_BAM.R'
     'ConvertToPSelf-methods.R'
+    'GetSignInteractions-methods.R'
     'InputChecks.R'
     'MACPETUlt.R'
     'MACPET_pkg.R'
@@ -34,6 +35,7 @@ Collate:
     'Stage_1_MappingFunctions.R'
     'Stage_2_PETClassificationFunctions.R'
     'Stage_3_PeakFinderFunctions.R'
+    'Stage_4_InteractionsFunctions.R'
     'TagsToGInteractions-methods.R'
     'exportPeaks-methods.R'
     'plot-methods.R'
