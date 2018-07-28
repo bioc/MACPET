@@ -153,3 +153,25 @@ NULL
 #' \code{\linkS4class{PSFit}}
 #' @keywords data
 NULL
+#-------------------GenomeMap Data:
+#' @title Genomic interactions from ChIA-PET data
+#' @name MACPET_GenomeMapData.rda
+#' @description Genomic Interactions data from
+#' ESR1 ChIA-PET subset data on human MCF-7.
+#'
+#' @details \code{MACPET_GenomeMapData} is produced by the \code{\link{MACPETUlt}}
+#' function at Stage 4 and it contains all the genomic interactions between the peaks
+#' in the data.
+#'
+#' @author
+#' \describe{
+#' \item{Main data creators}{Yijun Ruan, GIS, 2012-05-24}
+#' \item{MACPET_GenomeMapData.rda creator}{Ioannis Vardaxis,
+#' \email{ioannis.vardaxis@@ntnu.no}}
+#' }
+#'
+#' @format rda object of \code{\linkS4class{GenomeMap}} class.
+#' @docType data
+#' @seealso  \code{\linkS4class{GenomeMap}}
+#' @keywords data
+NULL

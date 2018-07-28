@@ -4,6 +4,10 @@
 #' @references
 #' Vardaxis I, Drabløs F, Rye M and Lindqvist BH (2018). \emph{MACPET: Model-based Analysis for ChIA-PET}.
 #' To be published.
+#'
+#' Vardaxis I, Drabløs F, Rye M and Lindqvist BH (2018). \emph{MACPET: Complete pipeline for ChIA-PET}.
+#' To be published.
+#'
 #' @description Different plot methods for the classes in the
 #' \code{\link{MACPET}} package.
 #'
@@ -12,12 +16,14 @@
 #'
 #' @seealso \code{\linkS4class{PSelf}},
 #' \code{\linkS4class{PSFit}}
-#' \code{\linkS4class{PInter}},\code{\linkS4class{PIntra}}
+#' \code{\linkS4class{PInter}}, \code{\linkS4class{PIntra}},
+#' \code{\linkS4class{GenomeMap}}
 #'
 #' @name plot
 #' @include AllClasses.R
 #' @importFrom plyr ddply . ldply
 #' @importFrom utils methods
+#' @importFrom gtools mixedsort
 #' @importFrom S4Vectors metadata
 NULL
 # > NULL
@@ -33,6 +39,7 @@ NULL
 #' @export
 #'
 #' @examples
+#'
 #' #load Inter-chromosomal data:
 #' load(system.file('extdata', 'MACPET_pinterData.rda', package = 'MACPET'))
 #' class(MACPET_pinterData)
@@ -81,6 +88,7 @@ plot.PInter = function(x, ...) {
 #' @export
 #'
 #' @examples
+#'
 #' #load Intra-chromosomal data:
 #' load(system.file('extdata', 'MACPET_pintraData.rda', package = 'MACPET'))
 #' class(MACPET_pintraData)
@@ -110,6 +118,7 @@ plot.PIntra = function(x, ...) {
 #' @export
 #'
 #' @examples
+#'
 #' #load Self-ligated data:
 #' load(system.file('extdata', 'MACPET_pselfData.rda', package = 'MACPET'))
 #' class(MACPET_pselfData)
@@ -136,7 +145,7 @@ plot.PSelf = function(x, ...) {
 #'  Different plots depenting on the \code{kind} argument.
 #' @param RegIndex an integer indicating which region to plot (1 means the biggest
 #' in terms of total PETs.)
-#' @param threshold The FDR cut-off when plotting the total significant peaks for each chromosome in the data.
+#' @param threshold The FDR cut-off when plotting the total significant peaks/interactions for each chromosome in the data.
 #' @param kind A string with one of the following arguments. Note that if a region visualization is plotted, the vertical lines represent peak-summits.
 #'  \describe{
 #'   \item{\code{PETcounts}}{ For a bar-plot of the PET-counts in each chromosome.}
@@ -151,9 +160,11 @@ plot.PSelf = function(x, ...) {
 #'   \item{\code{SigPeakCounts}}{For a bar-plot with the significant peak-counts in each chromosome.}
 #'
 #'  }
+#'
 #' @export
 #'
 #' @examples
+#'
 #' #load Self-ligated data:
 #' load(system.file('extdata', 'MACPET_psfitData.rda', package = 'MACPET'))
 #' class(MACPET_psfitData)
@@ -176,7 +187,7 @@ plot.PSFit = function(x, kind, RegIndex = NULL, threshold = NULL, ...) {
         "PeakPETs", "PeakTags", "SigPETCounts", "SigRegionCounts", "SigPeakCounts")) {
         stop("kind has been given wrong value!", call. = FALSE)
     }
-    if (!is.numeric(threshold))
+    if (!methods::is(threshold, "numeric"))
         threshold = NULL
     Peaks.Info = S4Vectors::metadata(x)$Peaks.Info
     if (!is.null(threshold))
@@ -328,4 +339,94 @@ plot.PSFit = function(x, kind, RegIndex = NULL, threshold = NULL, ...) {
         }
     }
     return(res)
+}
+#---GenomeMap:
+#' @rdname plot
+#' @method plot GenomeMap
+#' @return For the \code{\linkS4class{GenomeMap}} class:
+#' A heatmap plot or different kinds of network plots showing the relations between
+#' different chromosomes based on the interactions between them.
+#' @param Type A string with one of the following values:
+#'  \code{'heatmap'}, \code{'network-random'},\code{'network-circle'},\code{'network-sphere'}.
+#'  Each one shows the relations between the chromosomes based on their interactions.
+#' @export
+#'
+#' @examples
+#'
+#' #load Interactions data:
+#' load(system.file('extdata', 'MACPET_GenomeMapData.rda', package = 'MACPET'))
+#' class(MACPET_GenomeMapData)
+#' requireNamespace('igraph')
+#'  requireNamespace('reshape2')
+#' plot(MACPET_GenomeMapData,Type='network-circle')
+plot.GenomeMap = function(x, Type, threshold = NULL, ...) {
+    # global variables for Rcheck:
+    seqnames1 = NULL
+    seqnames2 = NULL
+    value = NULL
+    V1 = NULL
+    #--------------------------
+    #-------check package:
+    if (!methods::is(Type, "character")) {
+        stop("Type variable has to be a character", call. = FALSE)
+    } else if (!Type %in% c("heatmap", "network-random", "network-circle", "network-sphere")) {
+        stop("Type variable has to be: 'heatmap', 'network-random', 'network-circle' or 'network-sphere'.",
+            call. = FALSE)
+    }
+    # take the data:
+    object = GetSignInteractions(object = x, threshold = threshold, ReturnedAs = "GInteractions")
+    #--------------------------
+    # take cases:
+    #--------------------------
+    # make the CountsMat:
+    object = as.data.frame(object)[, c("seqnames1", "seqnames2")]
+    CountsMat = table(object)
+    if (Type == "heatmap") {
+        # check package:
+        if (!requireNamespace("ggplot2", quietly = TRUE) | !requireNamespace("reshape2",
+            quietly = TRUE)) {
+            stop("ggplot2 and reshape2 are needed for this
+                 function to work if heatmap==TRUE.
+                 Please install it.",
+                call. = FALSE)
+        }
+        plot.data = reshape2::melt(as.matrix(CountsMat))
+        plot.data$value = plot.data$value/max(plot.data$value)
+        RES = ggplot2::ggplot(data = plot.data, ggplot2::aes(x = seqnames1, y = seqnames2,
+            fill = value)) + ggplot2::geom_tile(color = "red") + ggplot2::ggtitle("Heat-Map plot for Interactions") +
+            ggplot2::xlab("Chromosome") + ggplot2::ylab("Chromosome") + ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
+        return(RES)
+    } else if (Type %in% c("network-random", "network-circle", "network-sphere")) {
+        # check package
+        if (!requireNamespace("igraph", quietly = TRUE)) {
+            stop("igraph needed for this function to work. Please install it.", call. = FALSE)
+        }
+        # make data:
+        nodes = as.data.frame(colSums(CountsMat))
+        nodes$sepnames1 = rownames(nodes)
+        colnames(nodes) = c("V1", "from")
+        nodes = nodes[, c("from", "V1")]
+        nodes$V1 = nodes$V1/max(nodes$V1)
+        nodes$from = as.character(nodes$from)
+        # network plot:
+        name.edges = colnames(CountsMat)
+        edges = split(CountsMat, rep(seq_len(ncol(CountsMat)), each = nrow(CountsMat)))
+        edges = plyr::ldply(seq_len(length(edges)), function(i, name.edges, edges) {
+            data.frame(from = name.edges[i], to = name.edges, V1 = edges[[i]])
+        }, name.edges = name.edges, edges = edges)
+        edges$V1 = edges$V1/max(edges$V1)
+        edges = subset(edges, V1 != 0)
+        edges$from = as.character(edges$from)
+        edges$to = as.character(edges$to)
+        net = igraph::graph_from_data_frame(d = edges, vertices = nodes, directed = FALSE)
+        if (Type == "network-random") {
+            igraph::plot.igraph(net, edge.color = "blue", vertex.color = "red", main = "Interactions Network Plot")
+        } else if (Type == "network-circle") {
+            igraph::plot.igraph(net, layout = igraph::layout_in_circle, edge.curved = 0.3,
+                edge.color = "blue", vertex.color = "red")
+        } else if (Type == "network-sphere") {
+            igraph::plot.igraph(net, layout = igraph::layout_on_sphere(net), edge.color = "blue",
+                vertex.color = "red")
+        }
+    }
 }

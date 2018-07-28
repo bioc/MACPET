@@ -386,8 +386,8 @@ FindInter_fun = function(S2_PairedData, S2_AnalysisDir, SA_prefix) {
         assign(NamepinterData, pinterData)  #assign value.
         save(list = NamepinterData, file = file.path(S2_AnalysisDir, NamepinterData))
     } else {
-        futile.logger::flog.warn("WARNING: Inter-chromosomal data is empty!", name = "SA_LogFile",
-            capture = FALSE)
+        futile.logger::flog.info("Message: Inter-chromosomal data is empty! No Inter data is saved in disk.",
+            name = "SA_LogFile", capture = FALSE)
     }
     cat("Done\n")
     return(Ninter)
@@ -537,8 +537,8 @@ FindIntra_fun = function(S2_PairedData, SelfIndicator, S2_AnalysisDir, SA_prefix
         assign(NamepintraData, pintraData)  #assign value.
         save(list = NamepintraData, file = file.path(S2_AnalysisDir, NamepintraData))
     } else {
-        futile.logger::flog.warn("WARNING: Intra-chromosomal data is empty!", name = "SA_LogFile",
-            capture = FALSE)
+        futile.logger::flog.info("Message: Intra-chromosomal data is empty! No Intra data is saved in disk.",
+            name = "SA_LogFile", capture = FALSE)
     }
     cat("Done\n")
     return(Nintra)

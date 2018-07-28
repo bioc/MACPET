@@ -6,7 +6,8 @@
 #'
 #' @description \code{PeaksToNarrowPeak} converts peaks of an object of \code{\linkS4class{PSFit}}
 #' class to \code{narrowPeak} object. The object is saved in a user specified directory and can be used in the
-#' MANGO or MICC algorithms for interaction analysis.
+#' MANGO or MICC algorithms for interaction analysis. Alternatively, the user can run stage 4 at \code{\link{MACPETUlt}}.
+#'
 #' @details Each Peak in the narrowPeak object is represented by an interval starting from the 'CIQ.Up.start'
 #' estimated variable to its 'CIQ.Down.end' (see \code{\linkS4class{PSFit}}). Close Peaks in genomic distance are NOT
 #' merged by the \code{PeaksToNarrowPeak} function. However the user can specify a distance window for merging in the

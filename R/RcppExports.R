@@ -9,3 +9,63 @@ FitCallLocal_fun_Rcpp <- function(bppass_x, ChromInf) {
     .Call('_MACPET_FitCallLocal_fun_Rcpp', PACKAGE = 'MACPET', bppass_x, ChromInf)
 }
 
+Get_PETsInfoMat_fun_Rcpp <- function(VEC_query, VEC_Type, VEC_Tag, VEC_LID, VEC_PeakSummit, NGlobalInterPETs, NIntTagsloop) {
+    .Call('_MACPET_Get_PETsInfoMat_fun_Rcpp', PACKAGE = 'MACPET', VEC_query, VEC_Type, VEC_Tag, VEC_LID, VEC_PeakSummit, NGlobalInterPETs, NIntTagsloop)
+}
+
+Initiate_InteractionInfMat_fun_Rcpp <- function(InteractionInfMat, InteractionInfo, NPeaksInvolved, NInteractions) {
+    .Call('_MACPET_Initiate_InteractionInfMat_fun_Rcpp', PACKAGE = 'MACPET', InteractionInfMat, InteractionInfo, NPeaksInvolved, NInteractions)
+}
+
+Initiate_GenomeMap_fun_Rcpp <- function(NPeaksInvolved_Net, AdjNode_Net, PBS_Net, PeakSummit_Net, Chrom12ID_Net) {
+    .Call('_MACPET_Initiate_GenomeMap_fun_Rcpp', PACKAGE = 'MACPET', NPeaksInvolved_Net, AdjNode_Net, PBS_Net, PeakSummit_Net, Chrom12ID_Net)
+}
+
+Get_VectPosIndex_fun_Rcpp <- function(NPeaksInvolved, Nadj, Adj_i, Adj_j) {
+    .Call('_MACPET_Get_VectPosIndex_fun_Rcpp', PACKAGE = 'MACPET', NPeaksInvolved, Nadj, Adj_i, Adj_j)
+}
+
+Get_VectPosIndex_Vectorized_fun_Rcpp <- function(NPeaksInvolved, Nadj, Adj_i_vect, Adj_j_vect) {
+    .Call('_MACPET_Get_VectPosIndex_Vectorized_fun_Rcpp', PACKAGE = 'MACPET', NPeaksInvolved, Nadj, Adj_i_vect, Adj_j_vect)
+}
+
+Dijkstra_GSP_fun_Rcpp <- function(src, Network, NPeaksInvolved) {
+    .Call('_MACPET_Dijkstra_GSP_fun_Rcpp', PACKAGE = 'MACPET', src, Network, NPeaksInvolved)
+}
+
+Save_BigMat_fun_Rcpp <- function(BigInfoMatDescInst, GlobalNodesDist, k, StartInd, EndInd, InteractionPairs) {
+    invisible(.Call('_MACPET_Save_BigMat_fun_Rcpp', PACKAGE = 'MACPET', BigInfoMatDescInst, GlobalNodesDist, k, StartInd, EndInd, InteractionPairs))
+}
+
+Get_VijNet_fun_Rcpp <- function(NiNjIndeces_Net, NiNjMat, Nadj_Net, NPeaksInvolved_Net) {
+    .Call('_MACPET_Get_VijNet_fun_Rcpp', PACKAGE = 'MACPET', NiNjIndeces_Net, NiNjMat, Nadj_Net, NPeaksInvolved_Net)
+}
+
+Get_QCellPETCounts_fun_Rcpp <- function(BinsDij, BinsDijSize, BinsVij, BinsVijSize, ObsDVij, InteractionInfMat, AllInteIndeces, QCellPETCountsDij, QCellPETCountsVij) {
+    invisible(.Call('_MACPET_Get_QCellPETCounts_fun_Rcpp', PACKAGE = 'MACPET', BinsDij, BinsDijSize, BinsVij, BinsVijSize, ObsDVij, InteractionInfMat, AllInteIndeces, QCellPETCountsDij, QCellPETCountsVij))
+}
+
+Get_QCellCombCounts_fun_Rcpp <- function(ind, BinsDij, BinsDijSize, BinsVij, BinsVijSize, BigInfoMatDescInst, DkhOrder, QCellCombCountsDij_Net, QCellCombCountsVij_Net, StartInd, EndInd, NiNjIndeces, NiNjMat) {
+    invisible(.Call('_MACPET_Get_QCellCombCounts_fun_Rcpp', PACKAGE = 'MACPET', ind, BinsDij, BinsDijSize, BinsVij, BinsVijSize, BigInfoMatDescInst, DkhOrder, QCellCombCountsDij_Net, QCellCombCountsVij_Net, StartInd, EndInd, NiNjIndeces, NiNjMat))
+}
+
+Assess_Interaction_fun_Rcpp <- function(CurInt, InteractionInfMat, Poiss_fun, BinMatDij, BinMatVij) {
+    .Call('_MACPET_Assess_Interaction_fun_Rcpp', PACKAGE = 'MACPET', CurInt, InteractionInfMat, Poiss_fun, BinMatDij, BinMatVij)
+}
+
+Update_ToBeAddedInter_fun_Rcpp <- function(InteractionInfMat, k, h, i, TR_Si, LastInteractions, Chrom12ID_i) {
+    invisible(.Call('_MACPET_Update_ToBeAddedInter_fun_Rcpp', PACKAGE = 'MACPET', InteractionInfMat, k, h, i, TR_Si, LastInteractions, Chrom12ID_i))
+}
+
+Check_BiProd_fun_Rcpp <- function(InteractionInfMat, k, h, AllInteIndeces, TotBiRem, Chrom12ID_i) {
+    .Call('_MACPET_Check_BiProd_fun_Rcpp', PACKAGE = 'MACPET', InteractionInfMat, k, h, AllInteIndeces, TotBiRem, Chrom12ID_i)
+}
+
+Get_InteractionInfo_fun_Rcpp <- function(InteractionInfMat, NInteractions) {
+    .Call('_MACPET_Get_InteractionInfo_fun_Rcpp', PACKAGE = 'MACPET', InteractionInfMat, NInteractions)
+}
+
+# Register entry points for exported C++ functions
+methods::setLoadAction(function(ns) {
+    .Call('_MACPET_RcppExport_registerCCallable', PACKAGE = 'MACPET')
+})

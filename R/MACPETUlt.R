@@ -7,6 +7,9 @@
 #' Vardaxis I, Drabløs F, Rye M and Lindqvist BH (2018). \emph{MACPET: Model-based Analysis for ChIA-PET}.
 #' To be published.
 #'
+#' Vardaxis I, Drabløs F, Rye M and Lindqvist BH (2018). \emph{MACPET: Complete pipeline for ChIA-PET}.
+#' To be published.
+#'
 #' Consortium EP (2012) \emph{An integrated encyclopedia of DNA elements in the human genome.}.
 #'  Nature, 489(7414), pp. 57–74. \url{http://dx.doi.org/10.1038/nature11247}.
 #'
@@ -14,7 +17,8 @@
 #' @export
 #----------#' make discription:
 #' @description \code{MACPETUlt} is used for running analysis based on paired-end DNA data, including stages
-#' for linker removal, mapping to the reference genome, PET classification and binding site identification.
+#' for linker removal, mapping to the reference genome, PET classification, binding site identification and
+#' interaction analysis.
 #'
 #----------#' make details sections
 #'@details
@@ -31,7 +35,7 @@
 #'by their ID. Furthermore, the IDs in \code{S0_fastq1} have to end with /1 and the ones in
 #'\code{S0_fastq2} with /2, representing the 5- and 3-end tags respectively. In other words,
 #'for the same line in  \code{S0_fastq1} and  \code{S0_fastq2}, their IDs have to be
-#'identical, except form their suffixes /1 and /2 respectively. Moreover, the "/" symbol
+#'identical, except form their suffixes /1 and /2 respectively. Moreover, the '/' symbol
 #'can be replaced with any other symbol, this will not cause any problems.
 #'
 #'\code{S0_LinkerOccurence} parameter defines the linker-occurence mode and separates the
@@ -109,6 +113,8 @@
 #' a \code{\linkS4class{PSelf}} object and both the name of the object in the directory
 #' and the one uploaded in R should be  \code{SA_prefix_pselfData}.
 #'
+#'
+#'
 #----------#' make stages description:
 #' @section Stages description: \code{MACPETUlt} runs a complete or partial analysis
 #' for PET data, depending on the stages of the analysis the user wants to run.
@@ -149,6 +155,19 @@
 #' 2 dimentional space using skewed generalized students-t distributions (SGT).
 #'  After the peak-calling analysis is done, the algorithm assesses the
 #' significance of the candidate peaks using a local Poisson model.}
+#'
+#' \item{Stage 4:}{ Interaction analysis stage: This stage uses the peaks found in stage 3 and the intra/inter-chromosomal
+#' PETs found in stage 2 to discover interactions between those peaks. It first estimates the expected number of PETs in each
+#' interaction under H0 (everything is random), based on the depth of the peaks which interact and their distance.
+#' It then uses the Poisson distribution to call for significant interactions.
+#' The resulting object will include all potential interactions found in the data. Then the function
+#' \code{\link{GetSignInteractions}} can be used for subsetting significant interactions. Therefore,
+#' this stage needs only to be run once, then the FDR cut-off of the most significant interactions
+#' can be given multiple times in the \code{\link{GetSignInteractions}} function. This stages will estimate
+#' the interactions in circles. In each circle the most significant interactions
+#' will be added to the model (those with the lowest FDR). Then the distances between the peaks of the significant
+#' interactions will become 0 and the rest of the distances (for the interactions not added yet) will
+#' be adjusted based on that. Then the second circle will run and so on.}
 #' }
 #'
 #' @section Parallel:
@@ -159,12 +178,13 @@
 #----------#'
 #' @seealso
 #' \linkS4class{PSelf}, \linkS4class{PIntra},
-#' \linkS4class{PInter},\code{\link{summary}},
+#' \linkS4class{PInter}, \linkS4class{PSFit}, \linkS4class{GenomeMap},
+#' \code{\link{summary}},
 #' \code{\link{AnalysisStatistics}}, \code{\link{plot}}
-#' \code{\link{BiocParallel}},\code{\link{ConvertToPSelf}},
-#' \code{\link{exportPeaks}},\code{\link{TagsToGInteractions}},
+#' \code{\link{BiocParallel}}, \code{\link{ConvertToPSelf}},
+#' \code{\link{exportPeaks}}, \code{\link{TagsToGInteractions}},
 #'  \code{\link{PeaksToGRanges}},  \code{\link{PeaksToNarrowPeak}},
-#'  \code{\link{ConvertToPE_BAM}}
+#'  \code{\link{ConvertToPE_BAM}}, \code{\link{GetSignInteractions}}
 #----------#'output
 #' @return All outputs are saved at the \code{SA_AnalysisDir}. The output depents of the stages run:
 #' \describe{
@@ -211,7 +231,13 @@
 #' \item{\code{SA_prefix_stage_3_p3_image.jpg: }}{FDR for the upstream/donwstream peaks of the binding sites given the binding sites FDR (if \code{S3_image==TRUE}).}
 #' }
 #' }
-#' \item{Stage 0:3 :}{ All the above outputs. Furthermore, a log file named \code{SA_prefix_analysis.log} is always
+#' \item{Stage 4: (outputs saved in a folder named \code{S4_results} in  \code{SA_AnalysisDir})}{
+#' \describe{
+#' \item{\code{SA_prefix_GenomeMapData: }}{An object of \code{\linkS4class{GenomeMap}} class with the interactions information.}
+#' \item{\code{SA_prefix_stage_4_p1_image.jpg: }}{Pie charts with the total peaks involved in the interactions and the total intra/inter-chromosomal PETs involved in the interactions (if \code{S4_image==TRUE}).}
+#' }
+#' }
+#' \item{Stage 0:4 :}{ All the above outputs. Furthermore, a log file named \code{SA_prefix_analysis.log} is always
 #' created in \code{SA_AnalysisDir} with information about the process.}
 #' }
 #'
@@ -301,6 +327,34 @@
 #'p-values of significant peaks in the data.
 #'See  \code{\link[stats:p.adjust]{p.adjust.methods}} (default= 'BH').
 #'This parameter is mandatory if Stage 3 is run.
+#'
+#'@param S4_filePSFitDir A string with the directory of the object of
+#'class \code{\linkS4class{PSFit}}.
+#' This parameter is not mandatory if Stage 3 is run right before Stage 4.
+#'@param S4_filePIntraDir A string with the directory of the object of
+#'class \code{\linkS4class{PIntra}}.
+#' This parameter is not mandatory if Stages 2:3 are run right before Stage 4.
+#'@param S4_filePInterDir A string with the directory of the object of
+#'class \code{\linkS4class{PInter}}.
+#' This parameter is not mandatory if Stages 2:3 are run right before Stage 4.
+#' NOTE: Currently, inter-chromosomal interactions are not supported, so this parameter is ignored.
+#'@param S4_FDR_peak A numeric for the FDR cut-off value of significant peaks
+#'to be used in interaction analysis (default 0.1 because MACPET is more strict in peak-calling than MACS,
+#'higher threshold than 0.1 might also be appropriate).
+#'This parameter is mandatory if Stage 4 is run.
+#'@param S4_method String with the FDR method used for finding
+#'p-values of significant interactions in the data.
+#'See  \code{\link[stats:p.adjust]{p.adjust.methods}} (default= 'BH').
+#'This parameter is mandatory if Stage 4 is run.
+#'@param S4_image Logical indicating whether images for the total peaks and total
+#'intra- and inter-chromosomal PETs used in the interaction analysis will be created.
+#'This parameter is mandatory if Stage 4 is run.
+#'@param S4_minPETs The minimum total PETs allowed between every two peaks (default=2).
+#'This parameter is mandatory if Stage 4 is run.
+#'@param S4_PeakExt Integer. MACPET will use a window or 2*\code{S4_PeakExt} centered at the peak summit, before
+#'running the interaction analysis. This parameter has to be greater than 500 (bp), the default is 1500 (that is 3000 bp window),
+#'which is recomented. This parameter will both affect the interaction PETs falling into the peak and the merging of
+#'overlapping peaks.
 # ----------#'
 #' @examples
 #'
@@ -360,7 +414,9 @@ MACPETUlt = function(SA_AnalysisDir = "", SA_stages = c(0:3), SA_prefix = "MACPE
     S1_image = TRUE, S1_BAMStream = 2e+06, S1_makeSam = TRUE, S1_genome = "hg19",
     S1_RbowtieIndexBuild = FALSE, S1_RbowtieIndexDir = "", S1_RbowtieIndexPrefix = "",
     S1_RbowtieRefDir = "", S2_PairedEndBAMpath = "", S2_image = TRUE, S2_BlackList = TRUE,
-    S3_fileSelfDir = "", S3_image = TRUE, S3_method = "BH") {
+    S3_fileSelfDir = "", S3_image = TRUE, S3_method = "BH", S4_filePSFitDir = "",
+    S4_filePIntraDir = "", S4_filePInterDir = NULL, S4_FDR_peak = 0.1, S4_method = "BH",
+    S4_image = TRUE, S4_minPETs = 2, S4_PeakExt = 1500) {
     #--------------------------------------------
     #---------------Take and reorder Input:
     #--------------------------------------------
@@ -372,15 +428,20 @@ MACPETUlt = function(SA_AnalysisDir = "", SA_stages = c(0:3), SA_prefix = "MACPE
         S0_MinReadLength = S0_MinReadLength, S0_MaxReadLength = S0_MaxReadLength,
         S0_LinkerOccurence = S0_LinkerOccurence, S0_image = S0_image, S0_fastqStream = S0_fastqStream,
         S1_fastq1_usable_dir = S1_fastq1_usable_dir, S1_fastq2_usable_dir = S1_fastq2_usable_dir,
-        S1_image = S1_image, S1_BAMStream = S1_BAMStream, S1_makeSam = S1_makeSam, S1_genome = S1_genome,
-        S1_RbowtieIndexBuild = S1_RbowtieIndexBuild, S1_RbowtieIndexDir = S1_RbowtieIndexDir,
+        S1_image = S1_image, S1_BAMStream = S1_BAMStream, S1_makeSam = S1_makeSam,
+        S1_genome = S1_genome, S1_RbowtieIndexBuild = S1_RbowtieIndexBuild, S1_RbowtieIndexDir = S1_RbowtieIndexDir,
         S1_RbowtieIndexPrefix = S1_RbowtieIndexPrefix, S1_RbowtieRefDir = S1_RbowtieRefDir,
         S2_PairedEndBAMpath = S2_PairedEndBAMpath, S2_image = S2_image, S2_BlackList = S2_BlackList,
-        S3_fileSelfDir = S3_fileSelfDir, S3_image = S3_image, S3_method = S3_method)
+        S3_fileSelfDir = S3_fileSelfDir, S3_image = S3_image, S3_method = S3_method,
+        S4_filePSFitDir = S4_filePSFitDir, S4_filePIntraDir = S4_filePIntraDir, S4_filePInterDir = S4_filePInterDir,
+        S4_FDR_peak = S4_FDR_peak, S4_method = S4_method, S4_image = S4_image, S4_minPETs = S4_minPETs,
+        S4_PeakExt = S4_PeakExt)
     #--------------------------------------------
     #---------------Check input is correct:
     #--------------------------------------------
     InArg = InputCheckMACPETUlt(InArg = InArg)
+    # start clusters:
+    BiocParallel::bpstart()
     #--------------------------------------------
     #---------------Run stages:
     #--------------------------------------------
@@ -396,10 +457,10 @@ MACPETUlt = function(SA_AnalysisDir = "", SA_stages = c(0:3), SA_prefix = "MACPE
         LogFile[2] = "|-------------------Filtering Linkers-------------------|"
         LogFile[3] = "|-----------------------Stage 0-------------------------|"
         LogFile[4] = "|%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%|"
-        for (lf in seq_len(4))  futile.logger::flog.info(LogFile[[lf]], name="SA_LogFile",capture=FALSE)
+        for (lf in seq_len(4)) futile.logger::flog.info(LogFile[[lf]], name = "SA_LogFile",
+            capture = FALSE)
         # call Stage 0:
         do.call(what = Stage_0_Main_fun, args = InArgS0)
-        SA_LogFile.dir = InArgS0$SA_LogFile.dir  #used in the at the end
     }
     if (c(1) %in% SA_stages) {
         #------------------------------------------------------------------#
@@ -413,10 +474,10 @@ MACPETUlt = function(SA_AnalysisDir = "", SA_stages = c(0:3), SA_prefix = "MACPE
         LogFile[2] = "|--Mapping to Ref. Genome And building paired-end BAM---|"
         LogFile[3] = "|-----------------------Stage 1-------------------------|"
         LogFile[4] = "|%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%|"
-        for (lf in seq_len(4)) futile.logger::flog.info(LogFile[[lf]], name="SA_LogFile",capture=FALSE)
+        for (lf in seq_len(4)) futile.logger::flog.info(LogFile[[lf]], name = "SA_LogFile",
+            capture = FALSE)
         # call Stage 1:
         do.call(what = Stage_1_Main_fun, args = InArgS1)
-        SA_LogFile.dir = InArgS1$SA_LogFile.dir  #used in the at the end
     }
     if (c(2) %in% SA_stages) {
         #------------------------------------------------------------------#
@@ -430,20 +491,19 @@ MACPETUlt = function(SA_AnalysisDir = "", SA_stages = c(0:3), SA_prefix = "MACPE
         LogFile[2] = "|--------------PET Classification Analysis--------------|"
         LogFile[3] = "|-----------------------Stage 2-------------------------|"
         LogFile[4] = "|%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%|"
-        for (lf in seq_len(4)) futile.logger::flog.info(LogFile[[lf]], name="SA_LogFile",capture=FALSE)
+        for (lf in seq_len(4)) futile.logger::flog.info(LogFile[[lf]], name = "SA_LogFile",
+            capture = FALSE)
         # load data, it is saved from stage 1 else it is already loaded:
         if (c(1) %in% SA_stages) {
             S2_PairedData = LoadBAM_FromMACPETUlt_fun(S2_PairedEndBAMpath = InArgS2$S2_PairedEndBAMpath,
-                S2_BlackList = InArgS2$S2_BlackList,
-                S2_image = InArgS2$S2_image, S2_AnalysisDir = InArgS2$S2_AnalysisDir,
-                SA_prefix = InArgS2$SA_prefix)
+                S2_BlackList = InArgS2$S2_BlackList, S2_image = InArgS2$S2_image,
+                S2_AnalysisDir = InArgS2$S2_AnalysisDir, SA_prefix = InArgS2$SA_prefix)
             InArgS2$S2_PairedData = S2_PairedData
             InArgS2$S2_BlackList = NULL
             InArgS2$S2_PairedEndBAMpath = NULL
         }
         # call Stage 2:
         do.call(what = Stage_2_Main_fun, args = InArgS2)
-        SA_LogFile.dir = InArgS2$SA_LogFile.dir  #used in the at the end
     }
     if (c(3) %in% SA_stages) {
         #------------------------------------------------------------------#
@@ -456,7 +516,8 @@ MACPETUlt = function(SA_AnalysisDir = "", SA_stages = c(0:3), SA_prefix = "MACPE
         LogFile[2] = "|----------------Binding Site Analysis------------------|"
         LogFile[3] = "|-----------------------Stage 3-------------------------|"
         LogFile[4] = "|%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%|"
-        for (lf in seq_len(4)) futile.logger::flog.info(LogFile[[lf]], name="SA_LogFile",capture=FALSE)
+        for (lf in seq_len(4)) futile.logger::flog.info(LogFile[[lf]], name = "SA_LogFile",
+            capture = FALSE)
         # if stage 2 is run then the pself is saved, so load it
         if (c(2) %in% SA_stages) {
             # then load the data:
@@ -466,17 +527,67 @@ MACPETUlt = function(SA_AnalysisDir = "", SA_stages = c(0:3), SA_prefix = "MACPE
         }
         # call stage 3:
         do.call(what = Stage_3_Main_fun, args = InArgS3)
-        SA_LogFile.dir = InArgS3$SA_LogFile.dir  #used in the at the end
     }
+    if (c(4) %in% SA_stages) {
+        #------------------------------------------------------------------#
+        #------------------- Run Interactions Call ------------------------#
+        #------------------------------------------------------------------#
+        # take arguments:
+        InArgS4 = InArg$InArgS4
+        LogFile = list()  #for the log file.
+        LogFile[1] = "|%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%|"
+        LogFile[2] = "|----------------Interactions Analysis------------------|"
+        LogFile[3] = "|-----------------------Stage 4-------------------------|"
+        LogFile[4] = "|%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%|"
+        for (lf in seq_len(4)) futile.logger::flog.info(LogFile[[lf]], name = "SA_LogFile",
+            capture = FALSE)
+        # if stage 2 is run then the pintra/pinter are saved, so load it
+        if (c(2) %in% SA_stages) {
+            # then load the _pintraData data if it exists:
+            if(file.exists(InArgS4$S4_filePIntraDir)){
+                load(InArgS4$S4_filePIntraDir)
+                InArgS4$S4_IntraObject = get(paste(InArgS4$SA_prefix, "_pintraData",
+                                                   sep = ""))
+            }else{
+                InArgS4$S4_IntraObject=NULL
+            }
+            InArgS4$S4_filePIntraDir = NULL
+            # then load the _pinterData data if it exists:
+            if(file.exists(InArgS4$S4_filePInterDir)){
+                load(InArgS4$S4_filePInterDir)
+                InArgS4$S4_InterObject = get(paste(InArgS4$SA_prefix, "_pinterData",
+                                                   sep = ""))
+            }else{
+                InArgS4$S4_InterObject=NULL
+            }
+            InArgS4$S4_filePInterDir = NULL
+            # finally check if both are not null to procceed:
+            if(is.null(InArgS4$S4_IntraObject)&is.null(InArgS4$S4_InterObject)){
+                stop("No Intra/Inter-ligated data is found!", call. = FALSE)
+            }
+        }
+        # if stage 3 is run then the _psfitData is saved, so load it
+        if (c(3) %in% SA_stages) {
+            # then load the _psfitData data:
+            load(InArgS4$S4_filePSFitDir)
+            InArgS4$S4_FitObject = get(paste(InArgS4$SA_prefix, "_psfitData", sep = ""))
+            InArgS4$S4_filePSFitDir = NULL
+        }
+        # call stage 4:
+        do.call(what = Stage_4_Main_fun, args = InArgS4)
+    }
+    # stop clusters:
+    BiocParallel::bpstop()
     #------------------------
     # finallize:
     #------------------------
-    futile.logger::flog.info("|%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%|", name="SA_LogFile",capture=FALSE)
-    futile.logger::flog.info("Global analysis is done!", name="SA_LogFile",capture=FALSE)
+    futile.logger::flog.info("|%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%|",
+        name = "SA_LogFile", capture = FALSE)
+    futile.logger::flog.info("Global analysis is done!", name = "SA_LogFile", capture = FALSE)
     # take time:
     Analysis.time.end = Sys.time()
     Total.Time = Analysis.time.end - Analysis.time.start
     LogFile = paste("Global analysis time:", Total.Time, " ", units(Total.Time))
-    futile.logger::flog.info(LogFile, name="SA_LogFile",capture=FALSE)
+    futile.logger::flog.info(LogFile, name = "SA_LogFile", capture = FALSE)
 }
 # done
