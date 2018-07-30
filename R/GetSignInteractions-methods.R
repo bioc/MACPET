@@ -67,6 +67,8 @@ GetSignInteractions.default = function(object, ...) {
 #' @export
 GetSignInteractions.GenomeMap = function(object, threshold = NULL, ReturnedAs = "GInteractions",
     SaveTo = "", Prefix = "MACPET", ...) {
+    # R check:
+    FDR = NULL
     #--------------------------
     # Check input here:
     #--------------------------
@@ -88,27 +90,26 @@ GetSignInteractions.GenomeMap = function(object, threshold = NULL, ReturnedAs = 
     #--------------------------
     # get mapping data/Those are shorted by the order:
     InteractionInfo = S4Vectors::metadata(object)$InteractionInfo
+    # convert to data frame:
+    InteractionInfo = as.data.frame(InteractionInfo)
+    # give ID:
+    InteractionInfo$ID = seq_len(nrow(InteractionInfo))
     # subset by threshold:
     if (!is.null(threshold)) {
-        # count the line
-        CutLine = 0
-        for (i in seq_len(nrow(InteractionInfo))) {
-            if (InteractionInfo$FDR[i] >= threshold) {
-                break
-            }
-            CutLine = CutLine + 1
-        }
-        # subset based CutLine
-        if (CutLine == 0) {
+        # subset by threshold:
+        InteractionInfo = subset(InteractionInfo, FDR < threshold)
+        # error check:
+        if (nrow(InteractionInfo) == 0) {
             stop("The FDR threshold ", threshold, " is too low! Use a higher one!",
-                call. = FALSE)
-        } else if (CutLine == nrow(InteractionInfo)) {
-            message("Threshold ", threshold, " is reached, all the interactions are returned.")
+                 call. = FALSE)
         }
+        # take maks order:
+        MaxOrder = SubsetSignificantInteractions_fun_Rcpp(nrow(InteractionInfo),
+            InteractionInfo$FDR, InteractionInfo$Order, threshold)
         # subset
-        CutSeq = seq_len(CutLine)
-        InteractionInfo = InteractionInfo[CutSeq, ]
-        object = object[CutSeq]
+        KeepID = which(InteractionInfo$Order <= MaxOrder)
+        InteractionInfo = InteractionInfo[KeepID, ]
+        object = object[InteractionInfo$ID]
     } else {
         message("No threshold given, all the interactions are returned.")
     }

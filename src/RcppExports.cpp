@@ -40,6 +40,41 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// Get_NewPeakSummit_fun_Rcpp
+SEXP Get_NewPeakSummit_fun_Rcpp(Rcpp::NumericVector const& queryHits, Rcpp::NumericVector const& subjectHits, Rcpp::NumericVector const& PeakSummit, Rcpp::NumericVector const& FDR, int const& Noverlaps, int const& NPeaksMerged);
+static SEXP _MACPET_Get_NewPeakSummit_fun_Rcpp_try(SEXP queryHitsSEXP, SEXP subjectHitsSEXP, SEXP PeakSummitSEXP, SEXP FDRSEXP, SEXP NoverlapsSEXP, SEXP NPeaksMergedSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< Rcpp::NumericVector const& >::type queryHits(queryHitsSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector const& >::type subjectHits(subjectHitsSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector const& >::type PeakSummit(PeakSummitSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector const& >::type FDR(FDRSEXP);
+    Rcpp::traits::input_parameter< int const& >::type Noverlaps(NoverlapsSEXP);
+    Rcpp::traits::input_parameter< int const& >::type NPeaksMerged(NPeaksMergedSEXP);
+    rcpp_result_gen = Rcpp::wrap(Get_NewPeakSummit_fun_Rcpp(queryHits, subjectHits, PeakSummit, FDR, Noverlaps, NPeaksMerged));
+    return rcpp_result_gen;
+END_RCPP_RETURN_ERROR
+}
+RcppExport SEXP _MACPET_Get_NewPeakSummit_fun_Rcpp(SEXP queryHitsSEXP, SEXP subjectHitsSEXP, SEXP PeakSummitSEXP, SEXP FDRSEXP, SEXP NoverlapsSEXP, SEXP NPeaksMergedSEXP) {
+    SEXP rcpp_result_gen;
+    {
+        Rcpp::RNGScope rcpp_rngScope_gen;
+        rcpp_result_gen = PROTECT(_MACPET_Get_NewPeakSummit_fun_Rcpp_try(queryHitsSEXP, subjectHitsSEXP, PeakSummitSEXP, FDRSEXP, NoverlapsSEXP, NPeaksMergedSEXP));
+    }
+    Rboolean rcpp_isInterrupt_gen = Rf_inherits(rcpp_result_gen, "interrupted-error");
+    if (rcpp_isInterrupt_gen) {
+        UNPROTECT(1);
+        Rf_onintr();
+    }
+    Rboolean rcpp_isError_gen = Rf_inherits(rcpp_result_gen, "try-error");
+    if (rcpp_isError_gen) {
+        SEXP rcpp_msgSEXP_gen = Rf_asChar(rcpp_result_gen);
+        UNPROTECT(1);
+        Rf_error(CHAR(rcpp_msgSEXP_gen));
+    }
+    UNPROTECT(1);
+    return rcpp_result_gen;
+}
 // Get_PETsInfoMat_fun_Rcpp
 SEXP Get_PETsInfoMat_fun_Rcpp(Rcpp::NumericVector const& VEC_query, Rcpp::NumericVector const& VEC_Type, Rcpp::NumericVector const& VEC_Tag, Rcpp::NumericVector const& VEC_LID, Rcpp::NumericVector const& VEC_PeakSummit, int const& NGlobalInterPETs, int const& NIntTagsloop);
 static SEXP _MACPET_Get_PETsInfoMat_fun_Rcpp_try(SEXP VEC_querySEXP, SEXP VEC_TypeSEXP, SEXP VEC_TagSEXP, SEXP VEC_LIDSEXP, SEXP VEC_PeakSummitSEXP, SEXP NGlobalInterPETsSEXP, SEXP NIntTagsloopSEXP) {
@@ -242,8 +277,8 @@ RcppExport SEXP _MACPET_Dijkstra_GSP_fun_Rcpp(SEXP srcSEXP, SEXP NetworkSEXP, SE
     return rcpp_result_gen;
 }
 // Save_BigMat_fun_Rcpp
-void Save_BigMat_fun_Rcpp(SEXP& BigInfoMatDescInst, Rcpp::NumericVector const& GlobalNodesDist, int& k, int& StartInd, int& EndInd, Rcpp::NumericVector& InteractionPairs);
-static SEXP _MACPET_Save_BigMat_fun_Rcpp_try(SEXP BigInfoMatDescInstSEXP, SEXP GlobalNodesDistSEXP, SEXP kSEXP, SEXP StartIndSEXP, SEXP EndIndSEXP, SEXP InteractionPairsSEXP) {
+void Save_BigMat_fun_Rcpp(SEXP& BigInfoMatDescInst, Rcpp::NumericVector const& GlobalNodesDist, int& k, int& StartInd, int& EndInd, Rcpp::NumericVector& InteractionPairs, Rcpp::NumericVector const& NiNjIndeces, Rcpp::NumericVector const& NiNjMat);
+static SEXP _MACPET_Save_BigMat_fun_Rcpp_try(SEXP BigInfoMatDescInstSEXP, SEXP GlobalNodesDistSEXP, SEXP kSEXP, SEXP StartIndSEXP, SEXP EndIndSEXP, SEXP InteractionPairsSEXP, SEXP NiNjIndecesSEXP, SEXP NiNjMatSEXP) {
 BEGIN_RCPP
     Rcpp::traits::input_parameter< SEXP& >::type BigInfoMatDescInst(BigInfoMatDescInstSEXP);
     Rcpp::traits::input_parameter< Rcpp::NumericVector const& >::type GlobalNodesDist(GlobalNodesDistSEXP);
@@ -251,48 +286,17 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int& >::type StartInd(StartIndSEXP);
     Rcpp::traits::input_parameter< int& >::type EndInd(EndIndSEXP);
     Rcpp::traits::input_parameter< Rcpp::NumericVector& >::type InteractionPairs(InteractionPairsSEXP);
-    Save_BigMat_fun_Rcpp(BigInfoMatDescInst, GlobalNodesDist, k, StartInd, EndInd, InteractionPairs);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector const& >::type NiNjIndeces(NiNjIndecesSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector const& >::type NiNjMat(NiNjMatSEXP);
+    Save_BigMat_fun_Rcpp(BigInfoMatDescInst, GlobalNodesDist, k, StartInd, EndInd, InteractionPairs, NiNjIndeces, NiNjMat);
     return R_NilValue;
 END_RCPP_RETURN_ERROR
 }
-RcppExport SEXP _MACPET_Save_BigMat_fun_Rcpp(SEXP BigInfoMatDescInstSEXP, SEXP GlobalNodesDistSEXP, SEXP kSEXP, SEXP StartIndSEXP, SEXP EndIndSEXP, SEXP InteractionPairsSEXP) {
+RcppExport SEXP _MACPET_Save_BigMat_fun_Rcpp(SEXP BigInfoMatDescInstSEXP, SEXP GlobalNodesDistSEXP, SEXP kSEXP, SEXP StartIndSEXP, SEXP EndIndSEXP, SEXP InteractionPairsSEXP, SEXP NiNjIndecesSEXP, SEXP NiNjMatSEXP) {
     SEXP rcpp_result_gen;
     {
         Rcpp::RNGScope rcpp_rngScope_gen;
-        rcpp_result_gen = PROTECT(_MACPET_Save_BigMat_fun_Rcpp_try(BigInfoMatDescInstSEXP, GlobalNodesDistSEXP, kSEXP, StartIndSEXP, EndIndSEXP, InteractionPairsSEXP));
-    }
-    Rboolean rcpp_isInterrupt_gen = Rf_inherits(rcpp_result_gen, "interrupted-error");
-    if (rcpp_isInterrupt_gen) {
-        UNPROTECT(1);
-        Rf_onintr();
-    }
-    Rboolean rcpp_isError_gen = Rf_inherits(rcpp_result_gen, "try-error");
-    if (rcpp_isError_gen) {
-        SEXP rcpp_msgSEXP_gen = Rf_asChar(rcpp_result_gen);
-        UNPROTECT(1);
-        Rf_error(CHAR(rcpp_msgSEXP_gen));
-    }
-    UNPROTECT(1);
-    return rcpp_result_gen;
-}
-// Get_VijNet_fun_Rcpp
-SEXP Get_VijNet_fun_Rcpp(Rcpp::NumericVector const& NiNjIndeces_Net, Rcpp::NumericVector const& NiNjMat, double& Nadj_Net, double& NPeaksInvolved_Net);
-static SEXP _MACPET_Get_VijNet_fun_Rcpp_try(SEXP NiNjIndeces_NetSEXP, SEXP NiNjMatSEXP, SEXP Nadj_NetSEXP, SEXP NPeaksInvolved_NetSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::traits::input_parameter< Rcpp::NumericVector const& >::type NiNjIndeces_Net(NiNjIndeces_NetSEXP);
-    Rcpp::traits::input_parameter< Rcpp::NumericVector const& >::type NiNjMat(NiNjMatSEXP);
-    Rcpp::traits::input_parameter< double& >::type Nadj_Net(Nadj_NetSEXP);
-    Rcpp::traits::input_parameter< double& >::type NPeaksInvolved_Net(NPeaksInvolved_NetSEXP);
-    rcpp_result_gen = Rcpp::wrap(Get_VijNet_fun_Rcpp(NiNjIndeces_Net, NiNjMat, Nadj_Net, NPeaksInvolved_Net));
-    return rcpp_result_gen;
-END_RCPP_RETURN_ERROR
-}
-RcppExport SEXP _MACPET_Get_VijNet_fun_Rcpp(SEXP NiNjIndeces_NetSEXP, SEXP NiNjMatSEXP, SEXP Nadj_NetSEXP, SEXP NPeaksInvolved_NetSEXP) {
-    SEXP rcpp_result_gen;
-    {
-        Rcpp::RNGScope rcpp_rngScope_gen;
-        rcpp_result_gen = PROTECT(_MACPET_Get_VijNet_fun_Rcpp_try(NiNjIndeces_NetSEXP, NiNjMatSEXP, Nadj_NetSEXP, NPeaksInvolved_NetSEXP));
+        rcpp_result_gen = PROTECT(_MACPET_Save_BigMat_fun_Rcpp_try(BigInfoMatDescInstSEXP, GlobalNodesDistSEXP, kSEXP, StartIndSEXP, EndIndSEXP, InteractionPairsSEXP, NiNjIndecesSEXP, NiNjMatSEXP));
     }
     Rboolean rcpp_isInterrupt_gen = Rf_inherits(rcpp_result_gen, "interrupted-error");
     if (rcpp_isInterrupt_gen) {
@@ -309,27 +313,24 @@ RcppExport SEXP _MACPET_Get_VijNet_fun_Rcpp(SEXP NiNjIndeces_NetSEXP, SEXP NiNjM
     return rcpp_result_gen;
 }
 // Get_QCellPETCounts_fun_Rcpp
-void Get_QCellPETCounts_fun_Rcpp(Rcpp::NumericVector const& BinsDij, int const& BinsDijSize, Rcpp::NumericVector const& BinsVij, int const& BinsVijSize, Rcpp::NumericMatrix const& ObsDVij, Rcpp::NumericMatrix& InteractionInfMat, Rcpp::NumericVector const& AllInteIndeces, Rcpp::NumericVector& QCellPETCountsDij, Rcpp::NumericVector& QCellPETCountsVij);
-static SEXP _MACPET_Get_QCellPETCounts_fun_Rcpp_try(SEXP BinsDijSEXP, SEXP BinsDijSizeSEXP, SEXP BinsVijSEXP, SEXP BinsVijSizeSEXP, SEXP ObsDVijSEXP, SEXP InteractionInfMatSEXP, SEXP AllInteIndecesSEXP, SEXP QCellPETCountsDijSEXP, SEXP QCellPETCountsVijSEXP) {
+void Get_QCellPETCounts_fun_Rcpp(Rcpp::NumericVector const& BinsVij, int const& BinsVijSize, Rcpp::NumericVector const& ObsVij, Rcpp::NumericMatrix& InteractionInfMat, Rcpp::NumericVector const& AllInteIndeces, Rcpp::NumericVector& QCellPETCountsVij);
+static SEXP _MACPET_Get_QCellPETCounts_fun_Rcpp_try(SEXP BinsVijSEXP, SEXP BinsVijSizeSEXP, SEXP ObsVijSEXP, SEXP InteractionInfMatSEXP, SEXP AllInteIndecesSEXP, SEXP QCellPETCountsVijSEXP) {
 BEGIN_RCPP
-    Rcpp::traits::input_parameter< Rcpp::NumericVector const& >::type BinsDij(BinsDijSEXP);
-    Rcpp::traits::input_parameter< int const& >::type BinsDijSize(BinsDijSizeSEXP);
     Rcpp::traits::input_parameter< Rcpp::NumericVector const& >::type BinsVij(BinsVijSEXP);
     Rcpp::traits::input_parameter< int const& >::type BinsVijSize(BinsVijSizeSEXP);
-    Rcpp::traits::input_parameter< Rcpp::NumericMatrix const& >::type ObsDVij(ObsDVijSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector const& >::type ObsVij(ObsVijSEXP);
     Rcpp::traits::input_parameter< Rcpp::NumericMatrix& >::type InteractionInfMat(InteractionInfMatSEXP);
     Rcpp::traits::input_parameter< Rcpp::NumericVector const& >::type AllInteIndeces(AllInteIndecesSEXP);
-    Rcpp::traits::input_parameter< Rcpp::NumericVector& >::type QCellPETCountsDij(QCellPETCountsDijSEXP);
     Rcpp::traits::input_parameter< Rcpp::NumericVector& >::type QCellPETCountsVij(QCellPETCountsVijSEXP);
-    Get_QCellPETCounts_fun_Rcpp(BinsDij, BinsDijSize, BinsVij, BinsVijSize, ObsDVij, InteractionInfMat, AllInteIndeces, QCellPETCountsDij, QCellPETCountsVij);
+    Get_QCellPETCounts_fun_Rcpp(BinsVij, BinsVijSize, ObsVij, InteractionInfMat, AllInteIndeces, QCellPETCountsVij);
     return R_NilValue;
 END_RCPP_RETURN_ERROR
 }
-RcppExport SEXP _MACPET_Get_QCellPETCounts_fun_Rcpp(SEXP BinsDijSEXP, SEXP BinsDijSizeSEXP, SEXP BinsVijSEXP, SEXP BinsVijSizeSEXP, SEXP ObsDVijSEXP, SEXP InteractionInfMatSEXP, SEXP AllInteIndecesSEXP, SEXP QCellPETCountsDijSEXP, SEXP QCellPETCountsVijSEXP) {
+RcppExport SEXP _MACPET_Get_QCellPETCounts_fun_Rcpp(SEXP BinsVijSEXP, SEXP BinsVijSizeSEXP, SEXP ObsVijSEXP, SEXP InteractionInfMatSEXP, SEXP AllInteIndecesSEXP, SEXP QCellPETCountsVijSEXP) {
     SEXP rcpp_result_gen;
     {
         Rcpp::RNGScope rcpp_rngScope_gen;
-        rcpp_result_gen = PROTECT(_MACPET_Get_QCellPETCounts_fun_Rcpp_try(BinsDijSEXP, BinsDijSizeSEXP, BinsVijSEXP, BinsVijSizeSEXP, ObsDVijSEXP, InteractionInfMatSEXP, AllInteIndecesSEXP, QCellPETCountsDijSEXP, QCellPETCountsVijSEXP));
+        rcpp_result_gen = PROTECT(_MACPET_Get_QCellPETCounts_fun_Rcpp_try(BinsVijSEXP, BinsVijSizeSEXP, ObsVijSEXP, InteractionInfMatSEXP, AllInteIndecesSEXP, QCellPETCountsVijSEXP));
     }
     Rboolean rcpp_isInterrupt_gen = Rf_inherits(rcpp_result_gen, "interrupted-error");
     if (rcpp_isInterrupt_gen) {
@@ -346,31 +347,25 @@ RcppExport SEXP _MACPET_Get_QCellPETCounts_fun_Rcpp(SEXP BinsDijSEXP, SEXP BinsD
     return rcpp_result_gen;
 }
 // Get_QCellCombCounts_fun_Rcpp
-void Get_QCellCombCounts_fun_Rcpp(int& ind, Rcpp::NumericVector const& BinsDij, int const& BinsDijSize, Rcpp::NumericVector const& BinsVij, int const& BinsVijSize, SEXP& BigInfoMatDescInst, Rcpp::NumericVector const& DkhOrder, Rcpp::NumericVector& QCellCombCountsDij_Net, Rcpp::NumericVector& QCellCombCountsVij_Net, int const& StartInd, int const& EndInd, Rcpp::NumericVector const& NiNjIndeces, Rcpp::NumericVector const& NiNjMat);
-static SEXP _MACPET_Get_QCellCombCounts_fun_Rcpp_try(SEXP indSEXP, SEXP BinsDijSEXP, SEXP BinsDijSizeSEXP, SEXP BinsVijSEXP, SEXP BinsVijSizeSEXP, SEXP BigInfoMatDescInstSEXP, SEXP DkhOrderSEXP, SEXP QCellCombCountsDij_NetSEXP, SEXP QCellCombCountsVij_NetSEXP, SEXP StartIndSEXP, SEXP EndIndSEXP, SEXP NiNjIndecesSEXP, SEXP NiNjMatSEXP) {
+void Get_QCellCombCounts_fun_Rcpp(Rcpp::NumericVector const& BinsVij, int const& BinsVijSize, SEXP& BigInfoMatDescInst, Rcpp::NumericVector const& VkhOrder, Rcpp::NumericVector& QCellCombCountsVij_Net, int const& StartInd, int const& EndInd);
+static SEXP _MACPET_Get_QCellCombCounts_fun_Rcpp_try(SEXP BinsVijSEXP, SEXP BinsVijSizeSEXP, SEXP BigInfoMatDescInstSEXP, SEXP VkhOrderSEXP, SEXP QCellCombCountsVij_NetSEXP, SEXP StartIndSEXP, SEXP EndIndSEXP) {
 BEGIN_RCPP
-    Rcpp::traits::input_parameter< int& >::type ind(indSEXP);
-    Rcpp::traits::input_parameter< Rcpp::NumericVector const& >::type BinsDij(BinsDijSEXP);
-    Rcpp::traits::input_parameter< int const& >::type BinsDijSize(BinsDijSizeSEXP);
     Rcpp::traits::input_parameter< Rcpp::NumericVector const& >::type BinsVij(BinsVijSEXP);
     Rcpp::traits::input_parameter< int const& >::type BinsVijSize(BinsVijSizeSEXP);
     Rcpp::traits::input_parameter< SEXP& >::type BigInfoMatDescInst(BigInfoMatDescInstSEXP);
-    Rcpp::traits::input_parameter< Rcpp::NumericVector const& >::type DkhOrder(DkhOrderSEXP);
-    Rcpp::traits::input_parameter< Rcpp::NumericVector& >::type QCellCombCountsDij_Net(QCellCombCountsDij_NetSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector const& >::type VkhOrder(VkhOrderSEXP);
     Rcpp::traits::input_parameter< Rcpp::NumericVector& >::type QCellCombCountsVij_Net(QCellCombCountsVij_NetSEXP);
     Rcpp::traits::input_parameter< int const& >::type StartInd(StartIndSEXP);
     Rcpp::traits::input_parameter< int const& >::type EndInd(EndIndSEXP);
-    Rcpp::traits::input_parameter< Rcpp::NumericVector const& >::type NiNjIndeces(NiNjIndecesSEXP);
-    Rcpp::traits::input_parameter< Rcpp::NumericVector const& >::type NiNjMat(NiNjMatSEXP);
-    Get_QCellCombCounts_fun_Rcpp(ind, BinsDij, BinsDijSize, BinsVij, BinsVijSize, BigInfoMatDescInst, DkhOrder, QCellCombCountsDij_Net, QCellCombCountsVij_Net, StartInd, EndInd, NiNjIndeces, NiNjMat);
+    Get_QCellCombCounts_fun_Rcpp(BinsVij, BinsVijSize, BigInfoMatDescInst, VkhOrder, QCellCombCountsVij_Net, StartInd, EndInd);
     return R_NilValue;
 END_RCPP_RETURN_ERROR
 }
-RcppExport SEXP _MACPET_Get_QCellCombCounts_fun_Rcpp(SEXP indSEXP, SEXP BinsDijSEXP, SEXP BinsDijSizeSEXP, SEXP BinsVijSEXP, SEXP BinsVijSizeSEXP, SEXP BigInfoMatDescInstSEXP, SEXP DkhOrderSEXP, SEXP QCellCombCountsDij_NetSEXP, SEXP QCellCombCountsVij_NetSEXP, SEXP StartIndSEXP, SEXP EndIndSEXP, SEXP NiNjIndecesSEXP, SEXP NiNjMatSEXP) {
+RcppExport SEXP _MACPET_Get_QCellCombCounts_fun_Rcpp(SEXP BinsVijSEXP, SEXP BinsVijSizeSEXP, SEXP BigInfoMatDescInstSEXP, SEXP VkhOrderSEXP, SEXP QCellCombCountsVij_NetSEXP, SEXP StartIndSEXP, SEXP EndIndSEXP) {
     SEXP rcpp_result_gen;
     {
         Rcpp::RNGScope rcpp_rngScope_gen;
-        rcpp_result_gen = PROTECT(_MACPET_Get_QCellCombCounts_fun_Rcpp_try(indSEXP, BinsDijSEXP, BinsDijSizeSEXP, BinsVijSEXP, BinsVijSizeSEXP, BigInfoMatDescInstSEXP, DkhOrderSEXP, QCellCombCountsDij_NetSEXP, QCellCombCountsVij_NetSEXP, StartIndSEXP, EndIndSEXP, NiNjIndecesSEXP, NiNjMatSEXP));
+        rcpp_result_gen = PROTECT(_MACPET_Get_QCellCombCounts_fun_Rcpp_try(BinsVijSEXP, BinsVijSizeSEXP, BigInfoMatDescInstSEXP, VkhOrderSEXP, QCellCombCountsVij_NetSEXP, StartIndSEXP, EndIndSEXP));
     }
     Rboolean rcpp_isInterrupt_gen = Rf_inherits(rcpp_result_gen, "interrupted-error");
     if (rcpp_isInterrupt_gen) {
@@ -387,24 +382,23 @@ RcppExport SEXP _MACPET_Get_QCellCombCounts_fun_Rcpp(SEXP indSEXP, SEXP BinsDijS
     return rcpp_result_gen;
 }
 // Assess_Interaction_fun_Rcpp
-SEXP Assess_Interaction_fun_Rcpp(int& CurInt, Rcpp::NumericMatrix& InteractionInfMat, Rcpp::Function& Poiss_fun, Rcpp::NumericMatrix const& BinMatDij, Rcpp::NumericMatrix const& BinMatVij);
-static SEXP _MACPET_Assess_Interaction_fun_Rcpp_try(SEXP CurIntSEXP, SEXP InteractionInfMatSEXP, SEXP Poiss_funSEXP, SEXP BinMatDijSEXP, SEXP BinMatVijSEXP) {
+SEXP Assess_Interaction_fun_Rcpp(int& CurInt, Rcpp::NumericMatrix& InteractionInfMat, Rcpp::Function& Poiss_fun, Rcpp::NumericMatrix const& BinMatVij);
+static SEXP _MACPET_Assess_Interaction_fun_Rcpp_try(SEXP CurIntSEXP, SEXP InteractionInfMatSEXP, SEXP Poiss_funSEXP, SEXP BinMatVijSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< int& >::type CurInt(CurIntSEXP);
     Rcpp::traits::input_parameter< Rcpp::NumericMatrix& >::type InteractionInfMat(InteractionInfMatSEXP);
     Rcpp::traits::input_parameter< Rcpp::Function& >::type Poiss_fun(Poiss_funSEXP);
-    Rcpp::traits::input_parameter< Rcpp::NumericMatrix const& >::type BinMatDij(BinMatDijSEXP);
     Rcpp::traits::input_parameter< Rcpp::NumericMatrix const& >::type BinMatVij(BinMatVijSEXP);
-    rcpp_result_gen = Rcpp::wrap(Assess_Interaction_fun_Rcpp(CurInt, InteractionInfMat, Poiss_fun, BinMatDij, BinMatVij));
+    rcpp_result_gen = Rcpp::wrap(Assess_Interaction_fun_Rcpp(CurInt, InteractionInfMat, Poiss_fun, BinMatVij));
     return rcpp_result_gen;
 END_RCPP_RETURN_ERROR
 }
-RcppExport SEXP _MACPET_Assess_Interaction_fun_Rcpp(SEXP CurIntSEXP, SEXP InteractionInfMatSEXP, SEXP Poiss_funSEXP, SEXP BinMatDijSEXP, SEXP BinMatVijSEXP) {
+RcppExport SEXP _MACPET_Assess_Interaction_fun_Rcpp(SEXP CurIntSEXP, SEXP InteractionInfMatSEXP, SEXP Poiss_funSEXP, SEXP BinMatVijSEXP) {
     SEXP rcpp_result_gen;
     {
         Rcpp::RNGScope rcpp_rngScope_gen;
-        rcpp_result_gen = PROTECT(_MACPET_Assess_Interaction_fun_Rcpp_try(CurIntSEXP, InteractionInfMatSEXP, Poiss_funSEXP, BinMatDijSEXP, BinMatVijSEXP));
+        rcpp_result_gen = PROTECT(_MACPET_Assess_Interaction_fun_Rcpp_try(CurIntSEXP, InteractionInfMatSEXP, Poiss_funSEXP, BinMatVijSEXP));
     }
     Rboolean rcpp_isInterrupt_gen = Rf_inherits(rcpp_result_gen, "interrupted-error");
     if (rcpp_isInterrupt_gen) {
@@ -456,8 +450,8 @@ RcppExport SEXP _MACPET_Update_ToBeAddedInter_fun_Rcpp(SEXP InteractionInfMatSEX
     return rcpp_result_gen;
 }
 // Check_BiProd_fun_Rcpp
-SEXP Check_BiProd_fun_Rcpp(Rcpp::NumericMatrix& InteractionInfMat, int& k, int& h, Rcpp::NumericVector& AllInteIndeces, double& TotBiRem, int& Chrom12ID_i);
-static SEXP _MACPET_Check_BiProd_fun_Rcpp_try(SEXP InteractionInfMatSEXP, SEXP kSEXP, SEXP hSEXP, SEXP AllInteIndecesSEXP, SEXP TotBiRemSEXP, SEXP Chrom12ID_iSEXP) {
+SEXP Check_BiProd_fun_Rcpp(Rcpp::NumericMatrix& InteractionInfMat, int& k, int& h, Rcpp::NumericVector& AllInteIndeces, double& TotBiRem, int& Chrom12ID_i, int& OrdersCount);
+static SEXP _MACPET_Check_BiProd_fun_Rcpp_try(SEXP InteractionInfMatSEXP, SEXP kSEXP, SEXP hSEXP, SEXP AllInteIndecesSEXP, SEXP TotBiRemSEXP, SEXP Chrom12ID_iSEXP, SEXP OrdersCountSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< Rcpp::NumericMatrix& >::type InteractionInfMat(InteractionInfMatSEXP);
@@ -466,15 +460,16 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< Rcpp::NumericVector& >::type AllInteIndeces(AllInteIndecesSEXP);
     Rcpp::traits::input_parameter< double& >::type TotBiRem(TotBiRemSEXP);
     Rcpp::traits::input_parameter< int& >::type Chrom12ID_i(Chrom12ID_iSEXP);
-    rcpp_result_gen = Rcpp::wrap(Check_BiProd_fun_Rcpp(InteractionInfMat, k, h, AllInteIndeces, TotBiRem, Chrom12ID_i));
+    Rcpp::traits::input_parameter< int& >::type OrdersCount(OrdersCountSEXP);
+    rcpp_result_gen = Rcpp::wrap(Check_BiProd_fun_Rcpp(InteractionInfMat, k, h, AllInteIndeces, TotBiRem, Chrom12ID_i, OrdersCount));
     return rcpp_result_gen;
 END_RCPP_RETURN_ERROR
 }
-RcppExport SEXP _MACPET_Check_BiProd_fun_Rcpp(SEXP InteractionInfMatSEXP, SEXP kSEXP, SEXP hSEXP, SEXP AllInteIndecesSEXP, SEXP TotBiRemSEXP, SEXP Chrom12ID_iSEXP) {
+RcppExport SEXP _MACPET_Check_BiProd_fun_Rcpp(SEXP InteractionInfMatSEXP, SEXP kSEXP, SEXP hSEXP, SEXP AllInteIndecesSEXP, SEXP TotBiRemSEXP, SEXP Chrom12ID_iSEXP, SEXP OrdersCountSEXP) {
     SEXP rcpp_result_gen;
     {
         Rcpp::RNGScope rcpp_rngScope_gen;
-        rcpp_result_gen = PROTECT(_MACPET_Check_BiProd_fun_Rcpp_try(InteractionInfMatSEXP, kSEXP, hSEXP, AllInteIndecesSEXP, TotBiRemSEXP, Chrom12ID_iSEXP));
+        rcpp_result_gen = PROTECT(_MACPET_Check_BiProd_fun_Rcpp_try(InteractionInfMatSEXP, kSEXP, hSEXP, AllInteIndecesSEXP, TotBiRemSEXP, Chrom12ID_iSEXP, OrdersCountSEXP));
     }
     Rboolean rcpp_isInterrupt_gen = Rf_inherits(rcpp_result_gen, "interrupted-error");
     if (rcpp_isInterrupt_gen) {
@@ -521,31 +516,66 @@ RcppExport SEXP _MACPET_Get_InteractionInfo_fun_Rcpp(SEXP InteractionInfMatSEXP,
     UNPROTECT(1);
     return rcpp_result_gen;
 }
+// SubsetSignificantInteractions_fun_Rcpp
+SEXP SubsetSignificantInteractions_fun_Rcpp(int const& NInteractionInfo, Rcpp::NumericVector const& FDR, Rcpp::NumericVector const& Order, double const& threshold);
+static SEXP _MACPET_SubsetSignificantInteractions_fun_Rcpp_try(SEXP NInteractionInfoSEXP, SEXP FDRSEXP, SEXP OrderSEXP, SEXP thresholdSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< int const& >::type NInteractionInfo(NInteractionInfoSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector const& >::type FDR(FDRSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector const& >::type Order(OrderSEXP);
+    Rcpp::traits::input_parameter< double const& >::type threshold(thresholdSEXP);
+    rcpp_result_gen = Rcpp::wrap(SubsetSignificantInteractions_fun_Rcpp(NInteractionInfo, FDR, Order, threshold));
+    return rcpp_result_gen;
+END_RCPP_RETURN_ERROR
+}
+RcppExport SEXP _MACPET_SubsetSignificantInteractions_fun_Rcpp(SEXP NInteractionInfoSEXP, SEXP FDRSEXP, SEXP OrderSEXP, SEXP thresholdSEXP) {
+    SEXP rcpp_result_gen;
+    {
+        Rcpp::RNGScope rcpp_rngScope_gen;
+        rcpp_result_gen = PROTECT(_MACPET_SubsetSignificantInteractions_fun_Rcpp_try(NInteractionInfoSEXP, FDRSEXP, OrderSEXP, thresholdSEXP));
+    }
+    Rboolean rcpp_isInterrupt_gen = Rf_inherits(rcpp_result_gen, "interrupted-error");
+    if (rcpp_isInterrupt_gen) {
+        UNPROTECT(1);
+        Rf_onintr();
+    }
+    Rboolean rcpp_isError_gen = Rf_inherits(rcpp_result_gen, "try-error");
+    if (rcpp_isError_gen) {
+        SEXP rcpp_msgSEXP_gen = Rf_asChar(rcpp_result_gen);
+        UNPROTECT(1);
+        Rf_error(CHAR(rcpp_msgSEXP_gen));
+    }
+    UNPROTECT(1);
+    return rcpp_result_gen;
+}
 
 // validate (ensure exported C++ functions exist before calling them)
 static int _MACPET_RcppExport_validate(const char* sig) { 
     static std::set<std::string> signatures;
     if (signatures.empty()) {
+        signatures.insert("SEXP(*Get_NewPeakSummit_fun_Rcpp)(Rcpp::NumericVector const&,Rcpp::NumericVector const&,Rcpp::NumericVector const&,Rcpp::NumericVector const&,int const&,int const&)");
         signatures.insert("SEXP(*Get_PETsInfoMat_fun_Rcpp)(Rcpp::NumericVector const&,Rcpp::NumericVector const&,Rcpp::NumericVector const&,Rcpp::NumericVector const&,Rcpp::NumericVector const&,int const&,int const&)");
         signatures.insert("SEXP(*Initiate_InteractionInfMat_fun_Rcpp)(Rcpp::NumericMatrix&,Rcpp::NumericMatrix&,int&,int&)");
         signatures.insert("SEXP(*Initiate_GenomeMap_fun_Rcpp)(int const&,Rcpp::NumericVector const&,Rcpp::NumericVector const&,Rcpp::NumericVector const&,int const&)");
         signatures.insert("int(*Get_VectPosIndex_fun_Rcpp)(int&,int&,int&,int&)");
         signatures.insert("SEXP(*Get_VectPosIndex_Vectorized_fun_Rcpp)(int&,int&,Rcpp::NumericVector const&,Rcpp::NumericVector const&)");
         signatures.insert("SEXP(*Dijkstra_GSP_fun_Rcpp)(int&,Rcpp::List const&,int const&)");
-        signatures.insert("void(*Save_BigMat_fun_Rcpp)(SEXP&,Rcpp::NumericVector const&,int&,int&,int&,Rcpp::NumericVector&)");
-        signatures.insert("SEXP(*Get_VijNet_fun_Rcpp)(Rcpp::NumericVector const&,Rcpp::NumericVector const&,double&,double&)");
-        signatures.insert("void(*Get_QCellPETCounts_fun_Rcpp)(Rcpp::NumericVector const&,int const&,Rcpp::NumericVector const&,int const&,Rcpp::NumericMatrix const&,Rcpp::NumericMatrix&,Rcpp::NumericVector const&,Rcpp::NumericVector&,Rcpp::NumericVector&)");
-        signatures.insert("void(*Get_QCellCombCounts_fun_Rcpp)(int&,Rcpp::NumericVector const&,int const&,Rcpp::NumericVector const&,int const&,SEXP&,Rcpp::NumericVector const&,Rcpp::NumericVector&,Rcpp::NumericVector&,int const&,int const&,Rcpp::NumericVector const&,Rcpp::NumericVector const&)");
-        signatures.insert("SEXP(*Assess_Interaction_fun_Rcpp)(int&,Rcpp::NumericMatrix&,Rcpp::Function&,Rcpp::NumericMatrix const&,Rcpp::NumericMatrix const&)");
+        signatures.insert("void(*Save_BigMat_fun_Rcpp)(SEXP&,Rcpp::NumericVector const&,int&,int&,int&,Rcpp::NumericVector&,Rcpp::NumericVector const&,Rcpp::NumericVector const&)");
+        signatures.insert("void(*Get_QCellPETCounts_fun_Rcpp)(Rcpp::NumericVector const&,int const&,Rcpp::NumericVector const&,Rcpp::NumericMatrix&,Rcpp::NumericVector const&,Rcpp::NumericVector&)");
+        signatures.insert("void(*Get_QCellCombCounts_fun_Rcpp)(Rcpp::NumericVector const&,int const&,SEXP&,Rcpp::NumericVector const&,Rcpp::NumericVector&,int const&,int const&)");
+        signatures.insert("SEXP(*Assess_Interaction_fun_Rcpp)(int&,Rcpp::NumericMatrix&,Rcpp::Function&,Rcpp::NumericMatrix const&)");
         signatures.insert("void(*Update_ToBeAddedInter_fun_Rcpp)(Rcpp::NumericMatrix&,int&,int&,int&,int&,Rcpp::NumericVector&,int&)");
-        signatures.insert("SEXP(*Check_BiProd_fun_Rcpp)(Rcpp::NumericMatrix&,int&,int&,Rcpp::NumericVector&,double&,int&)");
+        signatures.insert("SEXP(*Check_BiProd_fun_Rcpp)(Rcpp::NumericMatrix&,int&,int&,Rcpp::NumericVector&,double&,int&,int&)");
         signatures.insert("SEXP(*Get_InteractionInfo_fun_Rcpp)(Rcpp::NumericMatrix&,int&)");
+        signatures.insert("SEXP(*SubsetSignificantInteractions_fun_Rcpp)(int const&,Rcpp::NumericVector const&,Rcpp::NumericVector const&,double const&)");
     }
     return signatures.find(sig) != signatures.end();
 }
 
 // registerCCallable (register entry points for exported C++ functions)
 RcppExport SEXP _MACPET_RcppExport_registerCCallable() { 
+    R_RegisterCCallable("MACPET", "_MACPET_Get_NewPeakSummit_fun_Rcpp", (DL_FUNC)_MACPET_Get_NewPeakSummit_fun_Rcpp_try);
     R_RegisterCCallable("MACPET", "_MACPET_Get_PETsInfoMat_fun_Rcpp", (DL_FUNC)_MACPET_Get_PETsInfoMat_fun_Rcpp_try);
     R_RegisterCCallable("MACPET", "_MACPET_Initiate_InteractionInfMat_fun_Rcpp", (DL_FUNC)_MACPET_Initiate_InteractionInfMat_fun_Rcpp_try);
     R_RegisterCCallable("MACPET", "_MACPET_Initiate_GenomeMap_fun_Rcpp", (DL_FUNC)_MACPET_Initiate_GenomeMap_fun_Rcpp_try);
@@ -553,13 +583,13 @@ RcppExport SEXP _MACPET_RcppExport_registerCCallable() {
     R_RegisterCCallable("MACPET", "_MACPET_Get_VectPosIndex_Vectorized_fun_Rcpp", (DL_FUNC)_MACPET_Get_VectPosIndex_Vectorized_fun_Rcpp_try);
     R_RegisterCCallable("MACPET", "_MACPET_Dijkstra_GSP_fun_Rcpp", (DL_FUNC)_MACPET_Dijkstra_GSP_fun_Rcpp_try);
     R_RegisterCCallable("MACPET", "_MACPET_Save_BigMat_fun_Rcpp", (DL_FUNC)_MACPET_Save_BigMat_fun_Rcpp_try);
-    R_RegisterCCallable("MACPET", "_MACPET_Get_VijNet_fun_Rcpp", (DL_FUNC)_MACPET_Get_VijNet_fun_Rcpp_try);
     R_RegisterCCallable("MACPET", "_MACPET_Get_QCellPETCounts_fun_Rcpp", (DL_FUNC)_MACPET_Get_QCellPETCounts_fun_Rcpp_try);
     R_RegisterCCallable("MACPET", "_MACPET_Get_QCellCombCounts_fun_Rcpp", (DL_FUNC)_MACPET_Get_QCellCombCounts_fun_Rcpp_try);
     R_RegisterCCallable("MACPET", "_MACPET_Assess_Interaction_fun_Rcpp", (DL_FUNC)_MACPET_Assess_Interaction_fun_Rcpp_try);
     R_RegisterCCallable("MACPET", "_MACPET_Update_ToBeAddedInter_fun_Rcpp", (DL_FUNC)_MACPET_Update_ToBeAddedInter_fun_Rcpp_try);
     R_RegisterCCallable("MACPET", "_MACPET_Check_BiProd_fun_Rcpp", (DL_FUNC)_MACPET_Check_BiProd_fun_Rcpp_try);
     R_RegisterCCallable("MACPET", "_MACPET_Get_InteractionInfo_fun_Rcpp", (DL_FUNC)_MACPET_Get_InteractionInfo_fun_Rcpp_try);
+    R_RegisterCCallable("MACPET", "_MACPET_SubsetSignificantInteractions_fun_Rcpp", (DL_FUNC)_MACPET_SubsetSignificantInteractions_fun_Rcpp_try);
     R_RegisterCCallable("MACPET", "_MACPET_RcppExport_validate", (DL_FUNC)_MACPET_RcppExport_validate);
     return R_NilValue;
 }
@@ -567,20 +597,21 @@ RcppExport SEXP _MACPET_RcppExport_registerCCallable() {
 static const R_CallMethodDef CallEntries[] = {
     {"_MACPET_FilterFastqYield_fun_Rcpp", (DL_FUNC) &_MACPET_FilterFastqYield_fun_Rcpp, 10},
     {"_MACPET_FitCallLocal_fun_Rcpp", (DL_FUNC) &_MACPET_FitCallLocal_fun_Rcpp, 2},
+    {"_MACPET_Get_NewPeakSummit_fun_Rcpp", (DL_FUNC) &_MACPET_Get_NewPeakSummit_fun_Rcpp, 6},
     {"_MACPET_Get_PETsInfoMat_fun_Rcpp", (DL_FUNC) &_MACPET_Get_PETsInfoMat_fun_Rcpp, 7},
     {"_MACPET_Initiate_InteractionInfMat_fun_Rcpp", (DL_FUNC) &_MACPET_Initiate_InteractionInfMat_fun_Rcpp, 4},
     {"_MACPET_Initiate_GenomeMap_fun_Rcpp", (DL_FUNC) &_MACPET_Initiate_GenomeMap_fun_Rcpp, 5},
     {"_MACPET_Get_VectPosIndex_fun_Rcpp", (DL_FUNC) &_MACPET_Get_VectPosIndex_fun_Rcpp, 4},
     {"_MACPET_Get_VectPosIndex_Vectorized_fun_Rcpp", (DL_FUNC) &_MACPET_Get_VectPosIndex_Vectorized_fun_Rcpp, 4},
     {"_MACPET_Dijkstra_GSP_fun_Rcpp", (DL_FUNC) &_MACPET_Dijkstra_GSP_fun_Rcpp, 3},
-    {"_MACPET_Save_BigMat_fun_Rcpp", (DL_FUNC) &_MACPET_Save_BigMat_fun_Rcpp, 6},
-    {"_MACPET_Get_VijNet_fun_Rcpp", (DL_FUNC) &_MACPET_Get_VijNet_fun_Rcpp, 4},
-    {"_MACPET_Get_QCellPETCounts_fun_Rcpp", (DL_FUNC) &_MACPET_Get_QCellPETCounts_fun_Rcpp, 9},
-    {"_MACPET_Get_QCellCombCounts_fun_Rcpp", (DL_FUNC) &_MACPET_Get_QCellCombCounts_fun_Rcpp, 13},
-    {"_MACPET_Assess_Interaction_fun_Rcpp", (DL_FUNC) &_MACPET_Assess_Interaction_fun_Rcpp, 5},
+    {"_MACPET_Save_BigMat_fun_Rcpp", (DL_FUNC) &_MACPET_Save_BigMat_fun_Rcpp, 8},
+    {"_MACPET_Get_QCellPETCounts_fun_Rcpp", (DL_FUNC) &_MACPET_Get_QCellPETCounts_fun_Rcpp, 6},
+    {"_MACPET_Get_QCellCombCounts_fun_Rcpp", (DL_FUNC) &_MACPET_Get_QCellCombCounts_fun_Rcpp, 7},
+    {"_MACPET_Assess_Interaction_fun_Rcpp", (DL_FUNC) &_MACPET_Assess_Interaction_fun_Rcpp, 4},
     {"_MACPET_Update_ToBeAddedInter_fun_Rcpp", (DL_FUNC) &_MACPET_Update_ToBeAddedInter_fun_Rcpp, 7},
-    {"_MACPET_Check_BiProd_fun_Rcpp", (DL_FUNC) &_MACPET_Check_BiProd_fun_Rcpp, 6},
+    {"_MACPET_Check_BiProd_fun_Rcpp", (DL_FUNC) &_MACPET_Check_BiProd_fun_Rcpp, 7},
     {"_MACPET_Get_InteractionInfo_fun_Rcpp", (DL_FUNC) &_MACPET_Get_InteractionInfo_fun_Rcpp, 2},
+    {"_MACPET_SubsetSignificantInteractions_fun_Rcpp", (DL_FUNC) &_MACPET_SubsetSignificantInteractions_fun_Rcpp, 4},
     {"_MACPET_RcppExport_registerCCallable", (DL_FUNC) &_MACPET_RcppExport_registerCCallable, 0},
     {NULL, NULL, 0}
 };

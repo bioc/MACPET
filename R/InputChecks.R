@@ -590,8 +590,8 @@ Input_check_S4_fun = function(InArg) {
     #------------
     if (!methods::is(InArg$S4_PeakExt, "numeric")) {
         stop("S4_PeakExt: ", InArg$S4_PeakExt, " has to be a numeric!", call. = FALSE)
-    } else if (InArg$S4_PeakExt < 500) {
-        stop("S4_PeakExt: ", InArg$S4_PeakExt, " should be at least = 500!", call. = FALSE)
+    } else if (InArg$S4_PeakExt < 0) {
+        stop("S4_PeakExt: ", InArg$S4_PeakExt, " should be positive!", call. = FALSE)
     } else {
         # round it:
         InArg$S4_PeakExt = round(InArg$S4_PeakExt)

@@ -156,8 +156,9 @@
 #'  After the peak-calling analysis is done, the algorithm assesses the
 #' significance of the candidate peaks using a local Poisson model.}
 #'
-#' \item{Stage 4:}{ Interaction analysis stage: This stage uses the peaks found in stage 3 and the intra/inter-chromosomal
-#' PETs found in stage 2 to discover interactions between those peaks. It first estimates the expected number of PETs in each
+#' \item{Stage 4:}{ Interaction analysis stage: This stage uses the peaks found in stage 3 and the intra-chromosomal
+#' PETs found in stage 2 to discover interactions between those peaks. Inter-chromosomal PETs are not supported yet.
+#'  It first estimates the expected number of PETs in each
 #' interaction under H0 (everything is random), based on the depth of the peaks which interact and their distance.
 #' It then uses the Poisson distribution to call for significant interactions.
 #' The resulting object will include all potential interactions found in the data. Then the function
@@ -351,10 +352,9 @@
 #'This parameter is mandatory if Stage 4 is run.
 #'@param S4_minPETs The minimum total PETs allowed between every two peaks (default=2).
 #'This parameter is mandatory if Stage 4 is run.
-#'@param S4_PeakExt Integer. MACPET will use a window or 2*\code{S4_PeakExt} centered at the peak summit, before
-#'running the interaction analysis. This parameter has to be greater than 500 (bp), the default is 1500 (that is 3000 bp window),
-#'which is recomented. This parameter will both affect the interaction PETs falling into the peak and the merging of
-#'overlapping peaks.
+#'@param S4_PeakExt Integer for the number of bp to extend each peak on either side (default 500).
+#' This parameter will both affect the interaction PETs falling into the peak and the merging of
+#'overlapping peaks. This parameter is mandatory if Stage 4 is run.
 # ----------#'
 #' @examples
 #'
@@ -416,7 +416,7 @@ MACPETUlt = function(SA_AnalysisDir = "", SA_stages = c(0:3), SA_prefix = "MACPE
     S1_RbowtieRefDir = "", S2_PairedEndBAMpath = "", S2_image = TRUE, S2_BlackList = TRUE,
     S3_fileSelfDir = "", S3_image = TRUE, S3_method = "BH", S4_filePSFitDir = "",
     S4_filePIntraDir = "", S4_filePInterDir = NULL, S4_FDR_peak = 0.1, S4_method = "BH",
-    S4_image = TRUE, S4_minPETs = 2, S4_PeakExt = 1500) {
+    S4_image = TRUE, S4_minPETs = 2, S4_PeakExt = 500) {
     #--------------------------------------------
     #---------------Take and reorder Input:
     #--------------------------------------------

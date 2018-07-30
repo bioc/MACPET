@@ -6,6 +6,52 @@ using namespace Rcpp;
 // [[Rcpp::interfaces(r, cpp)]]
 
 //####################################################
+// Function to decide the new peak summit based on the merges:
+//####################################################
+//[[Rcpp::export]]
+SEXP Get_NewPeakSummit_fun_Rcpp(Rcpp::NumericVector const &queryHits,
+                                Rcpp::NumericVector const &subjectHits,
+                                Rcpp::NumericVector const &PeakSummit,
+                                Rcpp::NumericVector const &FDR,
+                                int const &Noverlaps, int const &NPeaksMerged){
+    //---------------------
+    // Initialize:
+    //---------------------
+    Rcpp::NumericVector PeakSummitNew(NPeaksMerged);
+    //---------------------
+    // loop on data:
+    //---------------------
+    int outer = 0;
+    int MergedPeakCount = 0;
+    while(outer<Noverlaps){
+        int SubHitouter=subjectHits[outer]-1;//will also take self
+        double FDRouter=FDR[SubHitouter];
+        double outerCounts=0;
+        double PeakSummit_opt;
+        //---------------------
+        // loop inner:
+        //---------------------
+        for(int inner=outer;inner<Noverlaps;inner++){
+            if(queryHits[outer]==queryHits[inner]){
+                outerCounts+=1;
+                int SubHitinner=subjectHits[inner]-1;//will also take self
+                double FDRinner=FDR[SubHitinner];
+                if(FDRinner<=FDRouter){
+                    FDRouter=FDRinner;
+                    PeakSummit_opt=PeakSummit[SubHitinner];
+                }
+            }else{
+                break;
+            }
+        }
+        PeakSummitNew[MergedPeakCount]=PeakSummit_opt;
+        MergedPeakCount+=1;
+        outer+=outerCounts;
+    }
+    return Rcpp::wrap(PeakSummitNew);
+}
+// done
+//####################################################
 // Funtions for classifing the interaction PETs according to their densities
 // And getting counts data
 //####################################################
@@ -251,10 +297,9 @@ SEXP Initiate_InteractionInfMat_fun_Rcpp(Rcpp::NumericMatrix &InteractionInfMat,
         InteractionInfMat(i,8)=NA_REAL;//p-value
         InteractionInfMat(i,9)=NA_REAL;//FDR
         InteractionInfMat(i,10)=InteractionInfo(i,2);//nij PETs
-        InteractionInfMat(i,11)=NA_REAL;//QCell for Dij
-        InteractionInfMat(i,12)=NA_REAL;//QCell for Vij
-        InteractionInfMat(i,14)=InteractionInfo(i,3);//Chrom12ID
-        InteractionInfMat(i,15)=InteractionInfo(i,4);//IntraID
+        InteractionInfMat(i,11)=NA_REAL;//QCell for Vij
+        InteractionInfMat(i,13)=InteractionInfo(i,3);//Chrom12ID
+        InteractionInfMat(i,14)=InteractionInfo(i,4);//IntraID
         // ---------------------------------------
         // Take the line ids for NiNjMat
         // ---------------------------------------
@@ -489,12 +534,14 @@ SEXP Dijkstra_GSP_fun_Rcpp(int &src,//source node in R index
 }
 // done
 //---------------------
-// Function for saving the SP into the matrix
+// Function for saving the Vij into the matrix
 //---------------------
 //[[Rcpp::export]]
 void Save_BigMat_fun_Rcpp(SEXP &BigInfoMatDescInst, Rcpp::NumericVector const &GlobalNodesDist,
                           int &k, int &StartInd, int &EndInd,
-                          Rcpp::NumericVector &InteractionPairs){
+                          Rcpp::NumericVector &InteractionPairs,
+                          Rcpp::NumericVector const &NiNjIndeces,
+                          Rcpp::NumericVector const &NiNjMat){
     // ---------------------------------------
     // Convert to Rcpp::XPtr<BigMatrix> objects:
     // ---------------------------------------
@@ -514,14 +561,19 @@ void Save_BigMat_fun_Rcpp(SEXP &BigInfoMatDescInst, Rcpp::NumericVector const &G
     for(int VectID_kh=StartInd;VectID_kh<=EndInd;VectID_kh++){
         // take distance:
         double Dkh=GlobalNodesDist[h];
+        // take correct indeces for NiNjMat:
+        int NiNjMat_k=NiNjIndeces[k]-1;
+        int NiNjMat_h=NiNjIndeces[h]-1;
+        // Compute Vij weight:
+        double Vij=NiNjMat[NiNjMat_k]*NiNjMat[NiNjMat_h]/Dkh;
         // check if valid:
-        if(Dkh==0||std::isinf(Dkh)){//out, inter too
-            Dkh=NA_REAL;
+        if(std::isinf(Vij)){//out, the Dkh is 0 and merged
+            Vij=NA_REAL;
         }
         // save:
-        maBigInfoMatDescInst[0][VectID_kh]=Dkh;
+        maBigInfoMatDescInst[0][VectID_kh]=Vij;
         // count combination:
-        if(!std::isnan(Dkh)){
+        if(!std::isnan(Vij)){
             // else not inf, and not na, so intra:
             InteractionPairs[0]+=1;
         }
@@ -531,49 +583,14 @@ void Save_BigMat_fun_Rcpp(SEXP &BigInfoMatDescInst, Rcpp::NumericVector const &G
 }
 // done
 //---------------------
-// Function for computing the Vij for each chromosome
-//---------------------
-//[[Rcpp::export]]
-SEXP Get_VijNet_fun_Rcpp(Rcpp::NumericVector const &NiNjIndeces_Net,
-                         Rcpp::NumericVector const &NiNjMat, double &Nadj_Net,
-                         double &NPeaksInvolved_Net){
-    //---------------------
-    // Initialize:
-    //---------------------
-    Rcpp::NumericVector Vij_Net(Nadj_Net);
-    int Vij_count=0;//for the above vector
-    //---------------------
-    // loop on all peak combinations
-    //---------------------
-    for(int k=0;k<NPeaksInvolved_Net;k++){
-        // take correct indeces:
-        int Pos_k=NiNjIndeces_Net[k]-1;
-        //---------------------
-        // scan the rest peaks
-        //---------------------
-        for(int h=k+1;h<NPeaksInvolved_Net;h++){
-            // take position
-            int Pos_h=NiNjIndeces_Net[h]-1;
-            // take vij:
-            Vij_Net[Vij_count]=NiNjMat[Pos_k]*NiNjMat[Pos_h];
-            Vij_count+=1;
-        }
-    }
-    return Rcpp::wrap(Vij_Net);
-}
-// done
-//---------------------
 // Function to get the total PETs in each quantile and assign the QCells into the InfMat
 //---------------------
 //[[Rcpp::export]]
-void Get_QCellPETCounts_fun_Rcpp(Rcpp::NumericVector const &BinsDij,
-                                 int const & BinsDijSize,
-                                 Rcpp::NumericVector const &BinsVij,
+void Get_QCellPETCounts_fun_Rcpp(Rcpp::NumericVector const &BinsVij,
                                  int const & BinsVijSize,
-                                 Rcpp::NumericMatrix const &ObsDVij,
+                                 Rcpp::NumericVector const &ObsVij,
                                  Rcpp::NumericMatrix &InteractionInfMat,
                                  Rcpp::NumericVector const &AllInteIndeces,
-                                 Rcpp::NumericVector &QCellPETCountsDij,
                                  Rcpp::NumericVector &QCellPETCountsVij){
     //---------------------
     // Initiate the return:
@@ -585,9 +602,8 @@ void Get_QCellPETCounts_fun_Rcpp(Rcpp::NumericVector const &BinsDij,
     for(int index=0;index<AllInteIndecesSize;index++){
         // take interaction
         int CurInt=AllInteIndeces[index]-1;//Now it is in c++ index
-        // take Dij and Vij:
-        double Dij=ObsDVij(index,0);
-        double Vij=ObsDVij(index,1);
+        // take Vij:
+        double Vij=ObsVij[index];
         // take nij:
         double nij=InteractionInfMat(CurInt,10);
         //---------------------
@@ -604,20 +620,6 @@ void Get_QCellPETCounts_fun_Rcpp(Rcpp::NumericVector const &BinsDij,
         InteractionInfMat(CurInt,11)=QPosVij;
         // count:
         QCellPETCountsVij[QPosVij]+=nij;
-        //---------------------
-        // classify Dij
-        //---------------------
-        int QPosDij=BinsDijSize-1; //last position
-        for(int j=0;j<BinsDijSize;j++){
-            if(Dij<=BinsDij[j]){
-                QPosDij=j;
-                break;
-            }
-        }
-        // save the QCell:
-        InteractionInfMat(CurInt,12)=QPosDij;
-        // count:
-        QCellPETCountsDij[QPosDij]+=nij;
     }
 }
 // done
@@ -625,17 +627,12 @@ void Get_QCellPETCounts_fun_Rcpp(Rcpp::NumericVector const &BinsDij,
 // Function to convert get the totals ni each QCell
 //---------------------
 //[[Rcpp::export]]
-void Get_QCellCombCounts_fun_Rcpp(int &ind, Rcpp::NumericVector const &BinsDij,
-                                  int const &BinsDijSize,
-                                  Rcpp::NumericVector const &BinsVij,
+void Get_QCellCombCounts_fun_Rcpp(Rcpp::NumericVector const &BinsVij,
                                   int const &BinsVijSize,
                                   SEXP &BigInfoMatDescInst,
-                                  Rcpp::NumericVector const &DkhOrder,
-                                  Rcpp::NumericVector &QCellCombCountsDij_Net,
+                                  Rcpp::NumericVector const &VkhOrder,
                                   Rcpp::NumericVector &QCellCombCountsVij_Net,
-                                  int const &StartInd, int const &EndInd,
-                                  Rcpp::NumericVector const &NiNjIndeces,
-                                  Rcpp::NumericVector const &NiNjMat){
+                                  int const &StartInd, int const &EndInd){
     // ---------------------------------------
     // Convert to Rcpp::XPtr<BigMatrix> objects:
     // ---------------------------------------
@@ -647,54 +644,34 @@ void Get_QCellCombCounts_fun_Rcpp(int &ind, Rcpp::NumericVector const &BinsDij,
     //---------------------
     // initialize
     //---------------------
-    int QPosDij=0;//the position on the QCellInterCountsChunk since DkiOrder
+    int QPosVij=0;//the position on the QCellCombCountsVij_Net since VkhOrder
     // gives sorted vij
     int TotVkh=EndInd-StartInd+1;
-    int k=ind-1;//the current peak in c++
     //---------------------
     // loop:
     //---------------------
     for(int i=0;i<TotVkh;i++){
         // take the order:
-        int Order_kh=DkhOrder[i]-1;//c++ index
+        int Order_kh=VkhOrder[i]-1;//c++ index
         // get the correct position on the Dij:
-        double DkhPos=StartInd+Order_kh;//c++ index
-        int h=k+1+Order_kh;//the next peak
-        // get the Dij:
-        double Dij=maBigInfoMatDescInst[0][int(DkhPos)];
-        // check if na and break
-        if(std::isnan(Dij)) break;//end of valid combinations
-        // tranform them to correct NiNjMat index:
-        int Pos_k=NiNjIndeces[k]-1;
-        int Pos_h=NiNjIndeces[h]-1;
+        double VkhPos=StartInd+Order_kh;//c++ index
         // get the Vij:
-        double Vij=NiNjMat[Pos_k]*NiNjMat[Pos_h];
+        double Vij=maBigInfoMatDescInst[0][int(VkhPos)];
+        // check if na and break
+        if(std::isnan(Vij)) break;//end of valid combinations
         //---------------------
         // classify Dij:
         //---------------------
-        if(Dij>BinsDij[QPosDij]){
-            // find next:
+        if(Vij>BinsVij[QPosVij]){
             // Find the next cell:
-            int QPosLast=BinsDijSize-1;//ensures last cell
-            for(int j=QPosDij+1;j<BinsDijSize;j++){
-                if(Dij<=BinsDij[j]){
+            int QPosLast=BinsVijSize-1;//ensures last cell
+            for(int j=QPosVij+1;j<BinsVijSize;j++){
+                if(Vij<=BinsVij[j]){
                     QPosLast=j;
                     break;
                 }
             }
-            QPosDij=QPosLast;
-        }
-        // count:
-        QCellCombCountsDij_Net[QPosDij]+=1;
-        //---------------------
-        // classify the Vij:
-        //---------------------
-        int QPosVij=BinsVijSize-1;//ensures last cell
-        for(int j=0;j<BinsVijSize;j++){
-            if(Vij<=BinsVij[j]){
-                QPosVij=j;
-                break;
-            }
+            QPosVij=QPosLast;
         }
         // count:
         QCellCombCountsVij_Net[QPosVij]+=1;
@@ -711,7 +688,6 @@ void Get_QCellCombCounts_fun_Rcpp(int &ind, Rcpp::NumericVector const &BinsDij,
 SEXP Assess_Interaction_fun_Rcpp(int &CurInt,//the current interaction id in R index
                                  Rcpp::NumericMatrix &InteractionInfMat,//the InteractionInfMat
                                  Rcpp::Function &Poiss_fun,
-                                 Rcpp::NumericMatrix const &BinMatDij,
                                  Rcpp::NumericMatrix const &BinMatVij){
     // ---------------------------------------
     // Initiate the results in a vector
@@ -729,12 +705,9 @@ SEXP Assess_Interaction_fun_Rcpp(int &CurInt,//the current interaction id in R i
     // ---------------------------------------
     double nij=InteractionInfMat(CurInt,10);
     // get QCEll:
-    int QCell_Vij=InteractionInfMat(CurInt,11);
-    int QCell_Dij=InteractionInfMat(CurInt,12);
-    // get prob:
-    double lijV=BinMatVij(QCell_Vij,2);
-    double lijD=BinMatDij(QCell_Dij,2);
-    double lij=(lijV+lijD)/2.0;
+    int QCell_Vij=InteractionInfMat(CurInt,11);//already in c++
+    // get expected:
+    double lij=BinMatVij(QCell_Vij,2);
     // ---------------------------------------
     // Get the p-value of the interaction
     // ---------------------------------------
@@ -770,8 +743,8 @@ void Update_ToBeAddedInter_fun_Rcpp(Rcpp::NumericMatrix &InteractionInfMat,
         // take ID:
         int ID_j=LastInteractions[j]-1;//because R to c++ index
         // change the Node_i/j if needed (note the chromosome ID has to also be the same):
-        if((InteractionInfMat(ID_j,2)==h)&&(InteractionInfMat(ID_j,14)==Chrom12ID_i)) InteractionInfMat(ID_j,2)=k;
-        if((InteractionInfMat(ID_j,3)==h)&&(InteractionInfMat(ID_j,14)==Chrom12ID_i)) InteractionInfMat(ID_j,3)=k;
+        if((InteractionInfMat(ID_j,2)==h)&&(InteractionInfMat(ID_j,13)==Chrom12ID_i)) InteractionInfMat(ID_j,2)=k;
+        if((InteractionInfMat(ID_j,3)==h)&&(InteractionInfMat(ID_j,13)==Chrom12ID_i)) InteractionInfMat(ID_j,3)=k;
     }
 }
 // done
@@ -781,12 +754,15 @@ void Update_ToBeAddedInter_fun_Rcpp(Rcpp::NumericMatrix &InteractionInfMat,
 //---------------------
 //[[Rcpp::export]]
 SEXP Check_BiProd_fun_Rcpp(Rcpp::NumericMatrix &InteractionInfMat,
-                           int &k, int &h, Rcpp::NumericVector &AllInteIndeces, double &TotBiRem, int &Chrom12ID_i){
+                           int &k, int &h, Rcpp::NumericVector &AllInteIndeces, double &TotBiRem, int &Chrom12ID_i,
+                           int &OrdersCount){
     // ---------------------------------------
     // Initiate:
     // ---------------------------------------
     int AllInteIndecesSize=AllInteIndeces.size();
-    Rcpp::NumericVector BiProductIDS;//R ids to be added and removed from AllInteIndeces
+    Rcpp::NumericVector BiProductIDSreject;//R ids to be added and removed from AllInteIndeces
+    Rcpp::NumericVector BiProductIDSaccepted;//accepted bi-products
+    int TotBiAcc=0;
     //---------------------
     // loop and update each element in the InteractionInfMat
     //---------------------
@@ -796,22 +772,34 @@ SEXP Check_BiProd_fun_Rcpp(Rcpp::NumericMatrix &InteractionInfMat,
         //---------------------
         // change the Node_i/j if needed:
         //---------------------
-        if((InteractionInfMat(ID_j,2)==h)&&(InteractionInfMat(ID_j,14)==Chrom12ID_i)) InteractionInfMat(ID_j,2)=k; //change name
-        if((InteractionInfMat(ID_j,3)==h)&&(InteractionInfMat(ID_j,14)==Chrom12ID_i)) InteractionInfMat(ID_j,3)=k;//change name
+        if((InteractionInfMat(ID_j,2)==h)&&(InteractionInfMat(ID_j,13)==Chrom12ID_i)) InteractionInfMat(ID_j,2)=k; //change name
+        if((InteractionInfMat(ID_j,3)==h)&&(InteractionInfMat(ID_j,13)==Chrom12ID_i)) InteractionInfMat(ID_j,3)=k;//change name
         // ---------------------------------------
         // check if bi-product
         // ---------------------------------------
         if(InteractionInfMat(ID_j,2)==InteractionInfMat(ID_j,3)){// then this is a biproduct.
-            // count:
-            TotBiRem+=1;
-            // order:
-            InteractionInfMat(ID_j,13)=NA_REAL;//indicating a bi-product non significant
-            // save the biproducts:
-            BiProductIDS.push_back(AllInteIndeces[j]);//R indeces
+            if(InteractionInfMat(ID_j,9)<0.05){
+                // accept it
+                // order:
+                InteractionInfMat(ID_j,12)=OrdersCount;
+                // save the biproducts:
+                BiProductIDSaccepted.push_back(AllInteIndeces[j]);//R indeces
+                TotBiAcc+=1;
+            }else{
+                // reject it
+                // count:
+                TotBiRem+=1;
+                // order:
+                InteractionInfMat(ID_j,12)=NA_REAL;//indicating a bi-product non significant
+                // save the biproducts:
+                BiProductIDSreject.push_back(AllInteIndeces[j]);//R indeces
+            }
         }
     }
-    Rcpp::List BiPorductsInfo=Rcpp::List::create(Rcpp::Named("BiProductIDS")=BiProductIDS,
-                                                 Rcpp::Named("TotBiRem")=TotBiRem);
+    Rcpp::List BiPorductsInfo=Rcpp::List::create(Rcpp::Named("BiProductIDSreject")=BiProductIDSreject,
+                                                 Rcpp::Named("TotBiRem")=TotBiRem,
+                                                 Rcpp::Named("BiProductIDSaccepted")=BiProductIDSaccepted,
+                                                 Rcpp::Named("TotBiAcc")=TotBiAcc);
 
     return Rcpp::wrap(BiPorductsInfo);
 }
@@ -839,10 +827,33 @@ SEXP Get_InteractionInfo_fun_Rcpp(Rcpp::NumericMatrix &InteractionInfMat,// the 
         // FDR:
         InteractionInfo(i,3)=InteractionInfMat(i,9);
         // order:
-        InteractionInfo(i,4)=InteractionInfMat(i,13);
+        InteractionInfo(i,4)=InteractionInfMat(i,12);
         //total interaction PETs
         InteractionInfo(i,5)=InteractionInfMat(i,10);
     }
     return Rcpp::wrap(InteractionInfo);
 }
 // done
+//####################################################
+//Function used in GetSignInteractions.GenomeMap for subseting significant interactions
+//####################################################
+//[[Rcpp::export]]
+SEXP SubsetSignificantInteractions_fun_Rcpp(int const &NInteractionInfo,
+                                            Rcpp::NumericVector const &FDR,
+                                            Rcpp::NumericVector const &Order,
+                                            double const &threshold){
+    int MaxOrder=0;//the maximum order to take, has to start at zero
+    // loop and check. Since in same order is the same FDR, break if
+    // the FDR gets bigger than the threshold, or iff the orders skips numbers
+    // This might happen in case one whole order is out from before, since
+    // you have subset the unsignifikant.
+    for(int i=0;i<NInteractionInfo;i++){
+        if((FDR[i]<threshold)&&((Order[i]==MaxOrder+1)||(Order[i]==MaxOrder))){
+            // Then it passes, but only if the order order is the previous plus one.
+            MaxOrder = Order[i];
+        }else{
+            break;
+        }
+    }
+    return Rcpp::wrap(MaxOrder);
+}

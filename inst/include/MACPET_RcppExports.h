@@ -24,6 +24,25 @@ namespace MACPET {
         }
     }
 
+    inline SEXP Get_NewPeakSummit_fun_Rcpp(Rcpp::NumericVector const& queryHits, Rcpp::NumericVector const& subjectHits, Rcpp::NumericVector const& PeakSummit, Rcpp::NumericVector const& FDR, int const& Noverlaps, int const& NPeaksMerged) {
+        typedef SEXP(*Ptr_Get_NewPeakSummit_fun_Rcpp)(SEXP,SEXP,SEXP,SEXP,SEXP,SEXP);
+        static Ptr_Get_NewPeakSummit_fun_Rcpp p_Get_NewPeakSummit_fun_Rcpp = NULL;
+        if (p_Get_NewPeakSummit_fun_Rcpp == NULL) {
+            validateSignature("SEXP(*Get_NewPeakSummit_fun_Rcpp)(Rcpp::NumericVector const&,Rcpp::NumericVector const&,Rcpp::NumericVector const&,Rcpp::NumericVector const&,int const&,int const&)");
+            p_Get_NewPeakSummit_fun_Rcpp = (Ptr_Get_NewPeakSummit_fun_Rcpp)R_GetCCallable("MACPET", "_MACPET_Get_NewPeakSummit_fun_Rcpp");
+        }
+        RObject rcpp_result_gen;
+        {
+            RNGScope RCPP_rngScope_gen;
+            rcpp_result_gen = p_Get_NewPeakSummit_fun_Rcpp(Shield<SEXP>(Rcpp::wrap(queryHits)), Shield<SEXP>(Rcpp::wrap(subjectHits)), Shield<SEXP>(Rcpp::wrap(PeakSummit)), Shield<SEXP>(Rcpp::wrap(FDR)), Shield<SEXP>(Rcpp::wrap(Noverlaps)), Shield<SEXP>(Rcpp::wrap(NPeaksMerged)));
+        }
+        if (rcpp_result_gen.inherits("interrupted-error"))
+            throw Rcpp::internal::InterruptedException();
+        if (rcpp_result_gen.inherits("try-error"))
+            throw Rcpp::exception(Rcpp::as<std::string>(rcpp_result_gen).c_str());
+        return Rcpp::as<SEXP >(rcpp_result_gen);
+    }
+
     inline SEXP Get_PETsInfoMat_fun_Rcpp(Rcpp::NumericVector const& VEC_query, Rcpp::NumericVector const& VEC_Type, Rcpp::NumericVector const& VEC_Tag, Rcpp::NumericVector const& VEC_LID, Rcpp::NumericVector const& VEC_PeakSummit, int const& NGlobalInterPETs, int const& NIntTagsloop) {
         typedef SEXP(*Ptr_Get_PETsInfoMat_fun_Rcpp)(SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP);
         static Ptr_Get_PETsInfoMat_fun_Rcpp p_Get_PETsInfoMat_fun_Rcpp = NULL;
@@ -138,17 +157,17 @@ namespace MACPET {
         return Rcpp::as<SEXP >(rcpp_result_gen);
     }
 
-    inline void Save_BigMat_fun_Rcpp(SEXP& BigInfoMatDescInst, Rcpp::NumericVector const& GlobalNodesDist, int& k, int& StartInd, int& EndInd, Rcpp::NumericVector& InteractionPairs) {
-        typedef SEXP(*Ptr_Save_BigMat_fun_Rcpp)(SEXP,SEXP,SEXP,SEXP,SEXP,SEXP);
+    inline void Save_BigMat_fun_Rcpp(SEXP& BigInfoMatDescInst, Rcpp::NumericVector const& GlobalNodesDist, int& k, int& StartInd, int& EndInd, Rcpp::NumericVector& InteractionPairs, Rcpp::NumericVector const& NiNjIndeces, Rcpp::NumericVector const& NiNjMat) {
+        typedef SEXP(*Ptr_Save_BigMat_fun_Rcpp)(SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP);
         static Ptr_Save_BigMat_fun_Rcpp p_Save_BigMat_fun_Rcpp = NULL;
         if (p_Save_BigMat_fun_Rcpp == NULL) {
-            validateSignature("void(*Save_BigMat_fun_Rcpp)(SEXP&,Rcpp::NumericVector const&,int&,int&,int&,Rcpp::NumericVector&)");
+            validateSignature("void(*Save_BigMat_fun_Rcpp)(SEXP&,Rcpp::NumericVector const&,int&,int&,int&,Rcpp::NumericVector&,Rcpp::NumericVector const&,Rcpp::NumericVector const&)");
             p_Save_BigMat_fun_Rcpp = (Ptr_Save_BigMat_fun_Rcpp)R_GetCCallable("MACPET", "_MACPET_Save_BigMat_fun_Rcpp");
         }
         RObject rcpp_result_gen;
         {
             RNGScope RCPP_rngScope_gen;
-            rcpp_result_gen = p_Save_BigMat_fun_Rcpp(Shield<SEXP>(Rcpp::wrap(BigInfoMatDescInst)), Shield<SEXP>(Rcpp::wrap(GlobalNodesDist)), Shield<SEXP>(Rcpp::wrap(k)), Shield<SEXP>(Rcpp::wrap(StartInd)), Shield<SEXP>(Rcpp::wrap(EndInd)), Shield<SEXP>(Rcpp::wrap(InteractionPairs)));
+            rcpp_result_gen = p_Save_BigMat_fun_Rcpp(Shield<SEXP>(Rcpp::wrap(BigInfoMatDescInst)), Shield<SEXP>(Rcpp::wrap(GlobalNodesDist)), Shield<SEXP>(Rcpp::wrap(k)), Shield<SEXP>(Rcpp::wrap(StartInd)), Shield<SEXP>(Rcpp::wrap(EndInd)), Shield<SEXP>(Rcpp::wrap(InteractionPairs)), Shield<SEXP>(Rcpp::wrap(NiNjIndeces)), Shield<SEXP>(Rcpp::wrap(NiNjMat)));
         }
         if (rcpp_result_gen.inherits("interrupted-error"))
             throw Rcpp::internal::InterruptedException();
@@ -156,36 +175,17 @@ namespace MACPET {
             throw Rcpp::exception(Rcpp::as<std::string>(rcpp_result_gen).c_str());
     }
 
-    inline SEXP Get_VijNet_fun_Rcpp(Rcpp::NumericVector const& NiNjIndeces_Net, Rcpp::NumericVector const& NiNjMat, double& Nadj_Net, double& NPeaksInvolved_Net) {
-        typedef SEXP(*Ptr_Get_VijNet_fun_Rcpp)(SEXP,SEXP,SEXP,SEXP);
-        static Ptr_Get_VijNet_fun_Rcpp p_Get_VijNet_fun_Rcpp = NULL;
-        if (p_Get_VijNet_fun_Rcpp == NULL) {
-            validateSignature("SEXP(*Get_VijNet_fun_Rcpp)(Rcpp::NumericVector const&,Rcpp::NumericVector const&,double&,double&)");
-            p_Get_VijNet_fun_Rcpp = (Ptr_Get_VijNet_fun_Rcpp)R_GetCCallable("MACPET", "_MACPET_Get_VijNet_fun_Rcpp");
-        }
-        RObject rcpp_result_gen;
-        {
-            RNGScope RCPP_rngScope_gen;
-            rcpp_result_gen = p_Get_VijNet_fun_Rcpp(Shield<SEXP>(Rcpp::wrap(NiNjIndeces_Net)), Shield<SEXP>(Rcpp::wrap(NiNjMat)), Shield<SEXP>(Rcpp::wrap(Nadj_Net)), Shield<SEXP>(Rcpp::wrap(NPeaksInvolved_Net)));
-        }
-        if (rcpp_result_gen.inherits("interrupted-error"))
-            throw Rcpp::internal::InterruptedException();
-        if (rcpp_result_gen.inherits("try-error"))
-            throw Rcpp::exception(Rcpp::as<std::string>(rcpp_result_gen).c_str());
-        return Rcpp::as<SEXP >(rcpp_result_gen);
-    }
-
-    inline void Get_QCellPETCounts_fun_Rcpp(Rcpp::NumericVector const& BinsDij, int const& BinsDijSize, Rcpp::NumericVector const& BinsVij, int const& BinsVijSize, Rcpp::NumericMatrix const& ObsDVij, Rcpp::NumericMatrix& InteractionInfMat, Rcpp::NumericVector const& AllInteIndeces, Rcpp::NumericVector& QCellPETCountsDij, Rcpp::NumericVector& QCellPETCountsVij) {
-        typedef SEXP(*Ptr_Get_QCellPETCounts_fun_Rcpp)(SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP);
+    inline void Get_QCellPETCounts_fun_Rcpp(Rcpp::NumericVector const& BinsVij, int const& BinsVijSize, Rcpp::NumericVector const& ObsVij, Rcpp::NumericMatrix& InteractionInfMat, Rcpp::NumericVector const& AllInteIndeces, Rcpp::NumericVector& QCellPETCountsVij) {
+        typedef SEXP(*Ptr_Get_QCellPETCounts_fun_Rcpp)(SEXP,SEXP,SEXP,SEXP,SEXP,SEXP);
         static Ptr_Get_QCellPETCounts_fun_Rcpp p_Get_QCellPETCounts_fun_Rcpp = NULL;
         if (p_Get_QCellPETCounts_fun_Rcpp == NULL) {
-            validateSignature("void(*Get_QCellPETCounts_fun_Rcpp)(Rcpp::NumericVector const&,int const&,Rcpp::NumericVector const&,int const&,Rcpp::NumericMatrix const&,Rcpp::NumericMatrix&,Rcpp::NumericVector const&,Rcpp::NumericVector&,Rcpp::NumericVector&)");
+            validateSignature("void(*Get_QCellPETCounts_fun_Rcpp)(Rcpp::NumericVector const&,int const&,Rcpp::NumericVector const&,Rcpp::NumericMatrix&,Rcpp::NumericVector const&,Rcpp::NumericVector&)");
             p_Get_QCellPETCounts_fun_Rcpp = (Ptr_Get_QCellPETCounts_fun_Rcpp)R_GetCCallable("MACPET", "_MACPET_Get_QCellPETCounts_fun_Rcpp");
         }
         RObject rcpp_result_gen;
         {
             RNGScope RCPP_rngScope_gen;
-            rcpp_result_gen = p_Get_QCellPETCounts_fun_Rcpp(Shield<SEXP>(Rcpp::wrap(BinsDij)), Shield<SEXP>(Rcpp::wrap(BinsDijSize)), Shield<SEXP>(Rcpp::wrap(BinsVij)), Shield<SEXP>(Rcpp::wrap(BinsVijSize)), Shield<SEXP>(Rcpp::wrap(ObsDVij)), Shield<SEXP>(Rcpp::wrap(InteractionInfMat)), Shield<SEXP>(Rcpp::wrap(AllInteIndeces)), Shield<SEXP>(Rcpp::wrap(QCellPETCountsDij)), Shield<SEXP>(Rcpp::wrap(QCellPETCountsVij)));
+            rcpp_result_gen = p_Get_QCellPETCounts_fun_Rcpp(Shield<SEXP>(Rcpp::wrap(BinsVij)), Shield<SEXP>(Rcpp::wrap(BinsVijSize)), Shield<SEXP>(Rcpp::wrap(ObsVij)), Shield<SEXP>(Rcpp::wrap(InteractionInfMat)), Shield<SEXP>(Rcpp::wrap(AllInteIndeces)), Shield<SEXP>(Rcpp::wrap(QCellPETCountsVij)));
         }
         if (rcpp_result_gen.inherits("interrupted-error"))
             throw Rcpp::internal::InterruptedException();
@@ -193,17 +193,17 @@ namespace MACPET {
             throw Rcpp::exception(Rcpp::as<std::string>(rcpp_result_gen).c_str());
     }
 
-    inline void Get_QCellCombCounts_fun_Rcpp(int& ind, Rcpp::NumericVector const& BinsDij, int const& BinsDijSize, Rcpp::NumericVector const& BinsVij, int const& BinsVijSize, SEXP& BigInfoMatDescInst, Rcpp::NumericVector const& DkhOrder, Rcpp::NumericVector& QCellCombCountsDij_Net, Rcpp::NumericVector& QCellCombCountsVij_Net, int const& StartInd, int const& EndInd, Rcpp::NumericVector const& NiNjIndeces, Rcpp::NumericVector const& NiNjMat) {
-        typedef SEXP(*Ptr_Get_QCellCombCounts_fun_Rcpp)(SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP);
+    inline void Get_QCellCombCounts_fun_Rcpp(Rcpp::NumericVector const& BinsVij, int const& BinsVijSize, SEXP& BigInfoMatDescInst, Rcpp::NumericVector const& VkhOrder, Rcpp::NumericVector& QCellCombCountsVij_Net, int const& StartInd, int const& EndInd) {
+        typedef SEXP(*Ptr_Get_QCellCombCounts_fun_Rcpp)(SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP);
         static Ptr_Get_QCellCombCounts_fun_Rcpp p_Get_QCellCombCounts_fun_Rcpp = NULL;
         if (p_Get_QCellCombCounts_fun_Rcpp == NULL) {
-            validateSignature("void(*Get_QCellCombCounts_fun_Rcpp)(int&,Rcpp::NumericVector const&,int const&,Rcpp::NumericVector const&,int const&,SEXP&,Rcpp::NumericVector const&,Rcpp::NumericVector&,Rcpp::NumericVector&,int const&,int const&,Rcpp::NumericVector const&,Rcpp::NumericVector const&)");
+            validateSignature("void(*Get_QCellCombCounts_fun_Rcpp)(Rcpp::NumericVector const&,int const&,SEXP&,Rcpp::NumericVector const&,Rcpp::NumericVector&,int const&,int const&)");
             p_Get_QCellCombCounts_fun_Rcpp = (Ptr_Get_QCellCombCounts_fun_Rcpp)R_GetCCallable("MACPET", "_MACPET_Get_QCellCombCounts_fun_Rcpp");
         }
         RObject rcpp_result_gen;
         {
             RNGScope RCPP_rngScope_gen;
-            rcpp_result_gen = p_Get_QCellCombCounts_fun_Rcpp(Shield<SEXP>(Rcpp::wrap(ind)), Shield<SEXP>(Rcpp::wrap(BinsDij)), Shield<SEXP>(Rcpp::wrap(BinsDijSize)), Shield<SEXP>(Rcpp::wrap(BinsVij)), Shield<SEXP>(Rcpp::wrap(BinsVijSize)), Shield<SEXP>(Rcpp::wrap(BigInfoMatDescInst)), Shield<SEXP>(Rcpp::wrap(DkhOrder)), Shield<SEXP>(Rcpp::wrap(QCellCombCountsDij_Net)), Shield<SEXP>(Rcpp::wrap(QCellCombCountsVij_Net)), Shield<SEXP>(Rcpp::wrap(StartInd)), Shield<SEXP>(Rcpp::wrap(EndInd)), Shield<SEXP>(Rcpp::wrap(NiNjIndeces)), Shield<SEXP>(Rcpp::wrap(NiNjMat)));
+            rcpp_result_gen = p_Get_QCellCombCounts_fun_Rcpp(Shield<SEXP>(Rcpp::wrap(BinsVij)), Shield<SEXP>(Rcpp::wrap(BinsVijSize)), Shield<SEXP>(Rcpp::wrap(BigInfoMatDescInst)), Shield<SEXP>(Rcpp::wrap(VkhOrder)), Shield<SEXP>(Rcpp::wrap(QCellCombCountsVij_Net)), Shield<SEXP>(Rcpp::wrap(StartInd)), Shield<SEXP>(Rcpp::wrap(EndInd)));
         }
         if (rcpp_result_gen.inherits("interrupted-error"))
             throw Rcpp::internal::InterruptedException();
@@ -211,17 +211,17 @@ namespace MACPET {
             throw Rcpp::exception(Rcpp::as<std::string>(rcpp_result_gen).c_str());
     }
 
-    inline SEXP Assess_Interaction_fun_Rcpp(int& CurInt, Rcpp::NumericMatrix& InteractionInfMat, Rcpp::Function& Poiss_fun, Rcpp::NumericMatrix const& BinMatDij, Rcpp::NumericMatrix const& BinMatVij) {
-        typedef SEXP(*Ptr_Assess_Interaction_fun_Rcpp)(SEXP,SEXP,SEXP,SEXP,SEXP);
+    inline SEXP Assess_Interaction_fun_Rcpp(int& CurInt, Rcpp::NumericMatrix& InteractionInfMat, Rcpp::Function& Poiss_fun, Rcpp::NumericMatrix const& BinMatVij) {
+        typedef SEXP(*Ptr_Assess_Interaction_fun_Rcpp)(SEXP,SEXP,SEXP,SEXP);
         static Ptr_Assess_Interaction_fun_Rcpp p_Assess_Interaction_fun_Rcpp = NULL;
         if (p_Assess_Interaction_fun_Rcpp == NULL) {
-            validateSignature("SEXP(*Assess_Interaction_fun_Rcpp)(int&,Rcpp::NumericMatrix&,Rcpp::Function&,Rcpp::NumericMatrix const&,Rcpp::NumericMatrix const&)");
+            validateSignature("SEXP(*Assess_Interaction_fun_Rcpp)(int&,Rcpp::NumericMatrix&,Rcpp::Function&,Rcpp::NumericMatrix const&)");
             p_Assess_Interaction_fun_Rcpp = (Ptr_Assess_Interaction_fun_Rcpp)R_GetCCallable("MACPET", "_MACPET_Assess_Interaction_fun_Rcpp");
         }
         RObject rcpp_result_gen;
         {
             RNGScope RCPP_rngScope_gen;
-            rcpp_result_gen = p_Assess_Interaction_fun_Rcpp(Shield<SEXP>(Rcpp::wrap(CurInt)), Shield<SEXP>(Rcpp::wrap(InteractionInfMat)), Shield<SEXP>(Rcpp::wrap(Poiss_fun)), Shield<SEXP>(Rcpp::wrap(BinMatDij)), Shield<SEXP>(Rcpp::wrap(BinMatVij)));
+            rcpp_result_gen = p_Assess_Interaction_fun_Rcpp(Shield<SEXP>(Rcpp::wrap(CurInt)), Shield<SEXP>(Rcpp::wrap(InteractionInfMat)), Shield<SEXP>(Rcpp::wrap(Poiss_fun)), Shield<SEXP>(Rcpp::wrap(BinMatVij)));
         }
         if (rcpp_result_gen.inherits("interrupted-error"))
             throw Rcpp::internal::InterruptedException();
@@ -248,17 +248,17 @@ namespace MACPET {
             throw Rcpp::exception(Rcpp::as<std::string>(rcpp_result_gen).c_str());
     }
 
-    inline SEXP Check_BiProd_fun_Rcpp(Rcpp::NumericMatrix& InteractionInfMat, int& k, int& h, Rcpp::NumericVector& AllInteIndeces, double& TotBiRem, int& Chrom12ID_i) {
-        typedef SEXP(*Ptr_Check_BiProd_fun_Rcpp)(SEXP,SEXP,SEXP,SEXP,SEXP,SEXP);
+    inline SEXP Check_BiProd_fun_Rcpp(Rcpp::NumericMatrix& InteractionInfMat, int& k, int& h, Rcpp::NumericVector& AllInteIndeces, double& TotBiRem, int& Chrom12ID_i, int& OrdersCount) {
+        typedef SEXP(*Ptr_Check_BiProd_fun_Rcpp)(SEXP,SEXP,SEXP,SEXP,SEXP,SEXP,SEXP);
         static Ptr_Check_BiProd_fun_Rcpp p_Check_BiProd_fun_Rcpp = NULL;
         if (p_Check_BiProd_fun_Rcpp == NULL) {
-            validateSignature("SEXP(*Check_BiProd_fun_Rcpp)(Rcpp::NumericMatrix&,int&,int&,Rcpp::NumericVector&,double&,int&)");
+            validateSignature("SEXP(*Check_BiProd_fun_Rcpp)(Rcpp::NumericMatrix&,int&,int&,Rcpp::NumericVector&,double&,int&,int&)");
             p_Check_BiProd_fun_Rcpp = (Ptr_Check_BiProd_fun_Rcpp)R_GetCCallable("MACPET", "_MACPET_Check_BiProd_fun_Rcpp");
         }
         RObject rcpp_result_gen;
         {
             RNGScope RCPP_rngScope_gen;
-            rcpp_result_gen = p_Check_BiProd_fun_Rcpp(Shield<SEXP>(Rcpp::wrap(InteractionInfMat)), Shield<SEXP>(Rcpp::wrap(k)), Shield<SEXP>(Rcpp::wrap(h)), Shield<SEXP>(Rcpp::wrap(AllInteIndeces)), Shield<SEXP>(Rcpp::wrap(TotBiRem)), Shield<SEXP>(Rcpp::wrap(Chrom12ID_i)));
+            rcpp_result_gen = p_Check_BiProd_fun_Rcpp(Shield<SEXP>(Rcpp::wrap(InteractionInfMat)), Shield<SEXP>(Rcpp::wrap(k)), Shield<SEXP>(Rcpp::wrap(h)), Shield<SEXP>(Rcpp::wrap(AllInteIndeces)), Shield<SEXP>(Rcpp::wrap(TotBiRem)), Shield<SEXP>(Rcpp::wrap(Chrom12ID_i)), Shield<SEXP>(Rcpp::wrap(OrdersCount)));
         }
         if (rcpp_result_gen.inherits("interrupted-error"))
             throw Rcpp::internal::InterruptedException();
@@ -278,6 +278,25 @@ namespace MACPET {
         {
             RNGScope RCPP_rngScope_gen;
             rcpp_result_gen = p_Get_InteractionInfo_fun_Rcpp(Shield<SEXP>(Rcpp::wrap(InteractionInfMat)), Shield<SEXP>(Rcpp::wrap(NInteractions)));
+        }
+        if (rcpp_result_gen.inherits("interrupted-error"))
+            throw Rcpp::internal::InterruptedException();
+        if (rcpp_result_gen.inherits("try-error"))
+            throw Rcpp::exception(Rcpp::as<std::string>(rcpp_result_gen).c_str());
+        return Rcpp::as<SEXP >(rcpp_result_gen);
+    }
+
+    inline SEXP SubsetSignificantInteractions_fun_Rcpp(int const& NInteractionInfo, Rcpp::NumericVector const& FDR, Rcpp::NumericVector const& Order, double const& threshold) {
+        typedef SEXP(*Ptr_SubsetSignificantInteractions_fun_Rcpp)(SEXP,SEXP,SEXP,SEXP);
+        static Ptr_SubsetSignificantInteractions_fun_Rcpp p_SubsetSignificantInteractions_fun_Rcpp = NULL;
+        if (p_SubsetSignificantInteractions_fun_Rcpp == NULL) {
+            validateSignature("SEXP(*SubsetSignificantInteractions_fun_Rcpp)(int const&,Rcpp::NumericVector const&,Rcpp::NumericVector const&,double const&)");
+            p_SubsetSignificantInteractions_fun_Rcpp = (Ptr_SubsetSignificantInteractions_fun_Rcpp)R_GetCCallable("MACPET", "_MACPET_SubsetSignificantInteractions_fun_Rcpp");
+        }
+        RObject rcpp_result_gen;
+        {
+            RNGScope RCPP_rngScope_gen;
+            rcpp_result_gen = p_SubsetSignificantInteractions_fun_Rcpp(Shield<SEXP>(Rcpp::wrap(NInteractionInfo)), Shield<SEXP>(Rcpp::wrap(FDR)), Shield<SEXP>(Rcpp::wrap(Order)), Shield<SEXP>(Rcpp::wrap(threshold)));
         }
         if (rcpp_result_gen.inherits("interrupted-error"))
             throw Rcpp::internal::InterruptedException();

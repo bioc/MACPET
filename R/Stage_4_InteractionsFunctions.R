@@ -112,6 +112,7 @@ Prepare_InteractionsData_fun = function(SA_prefix, S4_AnalysisDir, S4_FitObject,
 Get_PeaksSplit_fun = function(S4_FitObject, S4_FDR_peak, S4_PeakExt) {
     # Rcheck:
     FDR=NULL
+    queryHits=NULL
     #------
     # take Peak data and subset by significance:
     #------
@@ -120,7 +121,7 @@ Get_PeaksSplit_fun = function(S4_FitObject, S4_FDR_peak, S4_PeakExt) {
     PeakData = subset(PeakData, FDR < S4_FDR_peak)  #subset the data
     SeqInfo = GenomeInfoDb::seqinfo(S4_FitObject)  #to save again
     # keep what you need for the analysis:
-    PeakData = PeakData[, c("Chrom", "Peak.Summit")]
+    PeakData = PeakData[, c("Chrom", "Peak.Summit", "CIQ.Up.start", "CIQ.Down.end", "FDR")]
     NFDRPeaks = nrow(PeakData)  #the total number of Peaks left in the data after FDR
     #------
     # write in file and print:
@@ -134,21 +135,31 @@ Get_PeaksSplit_fun = function(S4_FitObject, S4_FDR_peak, S4_PeakExt) {
     #------
     # Extend the peaks from their center:
     #------
-    futile.logger::flog.info(paste("Making a", 2 * S4_PeakExt, "bp window around peak summits."),
+    futile.logger::flog.info(paste("Extending peak intervals by", S4_PeakExt, "bp on either side."),
         name = "SA_LogFile", capture = FALSE)
-    LeftInterval = PeakData$Peak.Summit - S4_PeakExt
-    RightInterval = PeakData$Peak.Summit + S4_PeakExt
+    LeftInterval = PeakData$CIQ.Up.start - S4_PeakExt
+    RightInterval = PeakData$CIQ.Down.end + S4_PeakExt
     #------
     # Merge overlapping and create the final PeaksGR object
     #------
     futile.logger::flog.info("Merging overlapping peaks...Done", name = "SA_LogFile",
         capture = FALSE)
-    PeaksIR = IRanges::IRanges(start = LeftInterval, end = RightInterval)
-    PeaksGR = GenomicRanges::GRanges(seqnames = PeakData$Chrom, ranges = PeaksIR,
-                                     seqinfo = SeqInfo)
-    PeaksGR = GenomicRanges::reduce(x = PeaksGR, min.gapwidth = 0, ignore.strand = TRUE)
-    NPeaksMerged = length(PeaksGR)
-    PeaksGR$PeakSummit = (GenomicRanges::start(PeaksGR) + GenomicRanges::end(PeaksGR))/2
+    NM_PeaksIR = IRanges::IRanges(start = LeftInterval, end = RightInterval)
+    NM_PeaksGR = GenomicRanges::GRanges(seqnames = PeakData$Chrom, ranges = NM_PeaksIR,
+        seqinfo = SeqInfo) #not merged yet
+    PeaksGR = GenomicRanges::reduce(x = NM_PeaksGR, min.gapwidth = 0, ignore.strand = TRUE) #merged
+    NPeaksMerged = length(PeaksGR) #total peaks after merging
+    # Find overlaps from PeaksGR to NM_PeaksGR to decide the summit based on FDR
+    MergedNotMergedOv = GenomicRanges::findOverlaps(query = PeaksGR, subject = NM_PeaksGR,
+        ignore.strand = TRUE)
+    MergedNotMergedOv = as.data.frame(MergedNotMergedOv)
+    MergedNotMergedOv = MergedNotMergedOv[with(MergedNotMergedOv, order(queryHits)),]
+    # find the summit:
+    PeakSummit = Get_NewPeakSummit_fun_Rcpp(MergedNotMergedOv$queryHits,
+        MergedNotMergedOv$subjectHits, PeakData$Peak.Summit, PeakData$FDR,
+        nrow(MergedNotMergedOv), NPeaksMerged)
+    # save:
+    PeaksGR$PeakSummit = PeakSummit
     PeaksGR$LID = seq_len(NPeaksMerged)
     futile.logger::flog.info(paste("Total peaks after merging: ", NPeaksMerged),
         name = "SA_LogFile", capture = FALSE)
@@ -292,7 +303,7 @@ Create_InteractionStructures_fun = function(SA_prefix, S4_AnalysisDir, Connectio
     #----------------------------
     # Summarize
     #----------------------------
-    futile.logger::flog.info(paste("Total", NInteractions, "candidate interactions will be tested."),
+    futile.logger::flog.info(paste("Total", NInteractions, "candidate interactions will be processed"),
         name = "SA_LogFile", capture = FALSE)
     futile.logger::flog.info(paste("Total", NPeaksInvolved, "peaks are involved in potential interactions",
         "(", NPeaksInvolved/PeaksSplit$NPeaksMerged * 100, "% of the total FDR peaks )"),
@@ -310,14 +321,14 @@ Create_InteractionStructures_fun = function(SA_prefix, S4_AnalysisDir, Connectio
     # matrices, not changing, col 7/8 are node IDS for the NiNjMat, not changing. The
     # NiNjMat is global in case you also include inter afterwards.  col 9/10 p-value
     # and FDR, col 11, the nij of the interaction col 12, the QCell ID in the
-    # expected matrix for the DVijij(NA on inter) 13 the QCell ID for the Dij col 14:
-    # order of the interaction col 15 is the Chromosome combination ID of the
-    # interaction col 16 is the intra indicator(intra=1, inter=0)
+    # expected matrix for the DVijij(NA on inter) col 13:
+    # order of the interaction col 14 is the Chromosome combination ID of the
+    # interaction col 15 is the intra indicator(intra=1, inter=0)
     cat("Summarizing interaction information...")
-    InteractionInfMat = matrix(0, nrow = NInteractions, ncol = 16)
+    InteractionInfMat = matrix(0, nrow = NInteractions, ncol = 15)
     colnames(InteractionInfMat) = c("PBS_i", "PBS_j", "AdjBiNode_i", "AdjBiNode_j",
         "AdjNode_i", "AdjNode_j", "NiNjNode_i", "NiNjNode_j", "pvalue", "FDR", "nij",
-        "QCell_Vij", "QCell_Dij", "Order", "Chrom12ID", "IntraID")
+        "QCell", "Order", "Chrom12ID", "IntraID")
     #----------------------------
     # fill up InteractionInfMat, dont need to return it, it is by reference Also
     # count the observed PETs in each combination.
@@ -625,8 +636,8 @@ Run_InteractionAnalysis_fun = function(InteractionData, S4_method) {
     NetUpdateIndicator = seq_len(NetworksData$TotNetworks)  # Network Update indicators(for not updating all distances all the time)
     # Quantiles:
     QuantileProbs = seq(from = 0, to = 1, length = 1001)[-c(1)]  #the size of the bins(plus one will be the last bin with the inter)
-    SavedQuantiles = lapply(as.list(seq_len(NetworksData$TotNetworks)), function(x) return(list(BinsDij = NA,
-        BinsVij = NA, ChunkSizeDVij = NA)))  #save for not computing again
+    SavedQuantiles = lapply(as.list(seq_len(NetworksData$TotNetworks)), function(x) return(list(BinsVij = NA,
+        ChunkSizeVij = NA)))  #save for not computing again
     # counters
     TotIntAdded = 0  #the total interactions added in the model
     TotBiRem = 0  #total bi-products removed from the model
@@ -643,7 +654,6 @@ Run_InteractionAnalysis_fun = function(InteractionData, S4_method) {
             NetworksData = NetworksData, SavedQuantiles = SavedQuantiles)
         # break output:
         BinMatVij = QuantRes$BinMatVij
-        BinMatDij = QuantRes$BinMatDij
         NetworksData = QuantRes$NetworksData
         InteractionInfMat = QuantRes$InteractionInfMat
         SavedQuantiles = QuantRes$SavedQuantiles
@@ -651,32 +661,28 @@ Run_InteractionAnalysis_fun = function(InteractionData, S4_method) {
         # Generate p-values:
         #----------------------------
         pValues_round = BiocParallel::bplapply(X = as.list(AllInteIndeces), FUN = Assess_Interaction_fun_Rcpp,
-            InteractionInfMat = InteractionInfMat, Poiss_fun = Poiss_fun, BinMatDij = BinMatDij,
-            BinMatVij = BinMatVij)
+            InteractionInfMat = InteractionInfMat, Poiss_fun = Poiss_fun, BinMatVij = BinMatVij)
         pValues_round = do.call(rbind, pValues_round)
         #----------------------------
         # get latest interaction information
         #----------------------------
         LaIn = Get_LatestInteraction_fun(pValues_round = pValues_round, S4_method = S4_method,
-            TotPairs = sum(unlist(NetworksData$InteractionPairsList)))
+            TotPairs = sum(unlist(NetworksData$InteractionPairsList)), InteractionInfMat = InteractionInfMat)
         LastInteractions = LaIn$LastInteractions
-        LastInteractionsFDR = LaIn$LastInteractionsFDR
-        LastInteractionsPval = LaIn$LastInteractionsPval
+        InteractionInfMat = LaIn$InteractionInfMat
         TR_Si = length(LastInteractions)  #total round significant interactions
         #----------------------------
         # Update the network for the newley added interactions
         #----------------------------
         NetworkUpdates = Update_Network_fun(AllInteIndeces = AllInteIndeces, TotIntAdded = TotIntAdded,
             TotBiRem = TotBiRem, NInteractions = NInteractions, LastInteractions = LastInteractions,
-            TR_Si = TR_Si, LastInteractionsFDR = LastInteractionsFDR, LastInteractionsPval = LastInteractionsPval,
-            InteractionInfMat = InteractionInfMat, OrdersCount = OrdersCount, NiNjMat = NiNjMat,
+            TR_Si = TR_Si, InteractionInfMat = InteractionInfMat, OrdersCount = OrdersCount,
             NetworksData = NetworksData)
         NetworksData = NetworkUpdates$NetworksData
         TotIntAdded = NetworkUpdates$TotIntAdded
         TotBiRem = NetworkUpdates$TotBiRem
         AllInteIndeces = NetworkUpdates$AllInteIndeces
         InteractionInfMat = NetworkUpdates$InteractionInfMat
-        NiNjMat = NetworkUpdates$NiNjMat
         NetUpdateIndicator = NetworkUpdates$NetUpdateIndicator
         # check if break:
         if (TotIntAdded + TotBiRem == NInteractions) {
@@ -720,46 +726,41 @@ Get_ExpectedPETs_fun = function(InteractionInfMat, AllInteIndeces, NiNjMat, Quan
         BigInfoMatDesc_Net = NetworksData$BigInfoMatDescList[[Net]]
         Nadj_Net = NetworksData$NadjList[[Net]]
         NPeaksInvolved_Net = NetworksData$NPeaksInvolvedList[[Net]]
+        NiNjIndeces_Net = NetworksData$NiNjIndecesList[[Net]]
         # update SP:
         InteractionPairs_Net = BiocParallel::bplapply(X = UpdateIndeces_Net, FUN = BigMat_SP_fun,
             NPeaksInvolved = NPeaksInvolved_Net, Nadj = Nadj_Net, BigInfoMatDesc = BigInfoMatDesc_Net,
-            Network = Network_Net, MergedNodesIndex = MergedNodesIndex_Net)
+            Network = Network_Net, MergedNodesIndex = MergedNodesIndex_Net, NiNjIndeces = NiNjIndeces_Net,
+            NiNjMat = NiNjMat)
         InteractionPairs_Net = Reduce("+", InteractionPairs_Net)
         # Update InteractionPairs:
         NetworksData$InteractionPairsList[[Net]] = InteractionPairs_Net
     }
-    # ---------------------------- Find quantiles for Vij=ni*nj and Dij
+    # ---------------------------- Find quantiles for Vij=ni*nj/ Dij
     # ----------------------------
     BigMatQuantiles = BiocParallel::bplapply(X = as.list(NetUpdateIndicator), FUN = Get_QuantileChunks_fun,
-        QuantileProbs = QuantileProbs, BigInfoMatDescList = NetworksData$BigInfoMatDescList,
-        NiNjIndecesList = NetworksData$NiNjIndecesList, NiNjMat = NiNjMat, NadjList = NetworksData$NadjList,
-        NPeaksInvolvedList = NetworksData$NPeaksInvolvedList)
+        QuantileProbs = QuantileProbs, BigInfoMatDescList = NetworksData$BigInfoMatDescList)
     # save in the SavedQuantiles
     SavedQuantiles[NetUpdateIndicator] = BigMatQuantiles
     # split quantiles:
-    BinsDij = Reduce("+", lapply(SavedQuantiles, "[[", 1))  #for dij
-    BinsVij = Reduce("+", lapply(SavedQuantiles, "[[", 2))  #for ninj
-    ChunkSizeVDij = Reduce("+", lapply(SavedQuantiles, "[[", 3))  #the chunk total
+    BinsVij = Reduce("+", lapply(SavedQuantiles, "[[", 1))
+    ChunkSizeVij = Reduce("+", lapply(SavedQuantiles, "[[", 2))  #the chunk total
     # finalize quantiles:
-    BinsDij = unique(round(BinsDij/ChunkSizeVDij))
-    BinsVij = unique(round(BinsVij/ChunkSizeVDij))
-    BinsDijSize = length(BinsDij)
+    BinsVij = unique(BinsVij/ChunkSizeVij)
     BinsVijSize = length(BinsVij)
     # ---------------------------- Load it from the data itself:
     # ----------------------------
-    ObsDVij = Get_DVij_Data_fun(InteractionInfMat = InteractionInfMat, NetworksData = NetworksData,
-        AllInteIndeces = AllInteIndeces, NiNjMat = NiNjMat)
+    ObsVij = Get_Vij_Data_fun(InteractionInfMat = InteractionInfMat, NetworksData = NetworksData,
+        AllInteIndeces = AllInteIndeces)
     #----------------------------
     # Count PETs and assign the QCells
     #----------------------------
-    QCellPETCountsDij = numeric(BinsDijSize)
     QCellPETCountsVij = numeric(BinsVijSize)
-    Get_QCellPETCounts_fun_Rcpp(BinsDij, BinsDijSize, BinsVij, BinsVijSize, ObsDVij,
-        InteractionInfMat, AllInteIndeces, QCellPETCountsDij, QCellPETCountsVij)
+    Get_QCellPETCounts_fun_Rcpp(BinsVij, BinsVijSize, ObsVij, InteractionInfMat,
+        AllInteIndeces, QCellPETCountsVij)
     #----------------------------
     # Find Cell counts, now you will loop all the networks:
     #----------------------------
-    QCellCombCountsDij = numeric(BinsDijSize)
     QCellCombCountsVij = numeric(BinsVijSize)
     for (Net in seq_len(NetworksData$TotNetworks)) {
         # Gather network data:
@@ -767,32 +768,25 @@ Get_ExpectedPETs_fun = function(InteractionInfMat, AllInteIndeces, NiNjMat, Quan
         BigInfoMatDesc_Net = NetworksData$BigInfoMatDescList[[Net]]
         Nadj_Net = NetworksData$NadjList[[Net]]
         NPeaksInvolved_Net = NetworksData$NPeaksInvolvedList[[Net]]
-        NiNjIndeces_Net = NetworksData$NiNjIndecesList[[Net]]
         # Count in cells
-        QCellCombCounts_Net = BiocParallel::bplapply(X = UpdateIndeces_Net, FUN = Get_QCellCombCounts_fun,
-            BinsDij = BinsDij, BinsDijSize = BinsDijSize, BinsVij = BinsVij, BinsVijSize = BinsVijSize,
-            BigInfoMatDesc = BigInfoMatDesc_Net, NPeaksInvolved = NPeaksInvolved_Net,
-            Nadj = Nadj_Net, NiNjIndeces = NiNjIndeces_Net, NiNjMat = NiNjMat)
+        QCellCombCountsVij_Net = BiocParallel::bplapply(X = UpdateIndeces_Net, FUN = Get_QCellCombCounts_fun,
+            BinsVij = BinsVij, BinsVijSize = BinsVijSize, BigInfoMatDesc = BigInfoMatDesc_Net,
+            NPeaksInvolved = NPeaksInvolved_Net, Nadj = Nadj_Net)
         # Sum
-        QCellCombCountsDij_Net = Reduce("+", lapply(QCellCombCounts_Net, "[[", 1))
-        QCellCombCountsVij_Net = Reduce("+", lapply(QCellCombCounts_Net, "[[", 2))
-        QCellCombCountsDij = QCellCombCountsDij + QCellCombCountsDij_Net
+        QCellCombCountsVij_Net = Reduce("+", QCellCombCountsVij_Net)
         QCellCombCountsVij = QCellCombCountsVij + QCellCombCountsVij_Net
     }
     #----------------------------
-    # Create Bin Matrix for Vij and Dij
+    # Create Bin Matrix for Vij
     #----------------------------
-    BinMatDij = cbind(seq_len(BinsDijSize), BinsDij, QCellPETCountsDij/QCellCombCountsDij)
-    colnames(BinMatDij) = NULL
     BinMatVij = cbind(seq_len(BinsVijSize), BinsVij, QCellPETCountsVij/QCellCombCountsVij)
     colnames(BinMatVij) = NULL
     #----------------------------
     # Create and smooth bins
     #----------------------------
-    BinMatDij = SmoothSplines_fun(BinMat = BinMatDij, Which = 3)
     BinMatVij = SmoothSplines_fun(BinMat = BinMatVij, Which = 3)
     # return:
-    return(list(BinMatDij = BinMatDij, BinMatVij = BinMatVij, NetworksData = NetworksData,
+    return(list(BinMatVij = BinMatVij, NetworksData = NetworksData,
         InteractionInfMat = InteractionInfMat, SavedQuantiles = SavedQuantiles))
 }
 # done
@@ -801,7 +795,7 @@ Get_ExpectedPETs_fun = function(InteractionInfMat, AllInteIndeces, NiNjMat, Quan
 # is zero, it becomes NA, as the nodes are merged
 #----------------------------
 BigMat_SP_fun = function(Indeces_x, NPeaksInvolved, Nadj, BigInfoMatDesc, Network,
-    MergedNodesIndex) {
+    MergedNodesIndex, NiNjIndeces, NiNjMat) {
     #----------------------------
     # attach the matrices:
     #----------------------------
@@ -836,50 +830,40 @@ BigMat_SP_fun = function(Indeces_x, NPeaksInvolved, Nadj, BigInfoMatDesc, Networ
             # Fill in the SP values:
             #----------------------------
             Save_BigMat_fun_Rcpp(BigInfoMatDescInst@address, GlobalNodesDist, k,
-                StartInd, EndInd, InteractionPairs)
+                StartInd, EndInd, InteractionPairs, NiNjIndeces, NiNjMat)
         }
     }
     return(InteractionPairs)
 }
 # done
 #----------------------------
-# Function for the Quantiles for Vij and Dij
+# Function for the Quantiles for Vij
 #----------------------------
-Get_QuantileChunks_fun = function(Net, QuantileProbs, BigInfoMatDescList, NiNjIndecesList,
-    NiNjMat, NadjList, NPeaksInvolvedList) {
+Get_QuantileChunks_fun = function(Net, QuantileProbs, BigInfoMatDescList) {
     #----------------------------
     # Attach and load matrix:
     #----------------------------
     BigInfoMatDescInst = bigmemory::attach.big.matrix(BigInfoMatDescList[[Net]])
     BigInfoMatDescInst = bigmemory::as.matrix(BigInfoMatDescInst)
-    ChunkDVij = which(!is.na(BigInfoMatDescInst))
-    ChunkSizeDVij = length(ChunkDVij)
+    ChunkVij = which(!is.na(BigInfoMatDescInst))
+    ChunkSizeVij = length(ChunkVij)
     #----------------------------
     # Get quantiles:
     #----------------------------
-    if (ChunkSizeDVij != 0) {
+    if (ChunkSizeVij != 0) {
         # For Distance:
-        BinsDij = stats::quantile(x = BigInfoMatDescInst[ChunkDVij], probs = QuantileProbs,
-            na.rm = TRUE, names = FALSE, type = 1) * ChunkSizeDVij
-        # Load Vij:
-        NiNjIndeces_Net = NiNjIndecesList[[Net]]
-        Nadj_Net = NadjList[[Net]]
-        NPeaksInvolved_Net = NPeaksInvolvedList[[Net]]
-        Vij_Net = Get_VijNet_fun_Rcpp(NiNjIndeces_Net, NiNjMat, Nadj_Net, NPeaksInvolved_Net)
-        # get quantiles:
-        BinsVij = stats::quantile(x = Vij_Net[ChunkDVij], probs = QuantileProbs,
-            na.rm = TRUE, names = FALSE, type = 1) * ChunkSizeDVij
+        BinsVij = stats::quantile(x = BigInfoMatDescInst[ChunkVij], probs = QuantileProbs,
+            na.rm = TRUE, names = FALSE, type = 7) * ChunkSizeVij
     } else {
-        BinsDij = rep(0, length(QuantileProbs))
-        BinsVij = BinsDij
+        BinsVij = rep(0, length(QuantileProbs))
     }
-    return(list(BinsDij = BinsDij, BinsVij = BinsVij, ChunkSizeDVij = ChunkSizeDVij))
+    return(list(BinsVij = BinsVij, ChunkSizeVij = ChunkSizeVij))
 }
 # done
 #----------------------------
 # Function for returning the observed Vij in the order of the interactions
 #----------------------------
-Get_DVij_Data_fun = function(InteractionInfMat, NetworksData, AllInteIndeces, NiNjMat) {
+Get_Vij_Data_fun = function(InteractionInfMat, NetworksData, AllInteIndeces) {
     #----------------------------
     # First subset the data and keep what you need:
     #----------------------------
@@ -896,7 +880,7 @@ Get_DVij_Data_fun = function(InteractionInfMat, NetworksData, AllInteIndeces, Ni
     #----------------------------
     # Create ObsDVij vector and loop to update
     #----------------------------
-    ObsDVij = matrix(0, ncol = 2, nrow = length(AllInteIndeces))
+    ObsVij = numeric(length(AllInteIndeces))
     Chrom12IDUnique = unique(InteractionInfMatSub[, c("Chrom12ID")])
     for (Net in Chrom12IDUnique) {
         # attach:
@@ -905,8 +889,6 @@ Get_DVij_Data_fun = function(InteractionInfMat, NetworksData, AllInteIndeces, Ni
         Pos_Net = which(InteractionInfMatSub[, c("Chrom12ID")] == Net)
         AdjNode_i_Net = InteractionInfMatSub[Pos_Net, c("AdjNode_i")]
         AdjNode_j_Net = InteractionInfMatSub[Pos_Net, c("AdjNode_j")]
-        NiNjNode_i_Net = InteractionInfMatSub[Pos_Net, c("NiNjNode_i")]  #correct on NiNjMat
-        NiNjNode_j_Net = InteractionInfMatSub[Pos_Net, c("NiNjNode_j")]  #correct on NiNjMat
         # Get Nadj and NPeaks:
         Nadj_Net = NetworksData$NadjList[[Net]]
         NPeaksInvolved_Net = NetworksData$NPeaksInvolvedList[[Net]]
@@ -914,18 +896,16 @@ Get_DVij_Data_fun = function(InteractionInfMat, NetworksData, AllInteIndeces, Ni
         AdjNode_ij_Net = Get_VectPosIndex_Vectorized_fun_Rcpp(NPeaksInvolved_Net,
             Nadj_Net, AdjNode_i_Net, AdjNode_j_Net)
         # load the Vij and save them:
-        ObsDVij[Pos_Net, c(1)] = BigInfoMatDescInst[AdjNode_ij_Net, c(1)]
-        # Compute the Vij and save it:
-        ObsDVij[Pos_Net, c(2)] = NiNjMat[NiNjNode_i_Net] * NiNjMat[NiNjNode_j_Net]
+        ObsVij[Pos_Net] = BigInfoMatDescInst[AdjNode_ij_Net, c(1)]
     }
-    return(ObsDVij)
+    return(ObsVij)
 }
 # done
 #----------------------------
 # Function for finding the QCellIDs and counting in the cells
 #----------------------------
-Get_QCellCombCounts_fun = function(Indeces_x, BinsDij, BinsDijSize, BinsVij, BinsVijSize,
-    BigInfoMatDesc, NPeaksInvolved, Nadj, NiNjIndeces, NiNjMat) {
+Get_QCellCombCounts_fun = function(Indeces_x, BinsVij, BinsVijSize, BigInfoMatDesc,
+    NPeaksInvolved, Nadj) {
     #----------------------------
     # attach the matrices:
     #----------------------------
@@ -933,7 +913,6 @@ Get_QCellCombCounts_fun = function(Indeces_x, BinsDij, BinsDijSize, BinsVij, Bin
     #----------------------------
     # Initialize:
     #----------------------------
-    QCellCombCountsDij_Net = numeric(BinsDijSize)
     QCellCombCountsVij_Net = numeric(BinsVijSize)
     #----------------------------
     # loop through the indeces:
@@ -948,16 +927,15 @@ Get_QCellCombCounts_fun = function(Indeces_x, BinsDij, BinsDijSize, BinsVij, Bin
         #----------------------------
         # load the Dij and take order:
         #----------------------------
-        DkhOrder = order(x = BigInfoMatDescInst[seq(from = StartInd + 1, to = EndInd +
+        VkhOrder = order(x = BigInfoMatDescInst[seq(from = StartInd + 1, to = EndInd +
             1), c(1)], na.last = TRUE, decreasing = FALSE)
         #----------------------------
         # Fill inn the values:
         #----------------------------
-        Get_QCellCombCounts_fun_Rcpp(ind, BinsDij, BinsDijSize, BinsVij, BinsVijSize,
-            BigInfoMatDescInst@address, DkhOrder, QCellCombCountsDij_Net, QCellCombCountsVij_Net,
-            StartInd, EndInd, NiNjIndeces, NiNjMat)
+        Get_QCellCombCounts_fun_Rcpp(BinsVij, BinsVijSize, BigInfoMatDescInst@address,
+            VkhOrder, QCellCombCountsVij_Net, StartInd, EndInd)
     }
-    return(list(QCellCombCountsDij_Net = QCellCombCountsDij_Net, QCellCombCountsVij_Net = QCellCombCountsVij_Net))
+    return(QCellCombCountsVij_Net)
 }
 # done
 #----------------------------
@@ -1010,36 +988,31 @@ Poiss_fun = function(nij, lij) {
 #----------------------------
 # Function for finding which interaction IDs will be added based on their FDR
 #----------------------------
-Get_LatestInteraction_fun = function(pValues_round, S4_method, TotPairs) {
+Get_LatestInteraction_fun = function(pValues_round, S4_method, TotPairs, InteractionInfMat) {
     #----------------------------
     # Adjust with FDR, note that the p-values of the non-interacting are also needed,
     # which are pval=1:
     #----------------------------
     FDR_round = stats::p.adjust(p = pValues_round[, c(2)], method = S4_method, n = TotPairs)
     #----------------------------
+    # Update the InteractionsInfMat too:
+    #----------------------------
+    InteractionInfMat[pValues_round[,c(1)], "pvalue"] = pValues_round[, c(2)]
+    InteractionInfMat[pValues_round[,c(1)], "FDR"] = FDR_round
+    #----------------------------
     # Find the most significant FDR and the interactions who have it
     #----------------------------
     Min_round_FDR = min(FDR_round)
     WhichMinFDR_round = which(FDR_round == Min_round_FDR)
-    #----------------------------
-    # Take the IDS of the interactions as well as their FDR and p-values:
-    #----------------------------
-    LastInteractionsFDR = FDR_round[WhichMinFDR_round]
-    LastInteractionsPval = pValues_round[WhichMinFDR_round, c(2)]
     LastInteractions = pValues_round[WhichMinFDR_round, c(1)]  #R index
-    #----------------------------
-    # Take the p-value(unique)
-    #----------------------------
-    return(list(LastInteractions = LastInteractions, LastInteractionsFDR = LastInteractionsFDR,
-        LastInteractionsPval = LastInteractionsPval))
+    return(list(LastInteractions = LastInteractions, InteractionInfMat = InteractionInfMat))
 }
 # Done
 #----------------------------
 # Function for updating the network
 #----------------------------
 Update_Network_fun = function(AllInteIndeces, TotIntAdded, TotBiRem, NInteractions,
-    LastInteractions, TR_Si, LastInteractionsFDR, LastInteractionsPval, InteractionInfMat,
-    OrdersCount, NiNjMat, NetworksData) {
+    LastInteractions, TR_Si, InteractionInfMat, OrdersCount, NetworksData) {
     #----------------------------
     # First remove all the interactions to be added from the interaction from
     # looping, and initiate which chrom comb will be updated next:
@@ -1061,13 +1034,9 @@ Update_Network_fun = function(AllInteIndeces, TotIntAdded, TotBiRem, NInteractio
         # Take interaction information ID
         #----------------------------
         ID_i = LastInteractions[i]  #row ID of InteractionInfMat
-        FDR_i = LastInteractionsFDR[i]
-        Pval_i = LastInteractionsPval[i]
         #----------------------------
         # update InteractionInfMat:
         #----------------------------
-        InteractionInfMat[ID_i, c("FDR")] = FDR_i
-        InteractionInfMat[ID_i, c("pvalue")] = Pval_i
         InteractionInfMat[ID_i, c("Order")] = OrdersCount
         Chrom12ID_i = InteractionInfMat[ID_i, c("Chrom12ID")]  #for updating paths again
         NetUpdateIndicator = c(NetUpdateIndicator, Chrom12ID_i)
@@ -1103,11 +1072,18 @@ Update_Network_fun = function(AllInteIndeces, TotIntAdded, TotBiRem, NInteractio
         # from the AllInteIndeces
         #----------------------------
         BiPorductsInfo = Check_BiProd_fun_Rcpp(InteractionInfMat, k, h, AllInteIndeces,
-            TotBiRem, Chrom12ID_i)
+            TotBiRem, Chrom12ID_i, OrdersCount)
+        # Check bi-product rejected:
         if (BiPorductsInfo$TotBiRem != TotBiRem) {
             # then at least one bi-product. remove from the rest of the interactions
-            AllInteIndeces = AllInteIndeces[-which(AllInteIndeces %in% BiPorductsInfo$BiProductIDS)]
+            AllInteIndeces = AllInteIndeces[-which(AllInteIndeces %in% BiPorductsInfo$BiProductIDSreject)]
             TotBiRem = BiPorductsInfo$TotBiRem
+        }
+        # check bi-products accepted:
+        if (BiPorductsInfo$TotBiAcc != 0) {
+            # then at least one bi-product. remove from the rest of the interactions
+            AllInteIndeces = AllInteIndeces[-which(AllInteIndeces %in% BiPorductsInfo$BiProductIDSaccepted)]
+            TotIntAdded = TotIntAdded + BiPorductsInfo$TotBiAcc
         }
         #----------------------------
         # Update the network:
@@ -1122,7 +1098,7 @@ Update_Network_fun = function(AllInteIndeces, TotIntAdded, TotBiRem, NInteractio
     # return
     #----------------------------
     return(list(NetworksData = NetworksData, TotIntAdded = TotIntAdded, TotBiRem = TotBiRem,
-        AllInteIndeces = AllInteIndeces, InteractionInfMat = InteractionInfMat, NiNjMat = NiNjMat,
+        AllInteIndeces = AllInteIndeces, InteractionInfMat = InteractionInfMat,
         NetUpdateIndicator = NetUpdateIndicator))
 }
 # done
