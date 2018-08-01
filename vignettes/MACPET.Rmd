@@ -41,7 +41,7 @@ vignette: >
 ---
 
 ```{r style,eval=TRUE,echo=FALSE,results='hide'}
-BiocStyle::latex2
+BiocStyle::latex
 ```
 
 <!-- Intro -->

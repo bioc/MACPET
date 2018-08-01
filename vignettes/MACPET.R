@@ -1,5 +1,5 @@
 ## ----style,eval=TRUE,echo=FALSE,results='hide'-----------------------------
-BiocStyle::latex2
+BiocStyle::latex
 
 ## ----eval=TRUE,echo=TRUE---------------------------------------------------
 #Create a temporary test folder, or anywhere you want:
