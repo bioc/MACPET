@@ -21,8 +21,8 @@ Initiate_InteractionInfMat_fun_Rcpp <- function(InteractionInfMat, InteractionIn
     .Call('_MACPET_Initiate_InteractionInfMat_fun_Rcpp', PACKAGE = 'MACPET', InteractionInfMat, InteractionInfo, NPeaksInvolved, NInteractions)
 }
 
-Initiate_GenomeMap_fun_Rcpp <- function(NPeaksInvolved_Net, AdjNode_Net, PBS_Net, PeakSummit_Net, Chrom12ID_Net) {
-    .Call('_MACPET_Initiate_GenomeMap_fun_Rcpp', PACKAGE = 'MACPET', NPeaksInvolved_Net, AdjNode_Net, PBS_Net, PeakSummit_Net, Chrom12ID_Net)
+Initiate_GenomeMap_fun_Rcpp <- function(NPeaksInvolved_Net, AdjNode_Net, PBS_Net, PeakSummit_Net, Chrom12ID_Net, Print) {
+    .Call('_MACPET_Initiate_GenomeMap_fun_Rcpp', PACKAGE = 'MACPET', NPeaksInvolved_Net, AdjNode_Net, PBS_Net, PeakSummit_Net, Chrom12ID_Net, Print)
 }
 
 Get_VectPosIndex_fun_Rcpp <- function(NPeaksInvolved, Nadj, Adj_i, Adj_j) {

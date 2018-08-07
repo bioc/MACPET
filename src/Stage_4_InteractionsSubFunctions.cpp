@@ -326,7 +326,8 @@ SEXP Initiate_GenomeMap_fun_Rcpp(int const &NPeaksInvolved_Net,//total peaks inv
                                  Rcpp::NumericVector const &AdjNode_Net,//the Adj node ids
                                  Rcpp::NumericVector const &PBS_Net,//IDS in the PeakSummit
                                  Rcpp::NumericVector const &PeakSummit_Net,//the peak summit
-                                 int const &Chrom12ID_Net){//the network ID
+                                 int const &Chrom12ID_Net, //the network ID
+                                 bool const &Print){//Print progress or not
     // ---------------------------------------
     // Initiate network list:
     // Each element is the Node_i/j and it is a list
@@ -341,10 +342,12 @@ SEXP Initiate_GenomeMap_fun_Rcpp(int const &NPeaksInvolved_Net,//total peaks inv
     double PrintThres=1;//threshold for printing
     for(int i=0;i<NPeaksInvolved_Net;i++){
         // printing:
-        double PrintIntdex=std::floor((i+1.0)/NPeaksInvolved_Net*100);
-        if(PrintIntdex==PrintThres){
-            PrintThres+=1;
-            Rcout<<"|----Initiating the Genome network <-"<<Chrom12ID_Net<<"->: "<<PrintIntdex<<"% completed ----|\r";
+        if(Print){
+            double PrintIntdex=std::floor((i+1.0)/NPeaksInvolved_Net*100);
+            if(PrintIntdex==PrintThres){
+                PrintThres+=1;
+                Rcout<<"|----Initiating the Genome network <-"<<Chrom12ID_Net<<"->: "<<PrintIntdex<<"% completed ----|\r";
+            }
         }
         // ---------------------------------------
         // take info for the i:

@@ -37,7 +37,7 @@ To be published.
 \seealso{
 \code{\link{plot}},
 \code{\link{summary}},\code{\link{GetSignInteractions}},
-\code{\link{MACPETUlt}}
+\code{\link{MACPETUlt}}, \code{\link{GetSortestPath}}
 }
 \author{
 Ioannis Vardaxis, \email{ioannis.vardaxis@ntnu.no}

@@ -81,17 +81,17 @@ namespace MACPET {
         return Rcpp::as<SEXP >(rcpp_result_gen);
     }
 
-    inline SEXP Initiate_GenomeMap_fun_Rcpp(int const& NPeaksInvolved_Net, Rcpp::NumericVector const& AdjNode_Net, Rcpp::NumericVector const& PBS_Net, Rcpp::NumericVector const& PeakSummit_Net, int const& Chrom12ID_Net) {
-        typedef SEXP(*Ptr_Initiate_GenomeMap_fun_Rcpp)(SEXP,SEXP,SEXP,SEXP,SEXP);
+    inline SEXP Initiate_GenomeMap_fun_Rcpp(int const& NPeaksInvolved_Net, Rcpp::NumericVector const& AdjNode_Net, Rcpp::NumericVector const& PBS_Net, Rcpp::NumericVector const& PeakSummit_Net, int const& Chrom12ID_Net, bool const& Print) {
+        typedef SEXP(*Ptr_Initiate_GenomeMap_fun_Rcpp)(SEXP,SEXP,SEXP,SEXP,SEXP,SEXP);
         static Ptr_Initiate_GenomeMap_fun_Rcpp p_Initiate_GenomeMap_fun_Rcpp = NULL;
         if (p_Initiate_GenomeMap_fun_Rcpp == NULL) {
-            validateSignature("SEXP(*Initiate_GenomeMap_fun_Rcpp)(int const&,Rcpp::NumericVector const&,Rcpp::NumericVector const&,Rcpp::NumericVector const&,int const&)");
+            validateSignature("SEXP(*Initiate_GenomeMap_fun_Rcpp)(int const&,Rcpp::NumericVector const&,Rcpp::NumericVector const&,Rcpp::NumericVector const&,int const&,bool const&)");
             p_Initiate_GenomeMap_fun_Rcpp = (Ptr_Initiate_GenomeMap_fun_Rcpp)R_GetCCallable("MACPET", "_MACPET_Initiate_GenomeMap_fun_Rcpp");
         }
         RObject rcpp_result_gen;
         {
             RNGScope RCPP_rngScope_gen;
-            rcpp_result_gen = p_Initiate_GenomeMap_fun_Rcpp(Shield<SEXP>(Rcpp::wrap(NPeaksInvolved_Net)), Shield<SEXP>(Rcpp::wrap(AdjNode_Net)), Shield<SEXP>(Rcpp::wrap(PBS_Net)), Shield<SEXP>(Rcpp::wrap(PeakSummit_Net)), Shield<SEXP>(Rcpp::wrap(Chrom12ID_Net)));
+            rcpp_result_gen = p_Initiate_GenomeMap_fun_Rcpp(Shield<SEXP>(Rcpp::wrap(NPeaksInvolved_Net)), Shield<SEXP>(Rcpp::wrap(AdjNode_Net)), Shield<SEXP>(Rcpp::wrap(PBS_Net)), Shield<SEXP>(Rcpp::wrap(PeakSummit_Net)), Shield<SEXP>(Rcpp::wrap(Chrom12ID_Net)), Shield<SEXP>(Rcpp::wrap(Print)));
         }
         if (rcpp_result_gen.inherits("interrupted-error"))
             throw Rcpp::internal::InterruptedException();

@@ -154,6 +154,15 @@ GetSignInteractions(object=MACPET_GenomeMapData,
                      threshold = NULL,
                      ReturnedAs='GInteractions')
 
+## ----eval=TRUE,echo=TRUE---------------------------------------------------
+class(MACPET_GenomeMapData)#GenomeMap class
+GetSortestPath(object=MACPET_GenomeMapData,
+                     threshold = NULL,
+                     ChrFrom="chr1",
+                     ChrTo="chr1",
+                     SummitFrom=10000,
+                     SummitTo=1000000)
+
 ## ----echo=TRUE,eval=TRUE---------------------------------------------------
 AnalysisStatistics(x.self=MACPET_psfitData,
                    x.intra=MACPET_pintraData,

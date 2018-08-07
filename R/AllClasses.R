@@ -149,5 +149,5 @@ PIntra = setClass("PIntra", contains = "GInteractions")
 #' @export
 #' @seealso \code{\link{plot}},
 #' \code{\link{summary}},\code{\link{GetSignInteractions}},
-#' \code{\link{MACPETUlt}}
+#' \code{\link{MACPETUlt}}, \code{\link{GetSortestPath}}
 GenomeMap = setClass("GenomeMap", contains = "GInteractions")

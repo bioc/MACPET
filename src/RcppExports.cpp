@@ -145,8 +145,8 @@ RcppExport SEXP _MACPET_Initiate_InteractionInfMat_fun_Rcpp(SEXP InteractionInfM
     return rcpp_result_gen;
 }
 // Initiate_GenomeMap_fun_Rcpp
-SEXP Initiate_GenomeMap_fun_Rcpp(int const& NPeaksInvolved_Net, Rcpp::NumericVector const& AdjNode_Net, Rcpp::NumericVector const& PBS_Net, Rcpp::NumericVector const& PeakSummit_Net, int const& Chrom12ID_Net);
-static SEXP _MACPET_Initiate_GenomeMap_fun_Rcpp_try(SEXP NPeaksInvolved_NetSEXP, SEXP AdjNode_NetSEXP, SEXP PBS_NetSEXP, SEXP PeakSummit_NetSEXP, SEXP Chrom12ID_NetSEXP) {
+SEXP Initiate_GenomeMap_fun_Rcpp(int const& NPeaksInvolved_Net, Rcpp::NumericVector const& AdjNode_Net, Rcpp::NumericVector const& PBS_Net, Rcpp::NumericVector const& PeakSummit_Net, int const& Chrom12ID_Net, bool const& Print);
+static SEXP _MACPET_Initiate_GenomeMap_fun_Rcpp_try(SEXP NPeaksInvolved_NetSEXP, SEXP AdjNode_NetSEXP, SEXP PBS_NetSEXP, SEXP PeakSummit_NetSEXP, SEXP Chrom12ID_NetSEXP, SEXP PrintSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< int const& >::type NPeaksInvolved_Net(NPeaksInvolved_NetSEXP);
@@ -154,15 +154,16 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< Rcpp::NumericVector const& >::type PBS_Net(PBS_NetSEXP);
     Rcpp::traits::input_parameter< Rcpp::NumericVector const& >::type PeakSummit_Net(PeakSummit_NetSEXP);
     Rcpp::traits::input_parameter< int const& >::type Chrom12ID_Net(Chrom12ID_NetSEXP);
-    rcpp_result_gen = Rcpp::wrap(Initiate_GenomeMap_fun_Rcpp(NPeaksInvolved_Net, AdjNode_Net, PBS_Net, PeakSummit_Net, Chrom12ID_Net));
+    Rcpp::traits::input_parameter< bool const& >::type Print(PrintSEXP);
+    rcpp_result_gen = Rcpp::wrap(Initiate_GenomeMap_fun_Rcpp(NPeaksInvolved_Net, AdjNode_Net, PBS_Net, PeakSummit_Net, Chrom12ID_Net, Print));
     return rcpp_result_gen;
 END_RCPP_RETURN_ERROR
 }
-RcppExport SEXP _MACPET_Initiate_GenomeMap_fun_Rcpp(SEXP NPeaksInvolved_NetSEXP, SEXP AdjNode_NetSEXP, SEXP PBS_NetSEXP, SEXP PeakSummit_NetSEXP, SEXP Chrom12ID_NetSEXP) {
+RcppExport SEXP _MACPET_Initiate_GenomeMap_fun_Rcpp(SEXP NPeaksInvolved_NetSEXP, SEXP AdjNode_NetSEXP, SEXP PBS_NetSEXP, SEXP PeakSummit_NetSEXP, SEXP Chrom12ID_NetSEXP, SEXP PrintSEXP) {
     SEXP rcpp_result_gen;
     {
         Rcpp::RNGScope rcpp_rngScope_gen;
-        rcpp_result_gen = PROTECT(_MACPET_Initiate_GenomeMap_fun_Rcpp_try(NPeaksInvolved_NetSEXP, AdjNode_NetSEXP, PBS_NetSEXP, PeakSummit_NetSEXP, Chrom12ID_NetSEXP));
+        rcpp_result_gen = PROTECT(_MACPET_Initiate_GenomeMap_fun_Rcpp_try(NPeaksInvolved_NetSEXP, AdjNode_NetSEXP, PBS_NetSEXP, PeakSummit_NetSEXP, Chrom12ID_NetSEXP, PrintSEXP));
     }
     Rboolean rcpp_isInterrupt_gen = Rf_inherits(rcpp_result_gen, "interrupted-error");
     if (rcpp_isInterrupt_gen) {
@@ -557,7 +558,7 @@ static int _MACPET_RcppExport_validate(const char* sig) {
         signatures.insert("SEXP(*Get_NewPeakSummit_fun_Rcpp)(Rcpp::NumericVector const&,Rcpp::NumericVector const&,Rcpp::NumericVector const&,Rcpp::NumericVector const&,int const&,int const&)");
         signatures.insert("SEXP(*Get_PETsInfoMat_fun_Rcpp)(Rcpp::NumericVector const&,Rcpp::NumericVector const&,Rcpp::NumericVector const&,Rcpp::NumericVector const&,Rcpp::NumericVector const&,int const&,int const&)");
         signatures.insert("SEXP(*Initiate_InteractionInfMat_fun_Rcpp)(Rcpp::NumericMatrix&,Rcpp::NumericMatrix&,int&,int&)");
-        signatures.insert("SEXP(*Initiate_GenomeMap_fun_Rcpp)(int const&,Rcpp::NumericVector const&,Rcpp::NumericVector const&,Rcpp::NumericVector const&,int const&)");
+        signatures.insert("SEXP(*Initiate_GenomeMap_fun_Rcpp)(int const&,Rcpp::NumericVector const&,Rcpp::NumericVector const&,Rcpp::NumericVector const&,int const&,bool const&)");
         signatures.insert("int(*Get_VectPosIndex_fun_Rcpp)(int&,int&,int&,int&)");
         signatures.insert("SEXP(*Get_VectPosIndex_Vectorized_fun_Rcpp)(int&,int&,Rcpp::NumericVector const&,Rcpp::NumericVector const&)");
         signatures.insert("SEXP(*Dijkstra_GSP_fun_Rcpp)(int&,Rcpp::List const&,int const&)");
@@ -600,7 +601,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_MACPET_Get_NewPeakSummit_fun_Rcpp", (DL_FUNC) &_MACPET_Get_NewPeakSummit_fun_Rcpp, 6},
     {"_MACPET_Get_PETsInfoMat_fun_Rcpp", (DL_FUNC) &_MACPET_Get_PETsInfoMat_fun_Rcpp, 7},
     {"_MACPET_Initiate_InteractionInfMat_fun_Rcpp", (DL_FUNC) &_MACPET_Initiate_InteractionInfMat_fun_Rcpp, 4},
-    {"_MACPET_Initiate_GenomeMap_fun_Rcpp", (DL_FUNC) &_MACPET_Initiate_GenomeMap_fun_Rcpp, 5},
+    {"_MACPET_Initiate_GenomeMap_fun_Rcpp", (DL_FUNC) &_MACPET_Initiate_GenomeMap_fun_Rcpp, 6},
     {"_MACPET_Get_VectPosIndex_fun_Rcpp", (DL_FUNC) &_MACPET_Get_VectPosIndex_fun_Rcpp, 4},
     {"_MACPET_Get_VectPosIndex_Vectorized_fun_Rcpp", (DL_FUNC) &_MACPET_Get_VectPosIndex_Vectorized_fun_Rcpp, 4},
     {"_MACPET_Dijkstra_GSP_fun_Rcpp", (DL_FUNC) &_MACPET_Dijkstra_GSP_fun_Rcpp, 3},

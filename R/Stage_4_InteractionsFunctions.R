@@ -561,7 +561,7 @@ Create_Networks_fun = function(NetworkBuildData, PeakSummit, SA_prefix, S4_Analy
         # Initiate Network structure:
         #----------------------------
         Network_Net = Initiate_GenomeMap_fun_Rcpp(NPeaksInvolved_Net, AdjNode_Net,
-            PBS_Net, PeakSummit, Chrom12ID_Net)
+            PBS_Net, PeakSummit, Chrom12ID_Net, TRUE)
         #----------------------------
         # Create AdjMatrix for the chromosome
         #----------------------------
