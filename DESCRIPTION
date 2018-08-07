@@ -1,7 +1,7 @@
 Package: MACPET
 Type: Package
 Title: Model based analysis for paired-end data
-Version: 1.1.3
+Version: 1.1.4
 Date: 2018-05-01
 Author: Ioannis Vardaxis
 Maintainer: Ioannis Vardaxis <ioannis.vardaxis@ntnu.no>
@@ -24,8 +24,8 @@ Collate:
     'AnalysisStatistics.R'
     'ConvertToPE_BAM.R'
     'ConvertToPSelf-methods.R'
+    'GetShortestPath-methods.R'
     'GetSignInteractions-methods.R'
-    'GetSortestPath-methods.R'
     'InputChecks.R'
     'MACPETUlt.R'
     'MACPET_pkg.R'

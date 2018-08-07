@@ -517,17 +517,17 @@ GetSignInteractions(object=MACPET_GenomeMapData,
                      ReturnedAs='GInteractions')
 ```
 
-\subsection{GetSortestPath methods}
+\subsection{GetShortestPath methods}
 \textcolor{LimeGreen}{\Rclass{GenomeMap}} 
-class has a method which finds the length of the  sortest path between two user-specified peaks. Currently it only finds the sortest paths between intra-chromosomal peaks. Therefore, the peaks have to be on the same chromosome.
+class has a method which finds the length of the  shortest path between two user-specified peaks. Currently it only finds the shortest paths between intra-chromosomal peaks. Therefore, the peaks have to be on the same chromosome.
 The resulting value is a two-element list with the first element named LinearPathLength
 for the linear length of the path between summits of the two peaks,
-and the second element named ThreeDPathLength for the 3D length of the sortest path
+and the second element named ThreeDPathLength for the 3D length of the shortest path
 between summits of the two peaks.
 
 ```{r,eval=TRUE,echo=TRUE}
 class(MACPET_GenomeMapData)#GenomeMap class
-GetSortestPath(object=MACPET_GenomeMapData,
+GetShortestPath(object=MACPET_GenomeMapData,
                      threshold = NULL,
                      ChrFrom="chr1",
                      ChrTo="chr1",

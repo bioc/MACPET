@@ -156,7 +156,7 @@ GetSignInteractions(object=MACPET_GenomeMapData,
 
 ## ----eval=TRUE,echo=TRUE---------------------------------------------------
 class(MACPET_GenomeMapData)#GenomeMap class
-GetSortestPath(object=MACPET_GenomeMapData,
+GetShortestPath(object=MACPET_GenomeMapData,
                      threshold = NULL,
                      ChrFrom="chr1",
                      ChrTo="chr1",

@@ -186,7 +186,7 @@
 #' \code{\link{exportPeaks}}, \code{\link{TagsToGInteractions}},
 #'  \code{\link{PeaksToGRanges}},  \code{\link{PeaksToNarrowPeak}},
 #'  \code{\link{ConvertToPE_BAM}}, \code{\link{GetSignInteractions}},
-#'  \code{\link{GetSortestPath}}
+#'  \code{\link{GetShortestPath}}
 #----------#'output
 #' @return All outputs are saved at the \code{SA_AnalysisDir}. The output depents of the stages run:
 #' \describe{

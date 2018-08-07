@@ -44,7 +44,7 @@
 #' \item{\code{\link{ConvertToPSelf}}}{Method for converting a \code{\link[InteractionSet:GInteractions-class]{GInteractions}} class of
 #' Self-ligated PETs to object of \code{\linkS4class{PSelf}} class.}
 #'  \item{\code{\link{GetSignInteractions}}}{Method for subseting the significant interactions of a \code{\linkS4class{GenomeMap}} object.}
-#'  \item{\code{\link{GetSortestPath}}}{Method for finding the sortest path between two peaks given a set of interactions.}
+#'  \item{\code{\link{GetShortestPath}}}{Method for finding the shortest path between two peaks given a set of interactions.}
 #' \item{\code{\link{PeaksToNarrowPeak}}}{Method for converting peaks to narrowPeak (BED) format for use in
 #' interaction analysis using the MANGO/MICC algorithm. Alternatively the user can run stage 4 at \code{\link{MACPETUlt}}.}
 #'}

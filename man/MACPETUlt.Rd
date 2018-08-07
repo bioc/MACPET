@@ -449,7 +449,7 @@ Consortium EP (2012) \emph{An integrated encyclopedia of DNA elements in the hum
 \code{\link{exportPeaks}}, \code{\link{TagsToGInteractions}},
  \code{\link{PeaksToGRanges}},  \code{\link{PeaksToNarrowPeak}},
  \code{\link{ConvertToPE_BAM}}, \code{\link{GetSignInteractions}},
- \code{\link{GetSortestPath}}
+ \code{\link{GetShortestPath}}
 }
 \author{
 Ioannis Vardaxis, \email{ioannis.vardaxis@ntnu.no}
