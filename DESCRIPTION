@@ -2,7 +2,7 @@ Package: MACPET
 Type: Package
 Title: Model based analysis for paired-end data
 Version: 1.2.1
-Date: 2019-03-20
+Date: 2019-03-22
 Author: Ioannis Vardaxis
 Maintainer: Ioannis Vardaxis <ioannis.vardaxis@ntnu.no>
 Description: The MACPET package can be used for complete interaction analysis for ChIA-PET data. MACPET reads ChIA-PET data in BAM or SAM format and separates the data into Self-ligated, Intra- and Inter-chromosomal PETs. Furthermore, MACPET breaks the genome into regions and applies 2D mixture models for identifying candidate peaks/binding sites using skewed generalized students-t distributions (SGT). It then uses a local poisson model for finding significant binding sites. Finally it runs an additive interaction-analysis model for calling for significant interactions between those peaks. MACPET is mainly written in C++, and it also supports the BiocParallel package.
