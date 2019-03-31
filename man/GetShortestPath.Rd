@@ -10,8 +10,8 @@ GetShortestPath(object, ...)
 
 \method{GetShortestPath}{default}(object, ...)
 
-\method{GetShortestPath}{GenomeMap}(object, threshold = NULL, ChrFrom, ChrTo,
-  SummitFrom, SummitTo, ...)
+\method{GetShortestPath}{GenomeMap}(object, threshold = NULL, ChrFrom,
+  ChrTo, SummitFrom, SummitTo, ...)
 }
 \arguments{
 \item{object}{An object of class \code{\linkS4class{GenomeMap}}.}

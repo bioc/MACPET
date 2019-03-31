@@ -4,19 +4,20 @@
 \alias{MACPETUlt}
 \title{Paired-end Tag (PET) Analysis Function.}
 \usage{
-MACPETUlt(SA_AnalysisDir = "", SA_stages = c(0:3), SA_prefix = "MACPET",
-  S0_fastq1 = "", S0_fastq2 = "", S0_LinkerA = "GTTGGATAAG",
-  S0_LinkerB = "GTTGGAATGT", S0_MinReadLength = 18, S0_MaxReadLength = 50,
+MACPETUlt(SA_AnalysisDir = "", SA_stages = c(0:3),
+  SA_prefix = "MACPET", S0_fastq1 = "", S0_fastq2 = "",
+  S0_LinkerA = "GTTGGATAAG", S0_LinkerB = "GTTGGAATGT",
+  S0_MinReadLength = 18, S0_MaxReadLength = 50,
   S0_LinkerOccurence = 0, S0_image = TRUE, S0_fastqStream = 2e+06,
-  S1_fastq1_usable_dir = "", S1_fastq2_usable_dir = "", S1_image = TRUE,
-  S1_BAMStream = 2e+06, S1_makeSam = TRUE, S1_genome = "hg19",
-  S1_RbowtieIndexBuild = FALSE, S1_RbowtieIndexDir = "",
-  S1_RbowtieIndexPrefix = "", S1_RbowtieRefDir = "",
-  S2_PairedEndBAMpath = "", S2_image = TRUE, S2_BlackList = TRUE,
-  S3_fileSelfDir = "", S3_image = TRUE, S3_method = "BH",
-  S4_filePSFitDir = "", S4_filePIntraDir = "", S4_filePInterDir = NULL,
-  S4_FDR_peak = 0.1, S4_method = "BH", S4_image = TRUE, S4_minPETs = 2,
-  S4_PeakExt = 500)
+  S1_fastq1_usable_dir = "", S1_fastq2_usable_dir = "",
+  S1_image = TRUE, S1_BAMStream = 2e+06, S1_makeSam = TRUE,
+  S1_genome = "hg19", S1_RbowtieIndexBuild = FALSE,
+  S1_RbowtieIndexDir = "", S1_RbowtieIndexPrefix = "",
+  S1_RbowtieRefDir = "", S2_PairedEndBAMpath = "", S2_image = TRUE,
+  S2_BlackList = TRUE, S3_fileSelfDir = "", S3_image = TRUE,
+  S3_method = "BH", S4_filePSFitDir = "", S4_filePIntraDir = "",
+  S4_filePInterDir = NULL, S4_FDR_peak = 0.1, S4_method = "BH",
+  S4_image = TRUE, S4_minPETs = 2, S4_PeakExt = 500)
 }
 \arguments{
 \item{SA_AnalysisDir}{A directory were all the ouput is to be saved.

@@ -1,7 +1,7 @@
 #' @importFrom Rbowtie bowtie_build bowtie
 #' @importFrom BiocParallel bpworkers bplapply
 #' @importFrom GEOquery gunzip
-#' @importFrom Rsamtools mergeBam sortBam countBam asBam scanBamFlag ScanBamParam filterBam scanBamWhat BamFile asSam
+#' @importFrom Rsamtools mergeBam sortBam countBam asBam scanBamFlag ScanBamParam filterBam scanBamWhat BamFile asSam scanBam
 #' @importFrom GenomicAlignments readGAlignments
 #' @importFrom rtracklayer export
 #' @importFrom Biostrings BStringSet width intersect
@@ -9,8 +9,8 @@
 #' @importFrom GenomeInfoDb genome seqinfo
 #' @importFrom methods as
 #' @importFrom InteractionSet GInteractions
-#' @importFrom rbamtools bamReader readerToFastq
 #' @importFrom IRanges narrow
+#' @importFrom ShortRead ShortReadQ writeFastq
 #' @importClassesFrom Rsamtools BamFile
 #' @importClassesFrom GenomicAlignments GAlignments
 #' @importClassesFrom GenomeInfoDb Seqinfo
@@ -44,7 +44,7 @@ Stage_1_Main_fun = function(SA_prefix, S1_fastq1_usable_dir, S1_fastq2_usable_di
     # round
     #----------------
     BAMstats12V0 = Convert_Filter_CreateFastq_main_fun(S1_AnalysisDir = S1_AnalysisDir,
-        SA_prefix = SA_prefix, SAMout12_M0 = SAMout12_M0)
+        SA_prefix = SA_prefix, SAMout12_M0 = SAMout12_M0, S1_BAMStream = S1_BAMStream)
     #----------------
     # Map the unmapped with at most one mismatch
     #----------------
@@ -181,7 +181,8 @@ Map_fastq_V0_sub_fun = function(S1_AnalysisDir, fastq_usable_dir, namefastqgz, n
 #----------------
 # main function for converting to bam, filtering, creating fastq for the
 # unmapped.
-Convert_Filter_CreateFastq_main_fun = function(S1_AnalysisDir, SA_prefix, SAMout12_M0) {
+Convert_Filter_CreateFastq_main_fun = function(S1_AnalysisDir, SA_prefix, SAMout12_M0,
+                                               S1_BAMStream) {
     cat("==================================================\n")
     cat("Preparing files for mapping with at most one mismatch...")
     #----------------
@@ -203,7 +204,8 @@ Convert_Filter_CreateFastq_main_fun = function(S1_AnalysisDir, SA_prefix, SAMout
         paste(SA_prefix, "_usable_2_MR2.bam.bai", sep = "")), FastqMR2 = file.path(S1_AnalysisDir,
         paste(SA_prefix, "_usable_2_MR2.fastq.gz", sep = "")))
     # run in parallel:
-    BAMstats12V0 = BiocParallel::bplapply(X = Converting, FUN = Convert_Filter_CreateFastq_sub_fun)
+    BAMstats12V0 = BiocParallel::bplapply(X = Converting, FUN = Convert_Filter_CreateFastq_sub_fun,
+                                          S1_BAMStream = S1_BAMStream)
     cat("Done\n")
     return(BAMstats12V0)
 }
@@ -211,7 +213,7 @@ Convert_Filter_CreateFastq_main_fun = function(S1_AnalysisDir, SA_prefix, SAMout
 #----------------
 #----------------
 # function for splitting and converting files for mapping round 2:
-Convert_Filter_CreateFastq_sub_fun = function(ConvertingL) {
+Convert_Filter_CreateFastq_sub_fun = function(ConvertingL, S1_BAMStream) {
     #----------------
     # Convert to BAM:
     #----------------
@@ -244,16 +246,41 @@ Convert_Filter_CreateFastq_sub_fun = function(ConvertingL) {
     Rsamtools::filterBam(file = ConvertingL$BAMoutMR1, index = ConvertingL$BAMoutbaiMR1,
         destination = ConvertingL$BAMoutMR2, param = SBparam, indexDestination = TRUE)
     #----------------
-    # Convert the umapped to fastq:
+    # Convert the umapped to fastq: Here I have to change
     #----------------
-    BAMreader = rbamtools::bamReader(filename = ConvertingL$BAMoutMR2, indexname = ConvertingL$BAMoutbaiMR2)
-    rbamtools::readerToFastq(object = BAMreader, filename = ConvertingL$FastqMR2)
+    bam_object = Rsamtools::BamFile(file = ConvertingL$BAMoutMR2, index = ConvertingL$BAMoutbaiMR2,
+                                    yieldSize = S1_BAMStream)
+    open(bam_object)
+    fastq_to = ConvertingL$FastqMR2
+    repeat {
+        ## maybe indicate progress?
+        len = BamToFastq(bam_object=bam_object, fastq_to=fastq_to)
+        if (len == 0L)
+            break
+    }
+    close(bam_object)
     #----------------
     # delete unnecessary files and return:
     #----------------
     unlink(x = c(ConvertingL$SAMoutMR1, ConvertingL$BAMoutMR1, ConvertingL$BAMoutbaiMR1,
         ConvertingL$BAMoutMR2, ConvertingL$BAMoutbaiMR2), recursive = TRUE, force = TRUE)
     return(list(TotReads = TotReads, TotmappedV0 = TotmappedV0))
+}
+#----------------
+#----------------
+#function for converting Bam files to fastq.
+BamToFastq = function(bam_object, fastq_to) {
+    #read chunk of BAM
+    param = Rsamtools::ScanBamParam(what = Rsamtools::scanBamWhat())
+    chunk = Rsamtools::scanBam(file = bam_object, param = param)
+    #comvert to fastq and write:
+    fastq_chunk = ShortRead::ShortReadQ(sread = chunk[[1]]$seq,
+                                        quality = chunk[[1]]$qual,
+                                        id = Biostrings::BStringSet(x = chunk[[1]]$qname),
+                                        alignData = chunk[[1]]$flag)
+    ShortRead::writeFastq(object = fastq_chunk, file = fastq_to, mode="a",
+                          compress = TRUE)
+    return(length(fastq_chunk))
 }
 #----------------
 #----------------

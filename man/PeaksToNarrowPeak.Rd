@@ -10,8 +10,8 @@ PeaksToNarrowPeak(object, ...)
 
 \method{PeaksToNarrowPeak}{default}(object, ...)
 
-\method{PeaksToNarrowPeak}{PSFit}(object, threshold = NULL, savedir, file.out,
-  ...)
+\method{PeaksToNarrowPeak}{PSFit}(object, threshold = NULL, savedir,
+  file.out, ...)
 }
 \arguments{
 \item{object}{An object of class \code{\linkS4class{PSFit}}.}

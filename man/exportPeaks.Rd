@@ -10,7 +10,8 @@ exportPeaks(object, ...)
 
 \method{exportPeaks}{default}(object, ...)
 
-\method{exportPeaks}{PSFit}(object, file.out, savedir, threshold = NULL, ...)
+\method{exportPeaks}{PSFit}(object, file.out, savedir, threshold = NULL,
+  ...)
 }
 \arguments{
 \item{object}{An object of \code{\linkS4class{PSFit}}  class.}
