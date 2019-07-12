@@ -165,3 +165,8 @@ GetSignInteractions.GenomeMap = function(object, threshold = NULL, ReturnedAs = 
         cat("The output is saved at:\n", SaveTo)
     }
 }  #done
+#defining the method as S4 method:
+#' @rdname GetSignInteractions
+#' @aliases GetSignInteractions,GenomeMap,GetSignInteractions-method
+#' @export
+setMethod("GetSignInteractions", "GenomeMap", GetSignInteractions.GenomeMap)

@@ -78,6 +78,9 @@ plot.PInter = function(x, ...) {
         main = "Inter Interaction Network Plot")
     return(res)
 }
+#defining the method as S4 method:
+setMethod("plot", "PInter", plot.PInter)
+
 #---Intra PETs:
 #' @rdname plot
 #' @method plot PIntra
@@ -108,6 +111,9 @@ plot.PIntra = function(x, ...) {
         ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
     return(res)
 }
+#defining the method as S4 method:
+setMethod("plot", "PIntra", plot.PIntra)
+
 #---Self PETs:
 #' @rdname plot
 #' @method plot PSelf
@@ -138,6 +144,9 @@ plot.PSelf = function(x, ...) {
         ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
     return(res)
 }
+#defining the method as S4 method:
+setMethod("plot", "PSelf", plot.PSelf)
+
 #----PSFit:
 #' @rdname plot
 #' @method plot PSFit
@@ -340,6 +349,9 @@ plot.PSFit = function(x, kind, RegIndex = NULL, threshold = NULL, ...) {
     }
     return(res)
 }
+#defining the method as S4 method:
+setMethod("plot", "PSFit", plot.PSFit)
+
 #---GenomeMap:
 #' @rdname plot
 #' @method plot GenomeMap
@@ -430,3 +442,5 @@ plot.GenomeMap = function(x, Type, threshold = NULL, ...) {
         }
     }
 }
+#defining the method as S4 method:
+setMethod("plot", "GenomeMap", plot.GenomeMap)

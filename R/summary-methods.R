@@ -65,6 +65,12 @@ summary.PSelf = function(object, ...) {
     print(knitr::kable(Info[, c(4, 5)], row.names = FALSE, align = c("c"), format = "rst",
         padding = 1, output = TRUE))
 }
+#defining the method as S4 method:
+#' @rdname summary
+#' @aliases summary,PSelf,summary-method
+#' @export
+setMethod("summary", "PSelf", summary.PSelf)
+
 #' @rdname summary
 #' @export
 #' @method summary PSFit
@@ -122,6 +128,12 @@ summary.PSFit = function(object, threshold = NULL, ...) {
             format = "rst", padding = 1, output = TRUE))
     }
 }
+#defining the method as S4 method:
+#' @rdname summary
+#' @aliases summary,PSFit,summary-method
+#' @export
+setMethod("summary", "PSFit", summary.PSFit)
+
 #' @rdname summary
 #' @export
 #' @method summary PIntra
@@ -177,6 +189,12 @@ summary.PIntra = function(object, heatmap = FALSE, ...) {
         return(RES)
     }
 }
+#defining the method as S4 method:
+#' @rdname summary
+#' @aliases summary,PIntra,summary-method
+#' @export
+setMethod("summary", "PIntra", summary.PIntra)
+
 #' @rdname summary
 #' @export
 #' @method summary PInter
@@ -231,6 +249,12 @@ summary.PInter = function(object, heatmap = FALSE, ...) {
         return(RES)
     }
 }
+#defining the method as S4 method:
+#' @rdname summary
+#' @aliases summary,PInter,summary-method
+#' @export
+setMethod("summary", "PInter", summary.PInter)
+
 #' @rdname summary
 #' @export
 #' @method summary GenomeMap
@@ -258,3 +282,8 @@ summary.GenomeMap = function(object, threshold = NULL, ...) {
     print(knitr::kable(Info, row.names = FALSE, align = c("c"), format = "markdown",
         padding = 1, output = TRUE))
 }
+#defining the method as S4 method:
+#' @rdname summary
+#' @aliases summary,GenomeMap,summary-method
+#' @export
+setMethod("summary", "GenomeMap", summary.GenomeMap)

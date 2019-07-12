@@ -2,7 +2,7 @@
 title: "MACPET"
 author:
   - name: "Ioannis Vardaxis"
-    email: ioannis.vardaxis@ntnu.no
+    email: iova89@hotmail.com
 date: "`r doc_date()`"
 package: "`r BiocStyle::pkg_ver('MACPET')` Rversion >=`r getRversion()`"
 abstract: |

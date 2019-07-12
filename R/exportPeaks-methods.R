@@ -108,3 +108,8 @@ exportPeaks.PSFit = function(object, file.out, savedir, threshold = NULL, ...) {
         qmethod = "double", append = TRUE))
     return("The output is saved at savedir")
 }
+#defining the method as S4 method:
+#' @rdname exportPeaks
+#' @aliases exportPeaks,PSFit,exportPeaks-method
+#' @export
+setMethod("exportPeaks", "PSFit", exportPeaks.PSFit)

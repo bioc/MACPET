@@ -87,3 +87,8 @@ PeaksToNarrowPeak.PSFit = function(object, threshold = NULL, savedir, file.out, 
     rtracklayer::export(object, con = connection, format = "BED")
     return("Done! Check savedir!")
 }
+#defining the method as S4 method:
+#' @rdname PeaksToNarrowPeak
+#' @aliases PeaksToNarrowPeak,PSFit,PeaksToNarrowPeak-method
+#' @export
+setMethod("PeaksToNarrowPeak", "PSFit", PeaksToNarrowPeak.PSFit)

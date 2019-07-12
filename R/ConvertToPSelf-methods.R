@@ -165,3 +165,8 @@ ConvertToPSelf.GInteractions = function(object, S2_BlackList, SA_prefix, S2_Anal
         SA_prefix = SA_prefix)
     cat("The PSelf object is saved in: \n", S2_AnalysisDir)
 }
+#defining the method as S4 method:
+#' @rdname ConvertToPSelf
+#' @aliases ConvertToPSelf,GInteractions,ConvertToPSelf-method
+#' @export
+setMethod("ConvertToPSelf", "GInteractions", ConvertToPSelf.GInteractions)

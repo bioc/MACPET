@@ -95,3 +95,8 @@ TagsToGInteractions.PSFit = function(object, threshold = NULL, ...) {
     class(object) = "GInteractions"
     return(object)
 }
+#defining the method as S4 method:
+#' @rdname TagsToGInteractions
+#' @aliases TagsToGInteractions,PSFit,TagsToGInteractions-method
+#' @export
+setMethod("TagsToGInteractions", "PSFit", TagsToGInteractions.PSFit)

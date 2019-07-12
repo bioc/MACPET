@@ -83,3 +83,8 @@ PeaksToGRanges.PSFit = function(object, threshold = NULL, ...) {
     RES$FDR = Peaks$FDR
     return(RES)
 }
+#defining the method as S4 method:
+#' @rdname PeaksToGRanges
+#' @aliases PeaksToGRanges,PSFit,PeaksToGRanges-method
+#' @export
+setMethod("PeaksToGRanges", "PSFit", PeaksToGRanges.PSFit)

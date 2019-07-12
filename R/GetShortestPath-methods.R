@@ -166,3 +166,8 @@ GetShortestPath.GenomeMap = function(object, threshold = NULL, ChrFrom, ChrTo, S
     #--------------------------
     return(list(LinearPathLength = LinearPathLength, ThreeDPathLength = ThreeDPathLength))
 }  #done
+#defining the method as S4 method:
+#' @rdname GetShortestPath
+#' @aliases GetShortestPath,GenomeMap,GetShortestPath-method
+#' @export
+setMethod("GetShortestPath", "GenomeMap", GetShortestPath.GenomeMap)
