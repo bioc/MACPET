@@ -1,7 +1,7 @@
 Package: MACPET
 Type: Package
 Title: Model based analysis for paired-end data
-Version: 1.13.0
+Version: 1.14.0
 Date: 2019-03-30
 Author: Ioannis Vardaxis
 Maintainer: Ioannis Vardaxis <iova89@hotmail.com>
